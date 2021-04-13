@@ -1,0 +1,175 @@
+body {
+    padding: 0 10% 0;
+    color: #777;
+    font-family: "Roboto",sans-serif;
+    font-weight: 400;
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    background-color: #fff;
+}
+
+.header-main {
+    height: 60px;
+    padding: 24px 0;
+    background: #fff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+    margin: 0 5%;
+    position: relative;
+    z-index: 1;
+}
+
+
+
+.container{
+    width: 800px;
+    height: 60px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+
+}
+
+.logo-area{
+    float:left;
+    padding-right: 15px;
+    padding-left: 15px;
+    display:inline;
+}
+
+.logo{
+    height: 70px;
+    width: 110px;
+}
+
+.main-menu{
+    margin-left: 100px;
+    float:left;
+    display:inline;
+    z-index: 1;
+}
+
+.main-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    /* overflow: auto; */
+    background-color: #fff;
+  }
+  
+  .main-menu li {
+    float: left;
+  }
+  
+  .main-menu li a {
+    display: block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    text-transform:uppercase;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .main-menu ul li{
+    position: relative;
+  }
+  
+
+.rec .sub-menu {
+    padding: 10px;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    background-color: #777;
+    top: 250%;
+    left: 0;
+    width: 250px;
+    background: #f5f5f5;
+    
+
+}
+
+.rec:hover .sub-menu{
+    visibility: visible;
+    top:40px;
+    opacity: 1;
+    z-index: 2;
+    -webkit-transition: .5s;
+    -moz-transition: .5s;
+    -o-transition: .5s;
+    transition: .5s;
+}
+  
+/* sign in hover */
+
+  .menu-btn{
+      margin-left: 30px;
+      
+      
+  }
+
+  .signin-btn{
+    color: #fff !important;
+    background: #f61b55;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    padding: 13px 24px;
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    border-radius: 5px;
+  }
+
+  a:hover{
+    background: #fff; 
+    opacity: 1;
+    color: #333 !important;
+    border-color: #f61b55;
+  }
+
+
+.banner-area{
+    background-color: #b0b0b0;
+    background-image: url(../img/running.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 400px;
+    padding: 200px 0 180px;
+    z-index: 1;
+    margin-top: -20px;
+}
+
+.banner-text{
+    margin: 10%;
+    /* width: 100%; */
+    padding: 3px;
+    background-color: #f5f5f5;
+    opacity: 0.7;
+    text-align: center;
+}
+
+.banner-text h1{
+    font-size: 30px;
+}
