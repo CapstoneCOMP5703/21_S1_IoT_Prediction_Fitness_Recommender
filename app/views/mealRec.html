@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Page Title -->
+    <title>Fitastic</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../../public/img/logo.png" type="image/x-icon">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" href="../../public/css/mealrec.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <!-- JS Files-->
+    <script tpye="text/javascript" src="../../public/js/text.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <script src="https://www.gstatic.com/charts/loader.js">
+        //Google Chart
+    </script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+</head>
+<body>
+    <header class="header-main">
+        <div class="container">
+            <div class="logo-area">
+                <a href="homepage.html"><img src="../../public/img/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <div class="main-menu">
+                <ul>
+                    <li class="active"><a href="homepage.html">home</a></li>
+                    <li class="rec"><a href="#" >recommendations</a>
+                        <ul class="sub-menu">
+                            <li><a href="workoutRec.html">workout recommendation</a></li>
+                            <li><a href="mealRec.html">meal recommendation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="activitylog.html">activity log</a></li>
+                    <li class="menu-btn">
+                        <a href="#" class="signin-btn">sign in</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="mealrec-area">
+        <div class="mealrec-text">
+            <h1>Diet Recommendation</h1>
+        </div>
+    </section>
+
+    <div class="intro"> 
+        <!-- <h1>Put your fitness plan on autopilot </h1> -->
+        <a>Fitastic creates personalized diet plans based on your historical records and the calories you want to consume. Create your diet plan right here in seconds.</a>
+    </div>
+
+    <section class="mealrec-input">
+        <div class="txt">
+            <input type="text">
+            <span data-placeholder="I want to consume:"></span>
+            <span data-placeholder="Calories" class="span_cal"></span>
+        </div>
+
+        <div class="txt">
+            <input type="text">
+            <span data-placeholder="In:"></span>
+            <span data-placeholder="Meals" class="span_cal"></span>
+        </div>
+
+        <div class="user_submit">
+            <input class="submit_btn" type="button" value="Generate"></button>
+        </div>
+    </section>
+
+
+
+</body>
+</html>
