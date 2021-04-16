@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Page Title -->
+    <title>Fitastic</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../../public/img/logo.png" type="image/x-icon">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" href="../../public/css/styles.css">
+
+     <!-- JS Files-->
+     <script tpye="text/javascript" src="../../public/js/text.js"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <header class="header-main">
+        <div class="container">
+            <div class="logo-area">
+                <a href="homepage.html"><img src="../../public/img/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <div class="main-menu">
+                <ul>
+                    <li class="active"><a href="homepage.html">home</a></li>
+                    <li class="rec"><a href="#" >recommendations</a>
+                        <ul class="sub-menu">
+                            <li><a href="workoutRec.html">workout recommendation</a></li>
+                            <li><a href="mealRec.html">meal recommendation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="activitylog.html">activity log</a></li>
+                    <li class="menu-btn">
+                        <a href="sign.html" class="signin-btn">sign in</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="logpage-area">
+    <div class="log-area">
+        <div class="login">
+            <form class="login-from" id="loginForm" method="POST">
+                <h1>Welcome to Fitastic</h1>
+                <div class="txt">
+                    <input type="text">
+                    <span data-placeholder="Username"></span>
+                </div>
+                <div class="txt">
+                    <input type="password">
+                    <span data-placeholder="Password"></span>
+                </div>
+                <div>
+                    <input class="resetbtn" type="button" value="Forget your password?">
+                </div>
+                    <input class="logbtn" type="submit" value="Login">
+                <div class="btn_text">Don't have account? 
+                    <input class="signbtn" type="button" value="Sigh up!">
+                </div>
+            </form>
+        </div>
+        <div class="signup">
+            <form class="signup-from" action="index.html">
+                <h1>Please Sign Up</h1>
+                <div class="txt">
+                    <input type="text" pattern="[A-Z]{1}[a-z]+">
+                    <span data-placeholder="First Name"></span>
+                </div>
+                <div class="txt">
+                    <input type="text" pattern="[A-Z]{1}[a-z]+">
+                    <span data-placeholder="Last Name"></span>
+                </div>
+                <div class="txt">
+                    <input type="email">
+                    <span data-placeholder="Email"></span>
+                </div>
+                <div class="txt">
+                    <input type="password">
+                    <span data-placeholder="Password"></span>
+                </div>
+                <div class="txt">
+                    <input type="password">
+                    <span data-placeholder="Please comfirm your password"></span>
+                </div>
+                <div>
+                    <span class="reset_txt">Reset Password Question</span>
+                    <select class="select_list" id="">
+                        <option value="option1">What is this course?</option>
+                        <option value="option2">Where is your hometown?</option>
+                        <option value="option3">What is your favorite song?</option>
+                    </select>
+                </div>
+                <div class="txt">
+                    <input type="text">
+                    <span data-placeholder="Answer"></span>
+                </div><input class="signupbtn" type="submit" value="Sign up">
+                <input class="signupbtn" type="reset" value="Clear">
+                <div class="sbtn_text">Already have account? 
+                    <input class="signbtn" type="button" value="Login!">
+                </div>
+            </form>
+        </div>
+        <div class="resetIn">
+            <form class="reset-from" action="index.html">
+                <h1>Please Reset Your Password</h1>
+                <div class="txt">
+                    <input type="text">
+                    <span data-placeholder="Email"></span>
+                </div>
+                <div>
+                    <span class="reset_txt">Reset Password Question</span>
+                    <select class="select_list" id="">
+                        <option value="option1">What is this course?</option>
+                        <option value="option2">Where is your hometown?</option>
+                        <option value="option3">What is your favorite song?</option>
+                    </select>
+                </div>
+                <div class="txt">
+                    <input type="text">
+                    <span data-placeholder="Answer"></span>
+                </div>
+                <div class="txt">
+                    <input type="password">
+                    <span data-placeholder="New password"></span>
+                </div>
+                <input class="signupbtn" type="submit" value="Comfirm">
+                <input class="signupbtn" type="reset" value="Clear">
+                <div class="sbtn_text">Remember your password? 
+                    <input class="rbtn" type="button" value="Login!">
+                </div>
+            </form>
+        </div>
+    </div>
+    </section>
+</body>
+</html>
