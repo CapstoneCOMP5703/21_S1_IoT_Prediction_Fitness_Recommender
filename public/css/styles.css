@@ -272,7 +272,7 @@ body {
 .signup-from{
   margin: 0 auto;
   width: 70%;
-  background: #f1f1f1;
+  background: #fff;
   height: 100%;
   padding: 80px 40px; 
   border-radius: 12px;
@@ -342,7 +342,7 @@ body {
 .reset-from{
   margin: 0 auto;
   width: 70%;
-  background: #f1f1f1;
+  background: #fff;
   height: 100%;
   padding: 80px 40px; 
   border-radius: 12px;
