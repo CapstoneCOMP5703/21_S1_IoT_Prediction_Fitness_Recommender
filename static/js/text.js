@@ -1,5 +1,5 @@
 window.onload = function() {
-    load_data();
+    // load_data();
     $(".txt input").on("focus",function(){
         $(this).addClass("focus");
     });
@@ -30,18 +30,15 @@ window.onload = function() {
         $(".login").show();
         $(".signup").hide();
     });
-
-
 }
 
-
-function load_data(){
-    var theme=localStorage.getItem("username");
-    if(theme==null||theme==""){
-       $("#cue").show(); 
-        $("#uname").html('');
-    }else{
-        $("#cue").hide();  
-        $("#uname").html(theme);
-    }
-}
+// function load_data(){
+//     var theme=localStorage.getItem("username");
+//     if(theme==null||theme==""){
+//        $("#cue").show(); 
+//         $("#uname").html('');
+//     }else{
+//         $("#cue").hide();  
+//         $("#uname").html(theme);
+//     }
+// }
