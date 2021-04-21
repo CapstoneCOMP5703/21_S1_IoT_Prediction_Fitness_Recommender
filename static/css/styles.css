@@ -169,7 +169,7 @@ body {
 
 .banner-area{
     background-color: #b0b0b0;
-    background-image: url(../img/running.jpg);
+    /* background-image: url(images/running.jpg); */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -194,7 +194,7 @@ body {
 
 .logpage-area{
   background-color: #b0b0b0;
-  background-image: url(../img/running.jpg);
+  /* background-image: url(../img/running.jpg); */
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

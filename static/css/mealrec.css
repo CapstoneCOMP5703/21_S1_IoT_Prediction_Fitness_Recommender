@@ -150,7 +150,7 @@ body {
 
 .mealrec-area{
   background-color: #b0b0b0;
-  background-image: url(../img/healthyfood.jpeg);
+  /* background-image: url(../img/healthyfood.jpeg); */
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

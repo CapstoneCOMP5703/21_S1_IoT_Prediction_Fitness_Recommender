@@ -150,7 +150,7 @@ body {
 
 .workrec-area{
   background-color: #b0b0b0;
-  background-image: url(../img/workrec.jpg);
+  /* background-image: url(../img/workrec.jpg); */
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -285,8 +285,4 @@ body {
 .workrec_content rec_box{
   margin-top: 30px;
   border:1px dashed #000
-}
-
-.rec_1 rec_name{
-  
 }
