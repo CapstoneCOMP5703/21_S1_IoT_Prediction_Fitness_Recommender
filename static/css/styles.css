@@ -23,6 +23,10 @@
     font-size: 30px;
 }
 
+.banner-text h2{
+  font-style: italic;
+}
+
 .logpage-area{
   background-color: #b0b0b0;
   /* background-image: url(../img/running.jpg); */

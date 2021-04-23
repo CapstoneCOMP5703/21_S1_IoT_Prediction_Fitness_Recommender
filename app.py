@@ -1,10 +1,12 @@
 from flask import Flask
 from flask import request, render_template, redirect, url_for, session, g
 from dataclasses import dataclass
+from datetime import timedelta
 
 app= Flask(__name__,static_url_path="/")
 # FLASK_ENV=development
 app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 @dataclass
 class User:
@@ -41,8 +43,17 @@ def mealRec():
         return redirect(url_for('login'))           
     return render_template("dietrec.html")
 
+@app.route("/activitylog")
+def activitylog():
+    if not g.user:
+        return redirect(url_for('login'))           
+    return render_template("activitylog.html")
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if g.user:
+        return redirect(url_for('profile'))
+
     if request.method == 'POST':
         # login
         session.pop('user_id', None)
@@ -57,3 +68,9 @@ def login():
             return redirect(url_for('workoutRec'))
         
     return render_template("sign.html")
+
+@app.route("/profile")
+def profile():
+    if not g.user:
+        return redirect(url_for('login'))           
+    return render_template("profile.html")

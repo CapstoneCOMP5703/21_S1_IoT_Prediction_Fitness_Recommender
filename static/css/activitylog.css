@@ -1,0 +1,26 @@
+.heartrate_area{
+    display: block;
+    width: 80%;
+    min-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+    padding: 100px auto 180px;
+    align-content: center;
+    text-align: center;
+  }
+
+  .heartrate_area h1{
+    margin-top: 20px;
+    font-size: 30px;
+  }
+
+  .report{
+      margin-top: 40px;
+      margin-bottom: 20px;
+      height: 400px;
+      width: 600px;
+  }
+
+
+

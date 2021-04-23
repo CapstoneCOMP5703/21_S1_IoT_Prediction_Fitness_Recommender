@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Page Title -->
+    <title>Fitastic</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/icon.png" type="image/x-icon">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" href="css/login_main.css">
+    <link rel="stylesheet" type="text/css" href="css/profile.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <!-- JS Files-->
+    <script tpye="text/javascript" src="js/workout.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <script src="https://www.gstatic.com/charts/loader.js">
+        //Google Chart
+    </script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+</head>
+<body>
+    <header class="header-main">
+        <div class="container">
+            <div class="logo-area">
+                <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <div class="main-menu">
+                <ul>
+                    <li class="active"><a href="/">home</a></li>
+                    <li class="rec"><a href="#" >recommendations</a>
+                        <ul class="sub-menu">
+                            <li><a href="/workoutrec">workout recommendation</a></li>
+                            <li><a href="/dietrec">diet recommendation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/activitylog">activity log</a></li>
+                    <li class="menu-btn">
+                        <a href="/login" class="signin-btn">log out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <section class="banner-area"  style="background-image: url(images/profile.jpeg);">
+        <div class="banner-text">
+            <h1>Profile</h1>
+            <h3>Welcome  {{g.user.username}}</h3>
+        </div>
+    </section>
+
+    <hr class="space"></hr>
+
+    <section class="profile_area">
+        <div class="profile">
+            <div class="profile_content">
+                <img src= "images/male.png" alt="profile picture" class="profile_picture">              
+            </div>
+            <a>{{g.user.username}}</a>
+        </div>
+        <div class="record">
+
+        </div>
+    </section>
+    
+</body>
+</html>
