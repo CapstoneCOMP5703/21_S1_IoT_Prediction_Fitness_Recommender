@@ -17,6 +17,8 @@ window.onload = function() {
         $(".workrec-input").show();
         $(".workrec_content").hide(); 
     });
+
+
 }
 
 // function load_data(){
