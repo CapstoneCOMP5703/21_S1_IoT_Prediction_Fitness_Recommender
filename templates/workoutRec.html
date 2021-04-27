@@ -63,17 +63,19 @@
         <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn. Create your fitness plan right here in seconds.</a>
     </div>
 
-    <section class="workrec-input">
+    <form class="workrec-input" action="/sportrec_model" method="POST">
         <div class="txt">
-            <input type="text">
+            <input type="text" name="calories">
             <span data-placeholder="I want to burn:"></span>
             <span data-placeholder="Calories" class="span_cal"></span>
         </div>
 
         <div class="user_submit">
-            <input class="submit_btn" type="button" value="Recommend Me"></button>
+            <button class="submit_btn" type="submit" name="Recommend Me">Recommend Me</button>
         </div>
-    </section>
+    </form>
+
+    <h4>消耗卡路里：{{result}}</h4>
 
     <section class="workrec_content">
         <table class="table_rec">
