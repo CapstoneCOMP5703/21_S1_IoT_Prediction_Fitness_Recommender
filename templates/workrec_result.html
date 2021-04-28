@@ -14,11 +14,11 @@
 
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="css/login_main.css">
-    <link rel="stylesheet" type="text/css" href="css/workrec.css">
+    <link rel="stylesheet" type="text/css" href="css/workrec_result.css">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     <!-- JS Files-->
-    <script tpye="text/javascript" src="js/workout.js"></script>
+    <!-- <script tpye="text/javascript" src="js/workout.js"></script> -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <script src="https://www.gstatic.com/charts/loader.js">
@@ -64,16 +64,32 @@
         <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn. Create your fitness plan right here in seconds.</a>
     </div>
 
-    <form class="workrec-input" action="/sportrec_model" method="POST">
-        <div class="txt">
-            <input type="text" name="calories">
-            <span data-placeholder="I want to burn:"></span>
-            <span data-placeholder="Calories" class="span_cal"></span>
-        </div>
-
-        <div class="user_submit">
-            <button class="submit_btn" type="submit" name="Recommend Me">Recommend Me</button>
-        </div>
-    </form>
+    <section class="workrec_content">
+        <table class="table_rec">
+            <tr>
+                <th>Recommended workout number</th>
+                <th>Recommended workout type</th>
+                <th>Recommended workout time</th>
+            </tr>
+            <tr>
+                <td>No.1</td>
+                <td><img src="images/running2.jpg" alt="" />Running</td>
+                <td>{{run_time}} mins</td>
+            </tr>
+            <tr>
+                <td>No.2</td>
+                <td><img src="images/biking.jpg" alt="" />Biking</td>
+                <td>{{bike_time}} mins</td>
+            </tr>
+            <tr>
+                <td>No.3</td>
+                <td><img src="images/mountain_biking.png" alt="" />Mountain Biking</td>
+                <td>{{mbike_time}} mins</td>
+            </tr>
+        </table>
+        <form class="user_regenerate" action="/workoutrec" method="POST">
+            <input class="regenerate_btn" type="submit" value="Recommend Again"></button>
+        </form>
+    </section>
 </body>
 </html>

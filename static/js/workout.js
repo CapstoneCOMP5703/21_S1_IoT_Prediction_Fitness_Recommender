@@ -8,15 +8,15 @@ window.onload = function() {
         $(this).removeClass("focus");
     });
 
-    $(".submit_btn").on("click",function(){
-        $(".workrec_content").show(); 
-        $(".workrec-input").hide();
-    });
+    // $(".submit_btn").on("click",function(){
+    //     $(".workrec_content").show(); 
+    //     $(".workrec-input").hide();
+    // });
 
-    $(".regenerate_btn").on("click",function(){
-        $(".workrec-input").show();
-        $(".workrec_content").hide(); 
-    });
+    // $(".regenerate_btn").on("click",function(){
+    //     $(".workrec-input").show();
+    //     $(".workrec_content").hide(); 
+    // });
 
 
 }
