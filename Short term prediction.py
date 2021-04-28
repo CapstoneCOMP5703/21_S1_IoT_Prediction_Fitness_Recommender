@@ -30,7 +30,6 @@ downloaded.GetContentFile('processed_endomondoHR_proper_interpolate_2w.csv')
 downloaded = drive.CreateFile({'id': '1vsy6uoloy2iXZkULIj_xYC03zp04_Jy9'})
 downloaded.GetContentFile('endomondoHR_proper_temporal_dataset_updated_test_9:1.pkl')
 
-
 class dataInterpreter(object):
     def __init__(self, T, inputAtts, includeUser, includeSport, includeTemporal, targetAtts,
                  fn="endomondoHR_proper.json", scaleVals=True, trimmed_workout_len=450, scaleTargets="scaleVals",
