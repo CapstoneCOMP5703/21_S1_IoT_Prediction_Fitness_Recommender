@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, g
+from flask import request, render_template, redirect, url_for, session, g,flash
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -44,13 +44,18 @@ def workoutRec():
 
 @app.route("/sportrec_model",methods=['GET', 'POST'])
 def sportrec_model():
+    
+    calories_get=request.form.get("calories")
+    if(calories_get == ""):
+        flash('Please input valid calories!')
+        return render_template("workoutrec.html",)
+    calories=int(calories_get) 
     rf.load_data_from_path('./testdata.csv')
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
-    calories=int(request.form.get("calories")) 
-    data=rf.predict_data(1520156, calories)
+    data=rf.predict_data(1111116, calories)
     run_time,bike_time,mbike_time=readsplitdata(data)
 
-    return render_template("workrec_result.html",result=calories,run_time=run_time,
+    return render_template("workrec_result.html",run_time=run_time,
                             bike_time=bike_time,mbike_time=mbike_time)
 
 def readsplitdata(data):

@@ -159,7 +159,7 @@ body {
     border-radius: 5px;
   }
 
-  a:hover{
+  .menu-btn a:hover{
     background: #fff; 
     opacity: 1;
     color: #333 !important;

@@ -18,14 +18,11 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     <!-- JS Files-->
-    <script tpye="text/javascript" src="js/workout.js"></script>
+    <!-- <script tpye="text/javascript" src="js/workout.js"></script> -->
+    <script tpye="text/javascript" src="js/test.js"></script>
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
-    <script src="https://www.gstatic.com/charts/loader.js">
-        //Google Chart
-    </script>
-        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
     
 </head>
 <body>
@@ -64,16 +61,18 @@
         <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn. Create your fitness plan right here in seconds.</a>
     </div>
 
-    <form class="workrec-input" action="/sportrec_model" method="POST">
+    <form class="workrec-input" name="workrec-input" action="/sportrec_model" method="POST">
         <div class="txt">
-            <input type="text" name="calories">
+            <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
+                onafterpaste="this.value=this.value.replace(/\D/g,'')">
             <span data-placeholder="I want to burn:"></span>
             <span data-placeholder="Calories" class="span_cal"></span>
         </div>
-
+        <h4>{{get_flashed_messages()[0]}}</h4>
         <div class="user_submit">
-            <button class="submit_btn" type="submit" name="Recommend Me">Recommend Me</button>
+            <input class="submit_btn" type="submit" value="Recommend Me"></input>
         </div>
+        
     </form>
 </body>
 </html>

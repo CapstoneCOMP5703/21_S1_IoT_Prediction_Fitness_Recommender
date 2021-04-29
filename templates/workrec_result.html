@@ -65,30 +65,38 @@
     </div>
 
     <section class="workrec_content">
+        <h2>We have these personalized workout recommendations for you!</br>Select one to start!</h2>
         <table class="table_rec">
             <tr>
-                <th>Recommended workout number</th>
-                <th>Recommended workout type</th>
-                <th>Recommended workout time</th>
+                <th id="th1">
+                    <a id="user_select_run" type="submit" href="/activitylog">
+                        <button style="background: url(images/running2.jpg);background-size: cover;"></button>
+                    </a>
+                </th>
+                <th>
+                    <a id="user_select_bile" type="submit" href="/activitylog">
+                        <button style="background: url(images/biking.jpg);background-size: cover;"></button>
+                    </a>
+                </th>
+                <th>
+                    <a id="user_select_mbike" type="submit" href="/activitylog">
+                        <button style="background: url(images/mountain_biking.png);background-size: cover;"></button>
+                    </a>
+                </th>
             </tr>
             <tr>
-                <td>No.1</td>
-                <td><img src="images/running2.jpg" alt="" />Running</td>
+                <td>Running</td>
+                <td>Biking</td>
+                <td>Mountain Biking</td>
+            </tr>
+            <tr>
                 <td>{{run_time}} mins</td>
-            </tr>
-            <tr>
-                <td>No.2</td>
-                <td><img src="images/biking.jpg" alt="" />Biking</td>
-                <td>{{bike_time}} mins</td>
-            </tr>
-            <tr>
-                <td>No.3</td>
-                <td><img src="images/mountain_biking.png" alt="" />Mountain Biking</td>
+                <td>{{bike_time}} mins </td>
                 <td>{{mbike_time}} mins</td>
             </tr>
         </table>
         <form class="user_regenerate" action="/workoutrec" method="POST">
-            <input class="regenerate_btn" type="submit" value="Recommend Again"></button>
+            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
     </section>
 </body>

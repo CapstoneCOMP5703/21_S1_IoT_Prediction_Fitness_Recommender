@@ -23,69 +23,6 @@
     font-size: 50px;
   }
   
-  .workrec-input{
-    display: block;
-    width: 30%;
-    min-width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .txt{
-    border-bottom: 2px solid #adadad;
-    position: relative;
-    margin-top: 50px;
-    margin-bottom: 30px;
-  }
-  
-  .txt input{
-    font-size: 23px;
-    color: #333333;
-    border: none;
-    width: 100%;
-    outline: none;
-    background: none;
-    padding: 0 5px;
-    height: 40px;
-  }
-  .span_cal{
-    content: attr(data-placeholder);
-    left: 100%;
-    top: 10%;
-    position: absolute;
-  }
-  
-  .txt span::before{
-    content: attr(data-placeholder);
-    position: absolute; 
-    top: 10%;
-    left: 5px; 
-    font-size: 23px;
-    /*transform: translate(-50%);*/
-    color: #adadad;
-    z-index: -1;
-    transition: .5s;
-  }
-  
-  .txt span::after{
-    content: '';
-    position: absolute;
-    width: 0%;
-    height: 2px;
-    left: 0;
-    top: 100%;
-    background: linear-gradient(125deg,#3387be,#FFCDD2);
-    transition: .5s;
-  }
-  
-  .focus + span::before{
-    top: -30px;
-  }
-  
-  .focus + span::after{
-    width: 100%;
-  }
-  
   .intro{
       margin-top: 20px;
       text-align: center;
@@ -100,47 +37,41 @@
     font-style: italic;
   }
   
-  .submit_btn{
-    margin-left: 35%;
-    width: 180px;
-    height: 60px;
-    font-size: large;
-    color: #fff !important;
-    background: #f61b55;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 1px;
-    padding: 13px 24px;
-    transition-property: all;
-    transition-duration: 0.5s;
-    transition-timing-function: ease;
-    transition-delay: 0s;
-    border-radius: 5px;
-  }
-  
-  .submit_btn:hover{
-    background: #fff; 
-    opacity: 1;
-    color: #333 !important;
-    border-color: #f61b55;
-  }
-  
   .workrec_content{
     display: block;
-    width: 70%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+    align-content: center;
+    text-align: center;
   }
   
   .table_rec{
-    border-collapse: collapse;
-    margin: 100px 20px;
+    border:0px; 
+    border-style: none;
+    width: fit-content;
+    margin: 50px auto 10px;
     text-align: center;
     align-content: center;
   }
+
+  .table_rec button{
+    margin: 30px;
+    width: 200px;
+    height: 200px;
+    background: rgba(0,0,0,0);
+    border-width: 0;
+    border: 0;
+  }
+
+  .table_rec th:hover button{
+    width: 250px;
+    height: 250px;
+    margin: 0px !important;
+  }
   
   table td, table th{
-    border: 1px solid #C0C0C0;
+    border: 0px;
     color: #21373d;
     height: 30px;
     width: 300px;
@@ -149,18 +80,24 @@
   table thead th{
     background-color: #C0C0C0;
     width: 100px;
+    text-align: center;
+  }
+
+  table th img{
+    width: 200px;
+    height: 200px;
   }
   
-  
-  table td img{
-    width: 150px;
-    height: 150px;
-    display:block;
+  .user_regenerate{
+    display: block;
+    width: fit-content;
+    margin: 20px auto;
+    text-align: center;
+    align-content: center;
   }
   
   .regenerate_btn{
-    margin-left: 35%;
-    width: 200px;
+    width: fit-content;
     height: 60px;
     font-size: large;
     color: #fff !important;

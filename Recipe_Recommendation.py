@@ -1,26 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import pandas as pd
 import numpy as np
 import re
 from nltk.stem import WordNetLemmatizer
 
-
-# In[ ]:
-
-
 def remove(x):
     x = re.findall("'(.*?)'",x)
     x = [el for el in x if el != '' and el != 'Add all ingredients to list'] 
     return str(x)
-
-
-# In[ ]:
-
 
 #data preprocessing
 def preprocessing():
@@ -46,10 +32,6 @@ def preprocessing():
     recipe.loc[recipe.veg == False,"veg"] = 'vegetarian'
     return recipe
 
-
-# In[ ]:
-
-
 #find the closet row
 def find_close(arr, value, meal_type, vegan):
     if vegan == "Yes":
@@ -58,10 +40,6 @@ def find_close(arr, value, meal_type, vegan):
         all_index = np.where(recipe["Meal_Type"]==meal_type)[0]   
     index = np.abs(arr-value).argmin()
     return all_index[index]
-
-
-# In[ ]:
-
 
 #print the recommendation list
 def print_list(arr1, arr2, calorie, min_calorie, meal_type, vegan):
@@ -75,20 +53,12 @@ def print_list(arr1, arr2, calorie, min_calorie, meal_type, vegan):
             arr2[key].append(arr1[key][index])
     return arr2
 
-
-# In[ ]:
-
-
 #calculate the remaining calorie
 def cal_calorie_left(dic,calorie):
     num = 0
     for i in dic["Calorie_num"]:
         num = num + i
     return calorie-num
-
-
-# In[ ]:
-
 
 #minimal calorie for each meal type
 def min_calorie(meal_type, vegan):
@@ -97,10 +67,6 @@ def min_calorie(meal_type, vegan):
     else:
         min_calorie = min(recipe.loc[recipe["Meal_Type"]==meal_type]["Calorie_num"])  
     return min_calorie
-
-
-# In[ ]:
-
 
 def recipe_rec(calorie, meal_num):
     recipe = preprocessing()
@@ -152,17 +118,8 @@ def recipe_rec(calorie, meal_num):
     else:
         print("The calorie number has be over 0")
 
-
-# In[ ]:
-
-
 calorie = int(input("Please input a calorie intake: "))
 meal_num = int(input("Please input the number of meal: "))
 recipe_rec(calorie, meal_num)
 
-
-# In[ ]:
-
-
-
-
+recipe_rec(calorie, meal_num, br(0/1), lun(0/1), din(0/1), sanck(0/1), vegan(0/1))
