@@ -13,6 +13,9 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
+from Short_term_prediction import da_rnn
+import torch
+
 @dataclass
 class User:
     id: int
@@ -121,6 +124,10 @@ def dietrec_model():
 #路由运动记录    
 @app.route("/activitylog")
 def activitylog():        
+    model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+    use_cuda = torch.cuda.is_available()
+    output = model.predict()
+    print(output)
     return render_template("activitylog.html")
 
 #路由用户登录后显示的页面
