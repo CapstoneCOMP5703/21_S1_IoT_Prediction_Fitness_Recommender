@@ -75,7 +75,7 @@ class DietRec():
 
         elif meal_num == 3:
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, index_number),calorie)
-            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, index_number),calorie)
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, index_number),calorie)
             self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[2], meal_pre),meal_type_list[2],meal_pre, index_number)    
             return rec_list
 
