@@ -1,15 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import pandas as pd
 import numpy as np
-
-
-# In[ ]:
-
 
 class DietRec():
     #find the closet row
@@ -90,10 +80,3 @@ if __name__ == '__main__':
     dietRec = DietRec()
     data = dietRec.recipe_rec(2000,1,0,1,0,0,0,3)
     print(data)
-
-
-# In[ ]:
-
-
-
-
