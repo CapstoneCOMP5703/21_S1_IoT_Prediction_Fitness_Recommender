@@ -6,159 +6,90 @@
 
 import pandas as pd
 import numpy as np
-import re
-from nltk.stem import WordNetLemmatizer
 
 
 # In[ ]:
 
 
-def remove(x):
-    x = re.findall("'(.*?)'",x)
-    x = [el for el in x if el != '' and el != 'Add all ingredients to list'] 
-    return str(x)
-
-
-# In[ ]:
-
-
-#data preprocessing
-def preprocessing():
-    #read data
-    recipe = pd.read_csv("/Users/apple/Downloads/recipe_dataset.csv")
-    #remove null values
-    recipe.dropna(axis=0, how="any", inplace=True)
-    #split calorie
-    recipe["Calorie_num"]=recipe["Calorie"].map(lambda x:int(x.split(" ")[0]))
-    #remove the duplicates
-    recipe.drop_duplicates(subset=["Name"], keep="first", inplace=True)
-    #reset the index
-    recipe = recipe.reset_index(drop=True)
-    #remove the null value & useless value of the ingredient list
-    recipe['Ingredients_list'] = recipe['Ingredients_list'].apply(remove)
-    #Lemmatize the ingredients field
-    recipe["lemmatized_ingredient"] = ["".join([WordNetLemmatizer().lemmatize(re.sub('[^A-Za-z]', ' ', line)) for line in lists]) for lists in recipe['Ingredients']]
-    #Adding Veg/Non-Veg information
-    mylist =['rib','crab','prosciutto','lobster','sausage','clam','goose','fish','goat','chicken','beef','pork','prawn','egg','Katsuobushi','mackrel','fillet','lamb','steak','salmon','shrimp','bacon','ham','turkey','duck','seafood','squid']
-    pattern = '|'.join(mylist)
-    recipe["veg"]=recipe.lemmatized_ingredient.str.contains(pattern) 
-    recipe.loc[recipe.veg == True,"veg"] = 'non-vegetarian'
-    recipe.loc[recipe.veg == False,"veg"] = 'vegetarian'
-    return recipe
-
-
-# In[ ]:
-
-
-#find the closet row
-def find_close(arr, value, meal_type, vegan):
-    if vegan == "Yes":
-        all_index = np.where((recipe["Meal_Type"]==meal_type) & (recipe["veg"]=="vegetarian"))[0]
-    else:
-        all_index = np.where(recipe["Meal_Type"]==meal_type)[0]   
-    index = np.abs(arr-value).argmin()
-    return all_index[index]
-
-
-# In[ ]:
-
-
-#print the recommendation list
-def print_list(arr1, arr2, calorie, min_calorie, meal_type, vegan):
-    while calorie >= min_calorie:
-        if vegan == "Yes":
-            index = find_close(arr1.loc[(recipe["Meal_Type"]==meal_type) & (recipe["veg"] == "vegetarian")]["Calorie_num"], calorie, meal_type, vegan)
+class DietRec():
+    #find the closet row
+    def find_close(self, arr, value, meal_type, vegan, index_number):
+        if vegan == 1:
+            all_index = np.where((arr["Meal_Type"]==meal_type) & (arr["veg"]=="vegetarian"))[0]
+            calories = arr.loc[(arr["Meal_Type"]==meal_type) & (arr["veg"] == "vegetarian")]["Calorie_num"]
         else:
-            index = find_close(arr1.loc[recipe["Meal_Type"]==meal_type]["Calorie_num"], calorie, meal_type, vegan)
-        calorie = calorie-arr1["Calorie_num"][index]
-        for key in arr2:
-            arr2[key].append(arr1[key][index])
-    return arr2
-
-
-# In[ ]:
-
-
-#calculate the remaining calorie
-def cal_calorie_left(dic,calorie):
-    num = 0
-    for i in dic["Calorie_num"]:
-        num = num + i
-    return calorie-num
-
-
-# In[ ]:
-
-
-#minimal calorie for each meal type
-def min_calorie(meal_type, vegan):
-    if vegan == "Yes":
-        min_calorie = min(recipe.loc[(recipe["Meal_Type"]==meal_type) & (recipe["veg"] == "vegetarian")]["Calorie_num"])
-    else:
-        min_calorie = min(recipe.loc[recipe["Meal_Type"]==meal_type]["Calorie_num"])  
-    return min_calorie
-
-
-# In[ ]:
-
-
-def recipe_rec(calorie, meal_num):
-    recipe = preprocessing()
+            all_index = np.where(arr["Meal_Type"]==meal_type)[0] 
+            calories = arr.loc[arr["Meal_Type"]==meal_type]["Calorie_num"]
+        index = list(np.abs(calories-value).sort_values().index)
+        return index[index_number]
     
-    #the output for each meal type
-    rec_list={"Name":[],"Ingredients_list":[],"Directions_list":[],"Prep_time":[],"Cook_time":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
+    #calculate the remaining calorie
+    def cal_calorie_left(self, dic, calorie):
+        num = 0
+        for i in dic["Calorie_num"]:
+            num = num + i
+        return calorie-num
     
-    #limit the number of meal in 1 to 4, and the input calories has to be over 0
-    if calorie >= 0: 
+    #minimal calorie for each meal type
+    def min_calorie(self, arr, meal_type, vegan):
+        if vegan == 1:
+            min_calorie = min(arr.loc[(arr["Meal_Type"]==meal_type) & (arr["veg"] == "vegetarian")]["Calorie_num"])
+        else:
+            min_calorie = min(arr.loc[arr["Meal_Type"]==meal_type]["Calorie_num"])  
+        return min_calorie
+    
+    #print the recommendation list
+    def print_list(self, arr1, arr2, calorie, min_calorie, meal_type, vegan, index_number):
+        while calorie >= min_calorie:
+            index = self.find_close(arr1, calorie, meal_type, vegan, index_number)
+            calorie = calorie-arr1["Calorie_num"][index]
+            for key in arr2:
+                arr2[key].append(arr1[key][index])
+        return arr2
+    
+    #main function
+    def recipe_rec(self, calorie, meal_num, breakfast, lunch, dinner, dessert, vegan, index_number):
+        
+        recipe = pd.read_csv("/Users/apple/Downloads/recipes.csv")
+
+        #determine the meal type(s)
+        meal_type_dic = {"breakfast":breakfast, "lunch":lunch, "dinner":dinner, "dessert":dessert} 
+        meal_type_list = []
+        for key,value in meal_type_dic.items():
+            if value == 1:
+                meal_type_list.append(key)
+
+        #determine the vegan/non-vegan
+        meal_pre = vegan
+        #the output for each meal type
+        rec_list={"Name":[],"Ingredients_list":[],"Directions_list":[],"Prep_time":[],"Cook_time":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
+
         if meal_num == 1:
-            #default meal type is breakfast
-            meal_type = input("Preferred meal-breakfast,lunch,dinner,dessert? ")
-            meal_pre = input("If vegetarian? Yes/No: ")
+            print(type(recipe))
+            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,index_number)
 
-            print(print_list(recipe,rec_list,calorie,min_calorie(meal_type,meal_pre),meal_type,meal_pre))
-                
-        elif meal_num == 2:
-            #default meal types are breakfast and lunch
-            meal_type_one = input("Preferred meal combination? First choice: ")
-            meal_type_two = input("Preferred meal combination? Second choice: ")
-            meal_pre = input("If vegetarian? Yes/No: ")
+        elif meal_num == 2:           
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.5,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, index_number),calorie)
+            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, index_number)
+            return rec_list 
 
-            calorie_left = cal_calorie_left(print_list(recipe,rec_list,calorie*0.5,min_calorie(meal_type_one, meal_pre),meal_type_one, meal_pre),calorie)
-            print_list(recipe,rec_list,calorie_left,min_calorie(meal_type_two, meal_pre),meal_type_two, meal_pre)
-            print(rec_list)
-            
         elif meal_num == 3:
-            #default meal types are breakfast, lunch & dinner
-            meal_type_one = input("Preferred meal combination? First choice: ")
-            meal_type_two = input("Preferred meal combination? Second choice: ")
-            meal_type_three = input("Preferred meal combination? Third choice: ")
-            meal_pre = input("If vegetarian? Yes/No: ")
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, index_number),calorie)
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, index_number),calorie)
+            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[2], meal_pre),meal_type_list[2],meal_pre, index_number)    
+            return rec_list
 
-            calorie_left = cal_calorie_left(print_list(recipe,rec_list,calorie*0.4,min_calorie(meal_type_one,meal_pre),meal_type_one, meal_pre),calorie)
-            calorie_left = cal_calorie_left(print_list(recipe,rec_list,calorie*0.4,min_calorie(meal_type_two,meal_pre),meal_type_two, meal_pre),calorie_left)
-            print_list(recipe,rec_list,calorie_left,min_calorie(meal_type_three,meal_pre),meal_type_three,meal_pre)    
-            print(rec_list)
-            
         elif meal_num == 4:
-            meal_type_list=["breakfast","lunch","dinner"]
-            meal_pre = input("If vegetarian? Yes/No: ")
-            calorie_left = calorie
-            for types in meal_type_list:
-                calorie_left = cal_calorie_left(print_list(recipe,rec_list,calorie*0.3,min_calorie(types,meal_pre),types,meal_pre), calorie_left)
-            rec_lists = print_list(recipe,rec_list,calorie_left,min_calorie("dessert",meal_pre),"dessert",meal_pre)
-            print(rec_list)
-        else:
-            print("The number of meal has to be in 1 to 4.")
-    else:
-        print("The calorie number has be over 0")
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[0], meal_pre), meal_type_list[0], meal_pre, index_number), calorie)
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[1], meal_pre), meal_type_list[1], meal_pre, index_number), calorie)
+            calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[2], meal_pre), meal_type_list[2], meal_pre, index_number), calorie)
+            rec_lists = self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[3],meal_pre),meal_type_list[3],meal_pre, index_number)
+            return rec_list
 
-
-# In[ ]:
-
-
-calorie = int(input("Please input a calorie intake: "))
-meal_num = int(input("Please input the number of meal: "))
-recipe_rec(calorie, meal_num)
+if __name__ == '__main__':
+    dietRec = DietRec()
+    data = dietRec.recipe_rec(2000,1,0,1,0,0,0,3)
+    print(data)
 
 
 # In[ ]:

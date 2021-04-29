@@ -31,6 +31,11 @@
   margin-right: auto;
 }
 
+.workrec-input h4{
+  color: red;
+  margin-top: -20px;
+}
+
 .txt{
   border-bottom: 2px solid #adadad;
   position: relative;
@@ -94,6 +99,8 @@
 .intro h1{
   font-size: 40px;
 }
+
+
 
 .intro a{
   font-size: 20px;

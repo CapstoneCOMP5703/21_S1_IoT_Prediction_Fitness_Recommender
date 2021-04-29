@@ -1,51 +1,34 @@
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, g
-# from flask_login import LoginManager, current_user, login_user, login_required, logout_user, UserMixin
+from flask import request, render_template, redirect, url_for, session, g,flash
 from dataclasses import dataclass
 from datetime import timedelta
-
-#调用自己写的model.py
-from models import UserModel,db
 
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///<db_name>.db' #这里链接数据库
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#调用自己写的auth.py
-from auth import login
+from SportRec_v2 import Model
+rf=Model()
 
-db.init_app(app)
-login.init_app(app)
+@dataclass
+class User:
+    id: int
+    user_id: int
+    username: str
+    password: str
 
-@app.before_first_request
-def create_all():
-    db.create_all()
+users = [
+	User(1, 11111116,"Admin", "123456"),
+	User(2, 222,"Eason", "888888"),
+	User(3, 333,"Tommy", "666666"),
+]
 
-# class User(UserMixin):
-#     pass
-
-# users = [
-#     {'id':'1', 'username': 'Admin', 'password': '123456'},
-#     {'id':'2', 'username': 'Eason', 'password': '888888'},
-#     {'id':'3', 'username': 'Tommy', 'password': '666666'}
-# ]
-
-# def query_user(user_name):
-#     for user in users:
-#         if user_name == user['username']:
-#             return user
-
-# login_manager = LoginManager()
-# login_manager.login_view = 'login'
-# login_manager.login_message_category = 'info'
-# login_manager.login_message = 'Access denied.'
-# login_manager.init_app(app)
-
-# @login.user_loader
-# def load_user(id):
-#     return UserModel.query.get(int(id))
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user_id' in session:
+        user = [u for u in users if u.id == session['user_id']][0] #todo 替换成数据库
+        g.user = user
 
 #路由主页
 @app.route("/")
@@ -53,11 +36,46 @@ def homepage():
     return render_template("homepage.html")
 
 #路由运动推荐，目前需要登录才能使用
-@app.route("/workoutrec")
+@app.route("/workoutrec",methods=['GET', 'POST'])
 def workoutRec():       
     if not g.user:
-        return redirect(url_for('login'))
+        return redirect(url_for('login'))    
     return render_template("workoutrec.html")
+
+@app.route("/sportrec_model",methods=['GET', 'POST'])
+def sportrec_model():
+    
+    calories_get=request.form.get("calories")
+    if(calories_get == ""):
+        flash('Please input valid calories!')
+        return render_template("workoutrec.html",)
+    calories=int(calories_get) 
+    rf.load_data_from_path('./testdata.csv')
+    rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
+    data=rf.predict_data(1111116, calories)
+    run_time,bike_time,mbike_time=readsplitdata(data)
+
+    return render_template("workrec_result.html",run_time=run_time,
+                            bike_time=bike_time,mbike_time=mbike_time)
+
+def readsplitdata(data):
+    length=len(data)
+    run_time=""
+    bike_time=""
+    mbike_time=""
+    for i in range(0,length):
+        data_list=data[i]
+        df=data_list.split(':')
+        if df[0] == 'run ':
+            run_time=df[1]
+            print("run_time"+run_time+ " ")
+        elif df[0] == 'bike ':
+            bike_time=df[1]
+            print("bike_time"+bike_time+ " ")
+        else: 
+            mbike_time=df[1]
+            print("mbike_time"+mbike_time+ " ")
+    return run_time,bike_time,mbike_time
 
 #路由饮食推荐
 @app.route("/dietrec")
@@ -74,70 +92,22 @@ def activitylog():
 def profile():        
     return render_template("profile.html")
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         user_name = request.form.get('username')
-#         user = query_user(user_name)
-#         if user is not None and request.form['password'] == user['password']:
-
-#             curr_user = User()
-#             curr_user.username = user_name
-
-#             # 通过Flask-Login的login_user方法登录用户
-#             login_user(curr_user)
-
-#             return redirect(url_for('workoutRec'))
-
-#         flash('Wrong username or password!')
-
-#     # GET 请求
-#     return render_template('login.html')
-
-# @app.route('/logout')
-# # @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for('homepage'))
-
-#用户登录
-@app.route('/login', methods = ['POST', 'GET'])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect('/profile')
-     
+    if g.user:
+        return redirect(url_for('profile'))
+
     if request.method == 'POST':
-        username = request.form['username']
-        user = UserModel.query.filter_by(username = username).first()
-        if user is not None and user.check_password(request.form['password']):
-            login_user(user)
-            return redirect('/profile')
-     
-    return render_template('sign.html')
-
-#用户注册-目前注释掉了，准备先试登录
-# @app.route('/register', methods=['POST', 'GET'])
-# def register():
-#     if current_user.is_authenticated:
-#         return redirect('/profile')
-     
-#     if request.method == 'POST':
-#         # email = request.form['email']
-#         username = request.form['username']
-#         password = request.form['password']
- 
-#         if UserModel.query.filter_by(email=email):
-#             return ('Email already Present')
-             
-#         user = UserModel(email=email, username=username)
-#         user.set_password(password)
-#         db.session.add(user)
-#         db.session.commit()
-#         return redirect('/login')
-#     return render_template('register.html')
-
-#用户登出
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect('/homepage')
+        # login
+        session.pop('user_id', None)
+        username = request.form.get("username", None)
+        password = request.form.get("password", None)
+        print(username)
+        user = [u for u in users if u.username==username] #todo 替换成数据库
+        if len(user) > 0:
+            user = user[0]
+        if user and user.password == password:
+            session['user_id'] = user.id
+            return redirect(url_for('workoutRec'))
+        
+    return render_template("sign.html")

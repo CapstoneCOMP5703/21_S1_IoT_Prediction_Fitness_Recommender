@@ -32,6 +32,15 @@ window.onload = function() {
     });
 }
 
+// function validateForm()
+// {
+//   var x=document.forms["workrec-input"]["calories"].value;
+//   if (x==null || x=="")
+//   {
+//     alert("Please input a valid number.");
+//     return false;
+//   }
+// }
 // function load_data(){
 //     var theme=localStorage.getItem("username");
 //     if(theme==null||theme==""){

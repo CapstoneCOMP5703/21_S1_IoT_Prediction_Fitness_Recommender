@@ -14,15 +14,18 @@
 
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="css/login_main.css">
-    <link rel="stylesheet" type="text/css" href="css/workrec.css">
+    <link rel="stylesheet" type="text/css" href="css/workrec_result.css">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     <!-- JS Files-->
     <!-- <script tpye="text/javascript" src="js/workout.js"></script> -->
-    <script tpye="text/javascript" src="js/test.js"></script>
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <script src="https://www.gstatic.com/charts/loader.js">
+        //Google Chart
+    </script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
     
 </head>
 <body>
@@ -61,18 +64,40 @@
         <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn. Create your fitness plan right here in seconds.</a>
     </div>
 
-    <form class="workrec-input" name="workrec-input" action="/sportrec_model" method="POST">
-        <div class="txt">
-            <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
-                onafterpaste="this.value=this.value.replace(/\D/g,'')">
-            <span data-placeholder="I want to burn:"></span>
-            <span data-placeholder="Calories" class="span_cal"></span>
-        </div>
-        <h4>{{get_flashed_messages()[0]}}</h4>
-        <div class="user_submit">
-            <input class="submit_btn" type="submit" value="Recommend Me"></input>
-        </div>
-        
-    </form>
+    <section class="workrec_content">
+        <h2>We have these personalized workout recommendations for you!</br>Select one to start!</h2>
+        <table class="table_rec">
+            <tr>
+                <th id="th1">
+                    <a id="user_select_run" type="submit" href="/activitylog">
+                        <button style="background: url(images/running2.jpg);background-size: cover;"></button>
+                    </a>
+                </th>
+                <th>
+                    <a id="user_select_bile" type="submit" href="/activitylog">
+                        <button style="background: url(images/biking.jpg);background-size: cover;"></button>
+                    </a>
+                </th>
+                <th>
+                    <a id="user_select_mbike" type="submit" href="/activitylog">
+                        <button style="background: url(images/mountain_biking.png);background-size: cover;"></button>
+                    </a>
+                </th>
+            </tr>
+            <tr>
+                <td>Running</td>
+                <td>Biking</td>
+                <td>Mountain Biking</td>
+            </tr>
+            <tr>
+                <td>{{run_time}} mins</td>
+                <td>{{bike_time}} mins </td>
+                <td>{{mbike_time}} mins</td>
+            </tr>
+        </table>
+        <form class="user_regenerate" action="/workoutrec" method="POST">
+            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
+        </form>
+    </section>
 </body>
 </html>

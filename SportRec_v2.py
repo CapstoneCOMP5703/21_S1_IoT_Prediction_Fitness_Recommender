@@ -17,6 +17,10 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import matplotlib.pyplot as plt
 import joblib
 
+# from sklearn import preprocessing
+# lbl = preprocessing.LabelEncoder()
+# train_x['calories'] = lbl.fit_transform(train_x['calories'].astype(str))
+
 class Model:
     def __init__(self):
         self.gender_dict = {'female': 0, 'male': 1, 'unknown': 2}
