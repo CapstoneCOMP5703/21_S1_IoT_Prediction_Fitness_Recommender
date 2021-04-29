@@ -9,6 +9,8 @@ import datetime as dt, itertools, pandas as pd, matplotlib.pyplot as plt, numpy 
 import datetime, time
 import os
 
+use_cuda = torch.cuda.is_available()
+
 class dataInterpreter(object):
     def __init__(self, T, inputAtts, includeUser, includeSport, includeTemporal, targetAtts, fn="endomondoHR_proper.json", scaleVals=True, trimmed_workout_len=450, scaleTargets="scaleVals", trainValidTestSplit=[.8,.1,.1], zMultiple=5, trainValidTestFN=None):
         self.T = T
@@ -1043,10 +1045,10 @@ class da_rnn:
         return result
 
 ###test sample###
-model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
-use_cuda = torch.cuda.is_available()
-output = model.predict()
+# model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+# use_cuda = torch.cuda.is_available()
+# output = model.predict()
 
-print(output)
+# print(output)
 # print(len(output[0][0]))
 # print(print(output[0][1]))
