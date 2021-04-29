@@ -30,6 +30,9 @@
   margin-left: auto;
   margin-right: auto;
 }
+.mealrec_input h4{
+  color: red;
+}
 
 .txt{
   border-bottom: 2px solid #adadad;
@@ -119,64 +122,6 @@
 }
 
 .submit_btn:hover{
-  background: #fff; 
-  opacity: 1;
-  color: #333 !important;
-  border-color: #f61b55;
-}
-
-.mealrec_content{
-  display: none;
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.table_rec{
-  border-collapse: collapse;
-  margin: 100px 20px;
-  text-align: center;
-  align-content: center;
-}
-
-table td, table th{
-  border: 1px solid #C0C0C0;
-  color: #21373d;
-  height: 30px;
-  width: 300px;
-}
-
-table thead th{
-  background-color: #C0C0C0;
-  width: 100px;
-}
-
-
-table td img{
-  width: 150px;
-  height: 150px;
-  display:block;
-}
-
-.regenerate_btn{
-  margin-left: 35%;
-  width: 200px;
-  height: 60px;
-  font-size: large;
-  color: #fff !important;
-  background: #f61b55;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 1px;
-  padding: 13px 24px;
-  transition-property: all;
-  transition-duration: 0.5s;
-  transition-timing-function: ease;
-  transition-delay: 0s;
-  border-radius: 5px;
-}
-
-.regenerate_btn:hover{
   background: #fff; 
   opacity: 1;
   color: #333 !important;

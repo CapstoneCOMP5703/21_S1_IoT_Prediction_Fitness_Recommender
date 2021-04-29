@@ -10,6 +10,9 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 from SportRec_v2 import Model
 rf=Model()
 
+from Recipe_Recommendation import DietRec
+dietRec = DietRec()
+
 @dataclass
 class User:
     id: int
@@ -78,9 +81,42 @@ def readsplitdata(data):
     return run_time,bike_time,mbike_time
 
 #路由饮食推荐
-@app.route("/dietrec")
+@app.route("/dietrec",methods=['GET', 'POST'])
 def mealRec():          
     return render_template("dietrec.html")
+
+@app.route("/dietrec_model",methods=['GET', 'POST'])
+def dietrec_model():
+    cbox=request.values.getlist("cbox")
+    calories_get=request.form.get("calories")
+    if(calories_get == "" or cbox==""):
+        flash('Please enter valid inputs!')
+        return render_template("dietrec.html",)
+    calories=int(calories_get)
+    s_breakfast,s_lunch,s_dinner,s_snack,s_vegan = 0,0,0,0,0
+    count,re=0,1
+    for c in cbox:
+        if c =='Breakfast':
+            s_breakfast=1
+            count=count+1
+        elif c =='Lunch':
+            s_lunch=1
+            count=count+1
+        elif c=='Dinner':
+            s_dinner=1
+            count=count+1
+        elif c=='Snack':
+            s_snack=1
+            count=count+1
+        else:
+            s_vegan=1
+    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_snack, s_vegan, re)
+    
+
+    return render_template("dietrec_result.html")
+
+    {'Name': ['addictive and healthy granola', 'oriental edamame salad'], 
+ 'Calorie_num': [251, 251], 'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
 
 #路由运动记录    
 @app.route("/activitylog")

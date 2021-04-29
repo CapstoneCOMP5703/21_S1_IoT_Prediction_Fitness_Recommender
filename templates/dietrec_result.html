@@ -14,11 +14,11 @@
 
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="css/login_main.css">
-    <link rel="stylesheet" type="text/css" href="css/mealrec.css">
+    <link rel="stylesheet" type="text/css" href="css/mealrec_result.css">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     <!-- JS Files-->
-    <script tpye="text/javascript" src="js/text.js"></script>
+    <!-- <script tpye="text/javascript" src="js/diet.js"></script> -->
 
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -64,33 +64,40 @@
         <a>Fitastic creates personalized diet plans based on your historical records and the calories you want to consume. Create your diet plan right here in seconds.</a>
     </div>
 
-    <form class="mealrec_input" action="/dietrec_model" method="POST">
-        <div class="txt">
-            <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
-                onafterpaste="this.value=this.value.replace(/\D/g,'')">
-            <span data-placeholder="I want to consume:"></span>
-            <span data-placeholder="Calories" class="span_cal"></span>
-        </div>
-        <div class="user_diet_selection">
-            <input id="select_breakfast" name="cbox" type="checkbox" value="Breakfast">Breakfast
-            <label for="Breakfast"></label>
-            
-            <input id="select_lunch" name="cbox" type="checkbox" value="Lunch">Lunch
-            <label for="Lunch"></label>
+    <section class="mealrec_content">
+        <table class="table_rec">
+            <tr>
+                <th>Recommended diet category</th>
+                <th>Recommended meal</th>
+                <th>Recommended meal number</th>
+            </tr>
+            <tr>
+                <td>Breakfast</td>
+                <td>Southwastern Eggs</td>
+                <td>1 serving</td>
+            </tr>
+            <tr>
+                <td>Breakfast</td>
+                <td>Orange</td>
+                <td>1 fruit</td>
+            </tr>
+            <tr>
+                <td>Lunch</td>
+                <td>Basic protein shake</td>
+                <td>1 cup</td>
+            </tr>
+            <tr>
+                <td>Dinner</td>
+                <td>Tomato Basil Pasta</td>
+                <td>1 serving</td>
+            </tr>
+        </table>
+        <form class="user_regenerate" action="/dietrec" method="POST">
+            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
+        </form>
+    </section>
 
-            <input id="select_dinner" name="cbox" type="checkbox" value="Dinner"> Dinner
-            <label for="Dinner"></label>
 
-            <input id="select_snack" name="cbox" type="checkbox" value="Snack"> Snack
-            <label for="Snack"></label>
 
-            <input id="select_vegan" name="cbox" type="checkbox" value="Vegan"> Vegan
-            <label for="Vegan"></label>
-        </div>
-        <h4>{{get_flashed_messages()[0]}}</h4>
-        <div class="user_submit">
-            <input class="submit_btn" type="submit" value="Recommend Me"></button>
-        </div>
-    </form>
 </body>
 </html>
