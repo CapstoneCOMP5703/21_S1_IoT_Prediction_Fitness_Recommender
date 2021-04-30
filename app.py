@@ -10,6 +10,13 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 from SportRec_v2 import Model
 rf=Model()
 
+from Recipe_Recommendation import DietRec
+dietRec = DietRec()
+
+from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+import torch
+# da_rnn=da_rnn()
+
 @dataclass
 class User:
     id: int
@@ -44,12 +51,20 @@ def workoutRec():
 
 @app.route("/sportrec_model",methods=['GET', 'POST'])
 def sportrec_model():
-    
+    #get calories input
     calories_get=request.form.get("calories")
     if(calories_get == ""):
         flash('Please input valid calories!')
         return render_template("workoutrec.html",)
+    #parse str into int
     calories=int(calories_get) 
+    if(calories > 1000):
+        flash('That is to much for you, try less calories!')
+        return render_template("workoutrec.html",)
+    if(calories < 100):
+        flash('That is not enough for you, try more calories!')
+        return render_template("workoutrec.html",)
+
     rf.load_data_from_path('./testdata.csv')
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
     data=rf.predict_data(1111116, calories)
@@ -78,13 +93,50 @@ def readsplitdata(data):
     return run_time,bike_time,mbike_time
 
 #路由饮食推荐
-@app.route("/dietrec")
+@app.route("/dietrec",methods=['GET', 'POST'])
 def mealRec():          
     return render_template("dietrec.html")
+
+@app.route("/dietrec_model",methods=['GET', 'POST'])
+def dietrec_model():
+    cbox=request.values.getlist("cbox")
+    calories_get=request.form.get("calories")
+    if(calories_get == "" or cbox==""):
+        flash('Please enter valid inputs!')
+        return render_template("dietrec.html",)
+    calories=int(calories_get)
+    s_breakfast,s_lunch,s_dinner,s_snack,s_vegan = 0,0,0,0,0
+    count,re=0,1
+    for c in cbox:
+        if c =='Breakfast':
+            s_breakfast=1
+            count=count+1
+        elif c =='Lunch':
+            s_lunch=1
+            count=count+1
+        elif c=='Dinner':
+            s_dinner=1
+            count=count+1
+        elif c=='Snack':
+            s_snack=1
+            count=count+1
+        else:
+            s_vegan=1
+    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_snack, s_vegan, re)
+    
+
+    return render_template("dietrec_result.html")
+
+#     {'Name': ['addictive and healthy granola', 'oriental edamame salad'], 
+#  'Calorie_num': [251, 251], 'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
 
 #路由运动记录    
 @app.route("/activitylog")
 def activitylog():        
+    # model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+    # use_cuda = torch.cuda.is_available()
+    # output = model.predict()
+    # print(output)
     return render_template("activitylog.html")
 
 #路由用户登录后显示的页面
