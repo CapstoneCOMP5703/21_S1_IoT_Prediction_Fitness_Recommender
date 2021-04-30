@@ -8,6 +8,11 @@ import matplotlib
 import datetime as dt, itertools, pandas as pd, matplotlib.pyplot as plt, numpy as np
 import datetime, time
 import os
+import pickle
+from collections import defaultdict
+import os
+import multiprocessing
+from multiprocessing import Pool
 
 use_cuda = torch.cuda.is_available()
 
@@ -47,8 +52,7 @@ class dataInterpreter(object):
     def preprocess_data(self):
  
         # self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate.csv"   
-        # self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate_5k.csv"
-        self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate_2w.csv"    
+        self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate_5k.csv"    
  
         self.loadTrainValidTest()      
         
@@ -521,6 +525,18 @@ class dataInterpreter(object):
         with open(self.processed_path, 'w') as f:
             for l in self.original_data:
                 f.write(str(l) + '\n')    
+class metaDataEndomondo(object):
+    def __init__(self, numDataPoints, encodingLengths, oneHotEncoders, oneHotMap, isSequence, isNominal, isDerived,
+                 variableMeans, variableStds):
+        self.numDataPoints = numDataPoints
+        self.encodingLengths = encodingLengths
+        self.oneHotEncoders = oneHotEncoders
+        self.oneHotMap = oneHotMap
+        self.isSequence = isSequence
+        self.isNominal = isNominal
+        self.isDerived = isDerived
+        self.variableMeans = variableMeans
+        self.variableStds = variableStds
 
 class contextEncoder(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -768,9 +784,8 @@ class da_rnn:
         self.scaleTargets = False 
 
         # self.trainValidTestFN = self.data_path.split(".")[0] + "_temporal_dataset_updated.pkl"
-        # self.trainValidTestFN = self.data_path.split(".")[0] + "_temporal_dataset_updated_5k.pkl"
+        self.trainValidTestFN = self.data_path.split(".")[0] + "_temporal_dataset_updated_5k.pkl"
         # self.trainValidTestFN = self.data_path.split(".")[0] + "_temporal_dataset_updated_2w.pkl"
-        self.trainValidTestFN = self.data_path.split(".")[0] + "_temporal_dataset_updated_test_v3.pkl"
 
         self.endo_reader = dataInterpreter(self.T, self.inputAtts, self.includeUser, self.includeSport, 
                                            self.includeTemporal, self.targetAtts, fn=self.data_path,
@@ -818,17 +833,17 @@ class da_rnn:
             # self.context_dim = encoder_hidden_size
             self.context_dim = int(encoder_hidden_size / 2)
             self.input_size += self.context_dim
-            self.context_encoder = contextEncoder(input_size = self.input_dim + 1, hidden_size = encoder_hidden_size, output_size = self.context_dim).cuda()
+            self.context_encoder = contextEncoder(input_size = self.input_dim + 1, hidden_size = encoder_hidden_size, output_size = self.context_dim)
 
         if use_cuda:
             for attr_embedding in self.attr_embeddings:
                 attr_embedding = attr_embedding.cuda()       
  
         self.encoder = encoder(input_size = self.input_size, hidden_size = encoder_hidden_size, T = T, 
-                               attr_embeddings = self.attr_embeddings).cuda()
+                               attr_embeddings = self.attr_embeddings)
         self.decoder = decoder(encoder_hidden_size = encoder_hidden_size,
                                decoder_hidden_size = decoder_hidden_size,
-                               T = T).cuda()
+                               T = T)
 
         if parallel:
             self.encoder = nn.DataParallel(self.encoder)
