@@ -1,11 +1,13 @@
+import pymysql
 from flask import Flask
 from flask import request, render_template, redirect, url_for, session, g,flash
+from traceback
 from dataclasses import dataclass
 from datetime import timedelta
 
 app= Flask(__name__,static_url_path="/")
-app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
+#app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
+#app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 from SportRec_v2 import Model
 rf=Model()
@@ -17,25 +19,25 @@ dietRec = DietRec()
 #import torch
 # da_rnn=da_rnn()
 
-@dataclass
-class User:
-    id: int
-    user_id: int
-    username: str
-    password: str
+#@dataclass
+#class User:
+#    id: int
+#    user_id: int
+#    username: str
+#    password: str
 
-users = [
-	User(1, 11111116,"Admin", "123456"),
-	User(2, 222,"Eason", "888888"),
-	User(3, 333,"Tommy", "666666"),
-]
+#users = [
+#	User(1, 11111116,"Admin", "123456"),
+#	User(2, 222,"Eason", "888888"),
+#	User(3, 333,"Tommy", "666666"),
+#]
 
-@app.before_request
-def before_request():
-    g.user = None
-    if 'user_id' in session:
-        user = [u for u in users if u.id == session['user_id']][0] #todo 替换成数据库
-        g.user = user
+#@app.before_request
+#def before_request():
+#    g.user = None
+#    if 'user_id' in session:
+#        user = [u for u in users if u.id == session['user_id']][0] #todo 替换成数据库
+#        g.user = user
 
 #路由主页
 @app.route("/")
@@ -151,15 +153,44 @@ def login():
 
     if request.method == 'POST':
         # login
-        session.pop('user_id', None)
-        username = request.form.get("username", None)
-        password = request.form.get("password", None)
-        print(username)
-        user = [u for u in users if u.username==username] #todo 替换成数据库
-        if len(user) > 0:
-            user = user[0]
-        if user and user.password == password:
-            session['user_id'] = user.id
-            return redirect(url_for('workoutRec'))
-        
+#        session.pop('user_id', None)
+#        username = request.form.get("username", None)
+#        password = request.form.get("password", None)
+#        print(username)
+#        user = [u for u in users if u.username==username] #todo 替换成数据库
+#        if len(user) > 0:
+#            user = user[0]
+#        if user and user.password == password:
+#            session['user_id'] = user.id
+#            return redirect(url_for('workoutRec'))
+	#缺少session
+	db = pymysql.connect(host="localhost",user="root",password="xxxx",database="Fitastic")#换成自己的root和password
+        cursor = db.cursor()
+        username = request.form.get('username', None)
+        password = request.form.get('password', None)
+        sql = "select * from users where username= '{}'".format(username, encoding='utf-8') 
+        try:
+            # 执行sql语句
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            #print(result[0][3])
+            #print(password)
+            if (len(result)==0):
+                print("The Username doe not exist!")
+                return redirect(url_for('login'))          
+            else:
+                if result[0][3] == password:
+                    print("Login successfully!") #todo 弹窗式提示
+                    return redirect(url_for('workoutRec'))
+                else:
+                    print("Username or password is wrong!") #todo form里提示
+                    return redirect(url_for('login'))
+            # 提交到数据库执行
+            db.commit()
+        except:
+            # 如果发生错误则回滚
+            traceback.print_exc()
+            db.rollback()
+        # 关闭数据库连接
+        db.close()       
     return render_template("sign.html")
