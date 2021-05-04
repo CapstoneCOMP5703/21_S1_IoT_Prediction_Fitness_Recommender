@@ -107,7 +107,7 @@ def dietrec_model():
         flash('Please enter valid inputs!')
         return render_template("dietrec.html",)
     calories=int(calories_get)
-    s_breakfast,s_lunch,s_dinner,s_snack,s_vegan = 0,0,0,0,0
+    s_breakfast,s_lunch,s_dinner,s_dessert,s_vegan = 0,0,0,0,0
     count,re=0,1
     for c in cbox:
         if c =='Breakfast':
@@ -119,12 +119,12 @@ def dietrec_model():
         elif c=='Dinner':
             s_dinner=1
             count=count+1
-        elif c=='Snack':
-            s_snack=1
+        elif c=='Dessert':
+            s_dessert=1
             count=count+1
         else:
             s_vegan=1
-    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_snack, s_vegan, re)
+    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re)
     
 
     return render_template("dietrec_result.html")
@@ -148,8 +148,8 @@ def profile():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    if g.user:
-        return redirect(url_for('profile'))
+#    if g.user:
+#        return redirect(url_for('profile'))
 
     if request.method == 'POST':
         # login
