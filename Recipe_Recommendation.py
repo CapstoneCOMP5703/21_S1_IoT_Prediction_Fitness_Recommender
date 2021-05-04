@@ -66,7 +66,7 @@ class DietRec():
         rec_list={"Name":[],"Ingredients_list":[],"Directions_list":[],"Prep_time":[],"Cook_time":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
 
         if meal_num == 1:
-            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,index_number)
+            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,meal_regeneration_list[0])
 
         elif meal_num == 2:           
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.5,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, meal_regeneration_list[0]),calorie)
