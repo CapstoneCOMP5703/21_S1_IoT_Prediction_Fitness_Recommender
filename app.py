@@ -13,8 +13,8 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-import torch
+#from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+#import torch
 # da_rnn=da_rnn()
 
 @dataclass
