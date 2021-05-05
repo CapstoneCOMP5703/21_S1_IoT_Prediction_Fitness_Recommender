@@ -1,4 +1,28 @@
-.heartrate_area{
+.banner-area{
+  background-color: #b0b0b0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 100px;
+  padding: 200px 0 180px;
+  z-index: 1;
+  margin-top: -20px;
+}
+
+.banner-text{
+  width: 100%;
+  height: max-content;
+  padding: 3px;
+  background-color: #f5f5f5;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.banner-text h1{
+  font-size: 50px;
+}
+
+.report_area{
     display: block;
     width: 80%;
     min-width: fit-content;
@@ -10,17 +34,43 @@
     text-align: center;
   }
 
-  .heartrate_area h1{
+  .report_table{
+    border:0px; 
+    border-style: none;
+    width: fit-content;
+    margin: 50px auto 10px;
+    align-content: center;
+  }
+
+  .report_area h1{
     margin-top: 20px;
     font-size: 30px;
   }
 
-  .report{
-      margin-top: 40px;
-      margin-bottom: 20px;
-      height: 400px;
-      width: 600px;
+  td {
+    text-align: left;
   }
+
+  img{
+    padding: 15px;
+    width: 35px;
+    height: 35px;
+    background-size: cover;
+    border-width: 0px;
+    border: transparent;
+  }
+  
+  .label{
+    text-align: center;
+    color: teal;
+    opacity: 0.7;
+  }
+
+  .result{
+    text-align: center;
+    font-size: large ;
+  }
+
 
 
 

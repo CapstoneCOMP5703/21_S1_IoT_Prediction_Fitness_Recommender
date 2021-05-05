@@ -140,21 +140,41 @@ def activitylog():
     input_data=pd.read_csv("test_calories1.csv")
     user_data=input_data.iloc[:1]
     print(user_data)
-    duration = int(user_data["duration"].tolist()[0])
-    distance = int(user_data["distance"].tolist()[0])
-    avg_heart_rate = int(user_data["avg_heart_rate"].tolist()[0])
-    avg_speed = int(user_data["avg_speed"].tolist()[0])
-    # print(uid)
-    
-
+    duration_seconds = int(user_data["duration"].tolist()[0])
+    distance = round(float(user_data["distance"].tolist()[0]),2)
+    avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[0]),0)
+    avg_speed = round(float(user_data["avg_speed"].tolist()[0]),2)
+    bike_check= int(user_data["sport_bike"].tolist()[0])
+    mbike_check= int(user_data["sport_mountain bike"].tolist()[0])
+    run_check= int(user_data["sport_run"].tolist()[0])
+    print(distance)
+    duration=cal_time(duration_seconds)
+    sport_type=check_sport_type(bike_check,mbike_check,run_check)
     #mike model
 
 
     #oni model
     acc_output = calories_cal_model.predict(input_data.iloc[:1])
     actual_calories = int(acc_output)
-    print(actual_calories)
-    return render_template("activitylog.html",actual_calories=actual_calories)
+    return render_template("activitylog.html",actual_calories=actual_calories,
+    sport_type=sport_type,duration=duration,avg_speed=avg_speed,avg_heart_rate=avg_heart_rate)
+
+def check_sport_type(bike_check,mbike_check,run_check):
+    if bike_check == 1:
+        return "Biking"
+    elif mbike_check == 1:
+        return "Mountain biking"
+    else:
+        return "Running"
+
+def cal_time(seconds):
+    mins, secs = divmod(seconds, 60)
+    hours, mins = divmod(mins, 60)
+    if hours==0:
+        return "00:%02d:%02d" % (mins, secs)
+    else:
+        return "%02d:%02d:%02d" % (hours, mins, secs)
+
 
 #路由用户登录后显示的页面
 @app.route("/profile")
