@@ -65,7 +65,7 @@
     </div>
 
     <section class="mealrec_content">
-        <table class="table_rec">
+        <!-- <table class="table_rec">
             <tr>
                 <th>Recommended diet category</th>
                 <th>Recommended meal</th>
@@ -91,7 +91,8 @@
                 <td>Tomato Basil Pasta</td>
                 <td>1 serving</td>
             </tr>
-        </table>
+        </table> -->
+        {{ table_html | safe }}
         <form class="user_regenerate" action="/dietrec" method="POST">
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
