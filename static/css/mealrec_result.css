@@ -47,7 +47,7 @@
 
 .table_rec{
   border-collapse: collapse;
-  margin: 100px 20px;
+  margin: 50px 20px;
   text-align: center;
   align-content: center;
 }
@@ -60,7 +60,7 @@ table td, table th{
 }
 
 table thead th{
-  background-color: #C0C0C0;
+  background-color: #111;
   width: 100px;
 }
 

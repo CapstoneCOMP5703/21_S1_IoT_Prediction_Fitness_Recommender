@@ -131,19 +131,35 @@ def dietrec_model():
         return render_template("dietrec.html",)
     diet_data = dietRec.recipe_rec(calories, count,
     s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re,0,0,0,0)
-    data_name=diet_data.get('Name')
-    data_Ingredients_list=diet_data.get('Ingredients_list')
-    data_meal_type=diet_data.get('Meal_Type')
-    data_cal=diet_data.get('Calorie_num')
+    header=["Meal Type","Meal","Meal Calories","Ingredients List"]
+
+    #
+    data_name=["Meal"]
+    append_list(data_name,diet_data.get('Name'))
+
+    data_Ingredients_list=["Ingredients List"]
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'))
+    
+    data_meal_type=["Meal Type"]
+    append_list(data_meal_type,diet_data.get('Meal_Type'))
+
+    data_cal=["Meal Calories"]
+    append_list(data_cal,diet_data.get('Calorie_num'))
+
     data_img_urls=diet_data.get('img_urls')
     
-
     df = pd.DataFrame(data=[data_meal_type,data_name,data_cal,data_Ingredients_list])
-    df_html = df.T.to_html()  # use pandas method to auto generate html
-
+    df_html = df.T.to_html(classes="table_rec",header=False,index=False)  # use pandas method to auto generate html
 #re增加时，其他都初始化为0
 #'index_number_br', 'index_number_lun', 'index_number_din', and 'index_number_des'
     return render_template("dietrec_result.html",table_html=df_html)
+
+def append_list(header,input_list):
+    length=len(input_list)
+    for i in range(0,length):
+        header.append(input_list[i])
+    return header
+
 
 #     {'Name': ['addictive and healthy granola', 'oriental edamame salad'], 
 #  'Calorie_num': [251, 251], 'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
