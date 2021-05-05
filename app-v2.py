@@ -198,33 +198,34 @@ def login():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-         db = pymysql.connect(host="localhost",user="root",password="12345678",database="Fitastic")#换成自己的root和password
-         cursor = db.cursor()
-         username = request.form.get('username', None)
-         password = request.form.get('password', None)
-         sql = "select * from users where username= '{}'".format(username, encoding='utf-8')
-         print (username)
-         print (password)
-         try:
+        db = pymysql.connect(host="localhost",user="root",password="12345678",database="Fitastic")#换成自己的root和password
+        cursor = db.cursor()
+        username = request.form.get('username', None)
+        password = request.form.get('password', None)
+        sql = "select * from users where username= '{}'".format(username, encoding='utf-8')
+        print (username)
+        print (password)
+        try:
             cursor.execute(sql)
             result = cursor.fetchone()
             if username == None or password == None:
-             print("Username or password can not be null, please retype") #todo 弹窗式提示
-             return redirect(url_for('login'))
+                print("Username or password can not be null, please retype") #todo 弹窗式提示
+                return redirect(url_for('login'))
             if result == None:
-             sql = 'INSERT INTO users (username, password) VALUES ("{}", "{}")'.format(username,password, encoding='utf-8')
-             cursor.execute(sql)
-             print (sql)
-             print("registered successfully, please sign in") #todo 弹窗式提示
-             return redirect(url_for('login')) 
-             db.commit()             
-         except:
+                sql = 'INSERT INTO users (username, password) VALUES ("{}", "{}")'.format(username,password, encoding='utf-8')
+                cursor.execute(sql)
+                print (sql)
+                print("registered successfully, please sign in") #todo 弹窗式提示
+                return redirect(url_for('login')) 
+            db.commit()             
+        except:
         # 如果发生错误则回滚
-          traceback.print_exc()
-          db.rollback()
-         print("failed, please sign up again") #todo 弹窗式提示 
-         return render_template("sign.html")
+            traceback.print_exc()
+            db.rollback()
+            print("failed, please sign up again") #todo 弹窗式提示        
         # 关闭数据库连接
+        db.close()
+    return render_template("sign.html") 
 
 #@app.route('/logout')
 #def logout():
