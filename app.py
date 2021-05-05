@@ -1,7 +1,7 @@
 import pymysql
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, g,flash
-from traceback
+from flask import request, render_template, redirect, url_for, session, g, flash
+import traceback
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -170,27 +170,27 @@ def login():
         password = request.form.get('password', None)
         sql = "select * from users where username= '{}'".format(username, encoding='utf-8') 
         try:
-            # 执行sql语句
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            #print(result[0][3])
-            #print(password)
-            if (len(result)==0):
-                print("The Username doe not exist!")
-                return redirect(url_for('login'))          
-            else:
-                if result[0][3] == password:
-                    print("Login successfully!") #todo 弹窗式提示
-                    return redirect(url_for('workoutRec'))
-                else:
-                    print("Username or password is wrong!") #todo form里提示
-                    return redirect(url_for('login'))
-            # 提交到数据库执行
-            db.commit()
+		# 执行sql语句
+		cursor.execute(sql)
+		result = cursor.fetchall()
+		#print(result[0][3])
+		#print(password)
+		if (len(result)==0):
+			print("The Username doe not exist!")
+			return redirect(url_for('login'))          
+		else:
+			if result[0][3] == password:
+				print("Login successfully!") #todo 弹窗式提示
+				return redirect(url_for('workoutRec'))
+			else:
+				print("Username or password is wrong!") #todo form里提示
+				return redirect(url_for('login'))
+		# 提交到数据库执行
+		db.commit()
         except:
-            # 如果发生错误则回滚
-            traceback.print_exc()
-            db.rollback()
+		# 如果发生错误则回滚
+		traceback.print_exc()
+		db.rollback()
         # 关闭数据库连接
         db.close()       
     return render_template("sign.html")
