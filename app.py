@@ -13,19 +13,8 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-import torch
-# da_rnn=da_rnn()
-
-# use_cuda = torch.cuda.is_available()
-# print("Is CUDA available? %s.", use_cuda)
-# learning_rate = 0.005
-# batch_size = 290
-# hidden_size = 64
-# T=10
-# model = da_rnn(parallel = False, T = T, encoder_hidden_size=hidden_size, decoder_hidden_size=hidden_size, learning_rate = learning_rate, batch_size=batch_size)
-
-# model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+# import torch
 
 import pickle
 import pandas as pd
@@ -119,7 +108,7 @@ def dietrec_model():
         flash('Please enter valid inputs!')
         return render_template("dietrec.html",)
     calories=int(calories_get)
-    s_breakfast,s_lunch,s_dinner,s_snack,s_vegan = 0,0,0,0,0
+    s_breakfast,s_lunch,s_dinner,s_dessert,s_vegan = 0,0,0,0,0
     count,re=0,1
     for c in cbox:
         if c =='Breakfast':
@@ -131,14 +120,14 @@ def dietrec_model():
         elif c=='Dinner':
             s_dinner=1
             count=count+1
-        elif c=='Snack':
-            s_snack=1
+        elif c=='Dessert':
+            s_dessert=1
             count=count+1
         else:
             s_vegan=1
-    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_snack, s_vegan, re)
-
-
+    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re)
+#re增加时，其他都初始化为0
+#'index_number_br', 'index_number_lun', 'index_number_din', and 'index_number_des'
     return render_template("dietrec_result.html")
 
 #     {'Name': ['addictive and healthy granola', 'oriental edamame salad'], 
@@ -146,21 +135,26 @@ def dietrec_model():
 
 #路由运动记录    
 @app.route("/activitylog")
-def activitylog():        
+def activitylog(): 
+    #获得假数据
+    input_data=pd.read_csv("test_calories1.csv")
+    user_data=input_data.iloc[:1]
+    print(user_data)
+    duration = int(user_data["duration"].tolist()[0])
+    distance = int(user_data["distance"].tolist()[0])
+    avg_heart_rate = int(user_data["avg_heart_rate"].tolist()[0])
+    avg_speed = int(user_data["avg_speed"].tolist()[0])
+    # print(uid)
+    
+
     #mike model
-    output = model.predict()
-    print(output)
-    # model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
-    # use_cuda = torch.cuda.is_available()
-    # output = model.predict()
-    # print(output)
+
 
     #oni model
-    input_data=pd.read_csv("test_calories1.csv")
-    print(input_data.iloc[:1])
-    data = calories_cal_model.predict(input_data.iloc[:1])
-    print(data)
-    return render_template("activitylog.html")
+    acc_output = calories_cal_model.predict(input_data.iloc[:1])
+    actual_calories = int(acc_output)
+    print(actual_calories)
+    return render_template("activitylog.html",actual_calories=actual_calories)
 
 #路由用户登录后显示的页面
 @app.route("/profile")
