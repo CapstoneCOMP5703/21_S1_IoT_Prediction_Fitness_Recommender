@@ -17,6 +17,20 @@ from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encod
 import torch
 # da_rnn=da_rnn()
 
+# use_cuda = torch.cuda.is_available()
+# print("Is CUDA available? %s.", use_cuda)
+# learning_rate = 0.005
+# batch_size = 290
+# hidden_size = 64
+# T=10
+# model = da_rnn(parallel = False, T = T, encoder_hidden_size=hidden_size, decoder_hidden_size=hidden_size, learning_rate = learning_rate, batch_size=batch_size)
+
+# model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+
+import pickle
+import pandas as pd
+calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
+
 @dataclass
 class User:
     id: int
@@ -123,7 +137,7 @@ def dietrec_model():
         else:
             s_vegan=1
     diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_snack, s_vegan, re)
-    
+
 
     return render_template("dietrec_result.html")
 
@@ -133,10 +147,19 @@ def dietrec_model():
 #路由运动记录    
 @app.route("/activitylog")
 def activitylog():        
+    #mike model
+    output = model.predict()
+    print(output)
     # model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
     # use_cuda = torch.cuda.is_available()
     # output = model.predict()
     # print(output)
+
+    #oni model
+    input_data=pd.read_csv("test_calories1.csv")
+    print(input_data.iloc[:1])
+    data = calories_cal_model.predict(input_data.iloc[:1])
+    print(data)
     return render_template("activitylog.html")
 
 #路由用户登录后显示的页面
