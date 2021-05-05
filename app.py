@@ -28,7 +28,7 @@ class User:
     password: str
 
 users = [
-	User(1, 11111116,"Admin", "123456"),
+	User(1, 11111116,"Admin", "Hn123456"),
 	User(2, 222,"Eason", "888888"),
 	User(3, 333,"Tommy", "666666"),
 ]
@@ -125,7 +125,14 @@ def dietrec_model():
             count=count+1
         else:
             s_vegan=1
-    diet_data = dietRec.recipe_rec(calories, count, s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re)
+    
+    if(count == 0):
+        flash('Please choose at least one meal type!')
+        return render_template("dietrec.html",)
+    diet_data = dietRec.recipe_rec(calories, count,
+    s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re,0,0,0,0)
+    print(diet_data)
+
 #re增加时，其他都初始化为0
 #'index_number_br', 'index_number_lun', 'index_number_din', and 'index_number_des'
     return render_template("dietrec_result.html")
