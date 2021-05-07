@@ -13,8 +13,9 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-# import torch
+from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+import torch
+
 
 import pickle
 import pandas as pd
@@ -109,7 +110,7 @@ def dietrec_model():
         return render_template("dietrec.html",)
     calories=int(calories_get)
     s_breakfast,s_lunch,s_dinner,s_dessert,s_vegan = 0,0,0,0,0
-    count,re=0,1
+    count,re,re_breakfast,re_lunch,re_dinner,re_dessert=0,0,0,0,0,0
     for c in cbox:
         if c =='Breakfast':
             s_breakfast=1
@@ -129,40 +130,132 @@ def dietrec_model():
     if(count == 0):
         flash('Please choose at least one meal type!')
         return render_template("dietrec.html",)
-    diet_data = dietRec.recipe_rec(calories, count,
-    s_breakfast, s_lunch, s_dinner, s_dessert, s_vegan, re,0,0,0,0)
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
     header=["Meal Type","Meal","Meal Calories","Ingredients List"]
 
-    #
-    data_name=["Meal"]
-    append_list(data_name,diet_data.get('Name'))
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
 
-    data_Ingredients_list=["Ingredients List"]
-    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'))
+
+    if breakfast_num != 0:
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+
+    if dinner_num !=0:   
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
     
-    data_meal_type=["Meal Type"]
-    append_list(data_meal_type,diet_data.get('Meal_Type'))
-
-    data_cal=["Meal Calories"]
-    append_list(data_cal,diet_data.get('Calorie_num'))
-
-    data_img_urls=diet_data.get('img_urls')
-    
-    df = pd.DataFrame(data=[data_meal_type,data_name,data_cal,data_Ingredients_list])
-    df_html = df.T.to_html(classes="table_rec",header=False,index=False)  # use pandas method to auto generate html
 #re增加时，其他都初始化为0
-#'index_number_br', 'index_number_lun', 'index_number_din', and 'index_number_des'
-    return render_template("dietrec_result.html",table_html=df_html)
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
 
-def append_list(header,input_list):
-    length=len(input_list)
-    for i in range(0,length):
+def append_list(header,input_list,start,end):
+    for i in range(start,end):
         header.append(input_list[i])
     return header
 
+def splitMeal(data):
+    length=len(data)
+    breakfast_num=0
+    lunch_num=0
+    dinner_num=0
+    dessert_num=0
+    for i in range(0,length):
+        data_list=data[i]
+        if data_list == 'breakfast':
+            breakfast_num=breakfast_num+1
+        elif data_list == 'lunch':
+            lunch_num=lunch_num+1
+        elif data_list == 'dinner':
+            dinner_num=dinner_num+1
+        else: 
+            dessert_num=dessert_num+1
+    return breakfast_num,lunch_num,dinner_num,dessert_num
 
-#     {'Name': ['addictive and healthy granola', 'oriental edamame salad'], 
-#  'Calorie_num': [251, 251], 'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
+def generateBreakfastDataFrame(diet_data,breakfast_num):
+    data_name=["Meal"]
+    append_list(data_name,diet_data.get('Name'),0,breakfast_num)
+
+    data_Ingredients_list=["Ingredients List"]
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),0,breakfast_num)
+
+    data_cal=["Meal Calories"]
+    append_list(data_cal,diet_data.get('Calorie_num'),0,breakfast_num)
+
+    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    return df
+
+def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
+    data_name=["Meal"]
+    append_list(data_name,diet_data.get('Name'),breakfast_num,breakfast_num+lunch_num)
+
+    data_Ingredients_list=["Ingredients List"]
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num,breakfast_num+lunch_num)
+
+    data_cal=["Meal Calories"]
+    append_list(data_cal,diet_data.get('Calorie_num'),breakfast_num,breakfast_num+lunch_num)
+
+    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    return df
+
+     
+def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
+    data_name=["Meal"]
+    append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
+
+    data_Ingredients_list=["Ingredients List"]
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
+
+    data_cal=["Meal Calories"]
+    append_list(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
+
+    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    return df
+
+def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num):
+    data_name=["Meal"]
+    append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
+
+    data_Ingredients_list=["Ingredients List"]
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
+
+    data_cal=["Meal Calories"]
+    append_list(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
+
+    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    return df
+
+#   'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
 
 #路由运动记录    
 @app.route("/activitylog")
@@ -181,9 +274,13 @@ def activitylog():
     print(distance)
     duration=cal_time(duration_seconds)
     sport_type=check_sport_type(bike_check,mbike_check,run_check)
+
     #mike model
-
-
+    model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+    use_cuda=torch.cuda.is_available() 
+    output = model.predict()
+    # print(output)
+    
     #oni model
     acc_output = calories_cal_model.predict(input_data.iloc[:1])
     actual_calories = int(acc_output)
@@ -231,3 +328,7 @@ def login():
             return redirect(url_for('workoutRec'))
         
     return render_template("sign.html")
+
+if __name__ == '__main__':
+    app.run(debug=True,host='0.0.0.0')
+    
