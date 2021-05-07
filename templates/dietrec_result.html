@@ -65,35 +65,21 @@
     </div>
 
     <section class="mealrec_content">
-        <!-- <table class="table_rec">
-            <tr>
-                <th>Recommended diet category</th>
-                <th>Recommended meal</th>
-                <th>Recommended meal number</th>
-            </tr>
-            <tr>
-                <td>Breakfast</td>
-                <td>Southwastern Eggs</td>
-                <td>1 serving</td>
-            </tr>
-            <tr>
-                <td>Breakfast</td>
-                <td>Orange</td>
-                <td>1 fruit</td>
-            </tr>
-            <tr>
-                <td>Lunch</td>
-                <td>Basic protein shake</td>
-                <td>1 cup</td>
-            </tr>
-            <tr>
-                <td>Dinner</td>
-                <td>Tomato Basil Pasta</td>
-                <td>1 serving</td>
-            </tr>
-        </table> -->
-        {{ table_html | safe }}
         <form class="user_regenerate" action="/dietrec" method="POST">
+            <h2>{{label_tbreakfast}}</h2>
+            {{ table_b_html | safe }}
+            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
+
+            <h2>{{label_tlunch}}</h2>
+            {{ table_l_html | safe }}
+
+            <h2>{{label_tdinner}}</h2>
+            {{ table_dinner_html | safe }}
+            
+            <h2>{{label_tdessert}}</h2>
+            {{ table_dessert_html | safe }}
+
+        
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
     </section>
