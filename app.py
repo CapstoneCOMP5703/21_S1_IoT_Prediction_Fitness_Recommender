@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import request, render_template, redirect, url_for, session, g,flash
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import timedelta,datetime
 
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
@@ -13,8 +13,8 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-import torch
+# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+# import torch
 
 
 import pickle
@@ -100,6 +100,7 @@ def readsplitdata(data):
 @app.route("/dietrec",methods=['GET', 'POST'])
 def mealRec():          
     return render_template("dietrec.html")
+    g.dietrec_request = none 
 
 @app.route("/dietrec_model",methods=['GET', 'POST'])
 def dietrec_model():
@@ -130,8 +131,15 @@ def dietrec_model():
     if(count == 0):
         flash('Please choose at least one meal type!')
         return render_template("dietrec.html",)
+    #load DietRec model
     diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+    
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    g.dietrec_request =  diet_list
+
     header=["Meal Type","Meal","Meal Calories","Ingredients List"]
 
     meal_type=diet_data.get('Meal_Type')
@@ -162,8 +170,8 @@ def dietrec_model():
     else:
         df_html_dinner=''
         label_tdinner=''
-
-    if dinner_num !=0:   
+        
+    if dessert_num !=0:   
         df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
         df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
         label_tdessert='Recommonded Dessert'
@@ -260,7 +268,7 @@ def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,desser
 #路由运动记录    
 @app.route("/activitylog")
 def activitylog(): 
-    #获得假数据
+    #get mock data
     input_data=pd.read_csv("test_calories1.csv")
     user_data=input_data.iloc[:1]
     print(user_data)
@@ -271,21 +279,24 @@ def activitylog():
     bike_check= int(user_data["sport_bike"].tolist()[0])
     mbike_check= int(user_data["sport_mountain bike"].tolist()[0])
     run_check= int(user_data["sport_run"].tolist()[0])
-    print(distance)
     duration=cal_time(duration_seconds)
     sport_type=check_sport_type(bike_check,mbike_check,run_check)
-
+    
+    print(distance)
+    system_time=str(datetime.now())
+    time=system_time.split('.')[0]
+    print(time)
     #mike model
-    model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
-    use_cuda=torch.cuda.is_available() 
-    output = model.predict()
-    # print(output)
+    # HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+    # use_cuda=torch.cuda.is_available() 
+    # HR_output = HR_track_model.predict()
+    # print(HR_output)
     
     #oni model
     acc_output = calories_cal_model.predict(input_data.iloc[:1])
+    print(acc_output)
     actual_calories = int(acc_output)
-    return render_template("activitylog.html",actual_calories=actual_calories,
-    sport_type=sport_type,duration=duration,avg_speed=avg_speed,avg_heart_rate=avg_heart_rate)
+    return render_template("activitylog.html",actual_calories=actual_calories,time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,avg_heart_rate=avg_heart_rate)
 
 def check_sport_type(bike_check,mbike_check,run_check):
     if bike_check == 1:

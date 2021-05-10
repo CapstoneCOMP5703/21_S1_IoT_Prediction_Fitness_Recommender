@@ -52,17 +52,21 @@
 
     <section class="banner-area"  style="background-image: url(images/bg_activitylog.jpeg);">
         <div class="banner-text">
-            <h1>Activity Log</h1>
+            <h1>Current Workout Type is: <b>{{sport_type}}</b></h1>
         </div>
     </section>
 
 
     <section class="report_area">
         <div class="heartrate_area">
-            <h1>You are doing: <b>{{sport_type}}</b></h1>
+            <h1></h1>
         </div>
 
         <div class="report">
+            <a>{{time}}</a>
+            <h1>{{distance}} <a class="label_report"> Kilometres</a></h1>
+
+            
             <table class="report_table">
                 <tr>
                     <td><img src= "images/ic_al_time.png"></img></td>

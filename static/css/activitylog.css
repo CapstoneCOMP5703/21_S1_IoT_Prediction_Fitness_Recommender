@@ -34,11 +34,18 @@
     text-align: center;
   }
 
+  
+  .label_report{
+    font-size: 13px !important;
+    font-style: normal !important;
+    opacity: 0.7 !important;
+  }
+
   .report_table{
     border:0px; 
     border-style: none;
     width: fit-content;
-    margin: 50px auto 10px;
+    margin: 10px auto 10px;
     align-content: center;
   }
 

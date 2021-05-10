@@ -65,10 +65,13 @@
     </div>
 
     <section class="mealrec_content">
-        <form class="user_regenerate" action="/dietrec" method="POST">
-            <h2>{{label_tbreakfast}}</h2>
-            {{ table_b_html | safe }}
-            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
+
+        <form class="user_regenerate" action="/dietrec_model" method="POST">
+            <input class="regenerate_btn" name="reall" type="submit" value="Regenerate All Meals"></input>
+                <h2>{{label_tbreakfast}}</h2>
+                {{ table_b_html | safe }}
+            <input class="regenerate_btn" name="rebreakfast" type="submit" value="Regenerate Breakfast"></input>
+        
 
             <h2>{{label_tlunch}}</h2>
             {{ table_l_html | safe }}
@@ -78,13 +81,11 @@
             
             <h2>{{label_tdessert}}</h2>
             {{ table_dessert_html | safe }}
-
-        
+            
+        </form>
+        <form class="user_regenerate" action="/dietrec" method="POST">
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
     </section>
-
-
-
 </body>
 </html>
