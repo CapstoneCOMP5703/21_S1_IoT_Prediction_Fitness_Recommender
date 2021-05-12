@@ -72,6 +72,7 @@ def sportrec_model():
     rf.load_data_from_path('./testdata.csv')
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
     data=rf.predict_data(1111116, calories)
+
     run_time,bike_time,mbike_time=readsplitdata(data)
 
     return render_template("workrec_result.html",run_time=run_time,
@@ -100,7 +101,6 @@ def readsplitdata(data):
 @app.route("/dietrec",methods=['GET', 'POST'])
 def mealRec():          
     return render_template("dietrec.html")
-    g.dietrec_request = none 
 
 @app.route("/dietrec_model",methods=['GET', 'POST'])
 def dietrec_model():
@@ -134,19 +134,18 @@ def dietrec_model():
     #load DietRec model
     diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-    
+
     #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    g.dietrec_request =  diet_list
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
 
     header=["Meal Type","Meal","Meal Calories","Ingredients List"]
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
 
-
     if breakfast_num != 0:
+        flash('Breakfast')
         df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
         # use pandas method to auto generate html
         df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
@@ -156,6 +155,7 @@ def dietrec_model():
         label_tbreakfast=''
 
     if lunch_num !=0:
+        flash('Lunch')
         df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
         df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
         label_tlunch='Recommonded Lunch'
@@ -164,6 +164,7 @@ def dietrec_model():
         label_tlunch=''
 
     if dinner_num !=0:
+        flash('Dinner')
         df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
         df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
         label_tdinner='Recommonded Dinner'
@@ -172,6 +173,7 @@ def dietrec_model():
         label_tdinner=''
         
     if dessert_num !=0:   
+        flash('Dessert')
         df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
         df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
         label_tdessert='Recommonded Dessert'
@@ -191,7 +193,6 @@ def append_list(header,input_list,start,end):
     for i in range(start,end):
         header.append(input_list[i])
     return header
-
 def splitMeal(data):
     length=len(data)
     breakfast_num=0
@@ -209,7 +210,6 @@ def splitMeal(data):
         else: 
             dessert_num=dessert_num+1
     return breakfast_num,lunch_num,dinner_num,dessert_num
-
 def generateBreakfastDataFrame(diet_data,breakfast_num):
     data_name=["Meal"]
     append_list(data_name,diet_data.get('Name'),0,breakfast_num)
@@ -222,7 +222,6 @@ def generateBreakfastDataFrame(diet_data,breakfast_num):
 
     df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
     return df
-
 def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
     data_name=["Meal"]
     append_list(data_name,diet_data.get('Name'),breakfast_num,breakfast_num+lunch_num)
@@ -234,9 +233,7 @@ def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
     append_list(data_cal,diet_data.get('Calorie_num'),breakfast_num,breakfast_num+lunch_num)
 
     df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
-    return df
-
-     
+    return df   
 def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
     data_name=["Meal"]
     append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
@@ -249,7 +246,6 @@ def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
 
     df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
     return df
-
 def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num):
     data_name=["Meal"]
     append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
@@ -264,6 +260,366 @@ def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,desser
     return df
 
 #   'img_urls': ['https://images.media-allrecipes.com/userphotos/125x70/1110710.jpg , https://images.media-allrecipes.com/userphotos/560x315/1110710.jpg , ', 'https://images.media-allrecipes.com/userphotos/560x315/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/819709.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079477.jpg , https://images.media-allrecipes.com/userphotos/125x70/7079476.jpg , https://images.media-allrecipes.com/userphotos/125x70/3083932.jpg , https://images.media-allrecipes.com/userphotos/125x70/2209681.jpg , https://images.media-allrecipes.com/userphotos/125x70/1120488.jpg , '], 'Meal_Type': ['breakfast', 'lunch'], 'veg': ['vegetarian', 'vegetarian']}
+
+@app.route("/regenerate_all",methods=['GET', 'POST'])
+def regenerate_all():
+    diet_list=session.get('diet_list')
+    calories = diet_list[0]
+    count= diet_list[1]
+    s_breakfast =diet_list[2]
+    s_lunch=diet_list[3]
+    s_dinner =diet_list[4]
+    s_dessert=diet_list[5]
+    s_vegan=diet_list[6]
+    re=diet_list[7]
+    re_breakfast=0
+    re_lunch=0
+    re_dinner=0
+    re_dessert=0
+    re=re+1
+
+    #load DietRec model
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
+
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+        
+    if dessert_num !=0:   
+        flash('Dessert')
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
+    
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
+    
+@app.route("/regenerate_breakfast",methods=['GET', 'POST'])
+def regenerate_breakfast():
+    diet_list=session.get('diet_list')
+    calories = diet_list[0]
+    count= diet_list[1]
+    s_breakfast =diet_list[2]
+    s_lunch=diet_list[3]
+    s_dinner =diet_list[4]
+    s_dessert=diet_list[5]
+    s_vegan=diet_list[6]
+    re=diet_list[7]
+    re_breakfast=diet_list[8]
+    re_lunch=diet_list[9]
+    re_dinner=diet_list[10]
+    re_dessert=diet_list[11]
+    re_breakfast=re_breakfast+1
+
+    #load DietRec model
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
+
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+        
+    if dessert_num !=0:   
+        flash('Dessert')
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
+    
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
+
+@app.route("/regenerate_lunch",methods=['GET', 'POST'])
+def regenerate_lunch():
+    diet_list=session.get('diet_list')
+    calories = diet_list[0]
+    count= diet_list[1]
+    s_breakfast =diet_list[2]
+    s_lunch=diet_list[3]
+    s_dinner =diet_list[4]
+    s_dessert=diet_list[5]
+    s_vegan=diet_list[6]
+    re=diet_list[7]
+    re_breakfast=diet_list[8]
+    re_lunch=diet_list[9]
+    re_dinner=diet_list[10]
+    re_dessert=diet_list[11]
+    re_lunch=re_lunch+1
+
+    #load DietRec model
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
+
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+        
+    if dessert_num !=0:  
+        flash('Dessert') 
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
+    
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
+
+@app.route("/regenerate_dinner",methods=['GET', 'POST'])
+def regenerate_dinner():
+    diet_list=session.get('diet_list')
+    calories = diet_list[0]
+    count= diet_list[1]
+    s_breakfast =diet_list[2]
+    s_lunch=diet_list[3]
+    s_dinner =diet_list[4]
+    s_dessert=diet_list[5]
+    s_vegan=diet_list[6]
+    re=diet_list[7]
+    re_breakfast=diet_list[8]
+    re_lunch=diet_list[9]
+    re_dinner=diet_list[10]
+    re_dessert=diet_list[11]
+    re_dinner=re_dinner+1
+
+    #load DietRec model
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
+
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+        
+    if dessert_num !=0:   
+        flash('Dessert')
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
+    
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
+
+@app.route("/regenerate_dessert",methods=['GET', 'POST'])
+def regenerate_dessert():
+    diet_list=session.get('diet_list')
+    calories = diet_list[0]
+    count= diet_list[1]
+    s_breakfast =diet_list[2]
+    s_lunch=diet_list[3]
+    s_dinner =diet_list[4]
+    s_dessert=diet_list[5]
+    s_vegan=diet_list[6]
+    re=diet_list[7]
+    re_breakfast=diet_list[8]
+    re_lunch=diet_list[9]
+    re_dinner=diet_list[10]
+    re_dessert=diet_list[11]
+    re_dessert=re_dessert+1
+
+    #load DietRec model
+    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
+    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+
+    #save DietRec parameter into global variate
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    session['diet_list']=diet_list
+
+    meal_type=diet_data.get('Meal_Type')
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tbreakfast = 'Recommonded Breakfast'
+    else:
+        df_html_b=''
+        label_tbreakfast=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num)
+        df_html_l = df_lunch.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tlunch='Recommonded Lunch'
+    else:
+        df_html_l=''
+        label_tlunch=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num)
+        df_html_dinner = df_dinner.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdinner='Recommonded Dinner'
+    else:
+        df_html_dinner=''
+        label_tdinner=''
+        
+    if dessert_num !=0:  
+        flash('Dessert') 
+        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num)
+        df_html_dessert = df_dessert.T.to_html(classes="table_rec",header=False,index=False) 
+        label_tdessert='Recommonded Dessert'
+    else:
+        df_html_dessert=''
+        label_tdessert=''
+
+    data_img_urls=diet_data.get('img_urls') 
+    
+    return render_template("dietrec_result.html",table_b_html=df_html_b,
+    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
+    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
+    label_tdessert=label_tdessert)
 
 #路由运动记录    
 @app.route("/activitylog")
@@ -305,7 +661,6 @@ def check_sport_type(bike_check,mbike_check,run_check):
         return "Mountain biking"
     else:
         return "Running"
-
 def cal_time(seconds):
     mins, secs = divmod(seconds, 60)
     hours, mins = divmod(mins, 60)

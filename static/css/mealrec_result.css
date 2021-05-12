@@ -40,14 +40,81 @@
 
 .mealrec_content{
   display: block;
-  width: 70%;
+  width: fit-content;
   margin-left: auto;
   margin-right: auto;
 }
 
+.table_main{
+  /* margin-top: 50px; */
+  width: auto;
+}
+
+.table_main .table_main_left{
+  float: left;
+}
+
+.table_main .table_main_right{
+  float: right;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.table_main .table_main_left .label{
+  width: fit-content;
+  background-color: lightskyblue;
+  border-radius: 10px;
+  border-width: 0px;
+  padding: 10px 13px;
+  font-size: 20px;
+  font-style: bold;
+  color: #f5f5f5;
+  z-index: 1;
+}
+
+.table_main .table_main_right .regenerate{
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  border-width: 0px;
+  background-color: transparent;
+}
+
+.table_main .table_main_right .regenerate{
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  border-width: 0px;
+  background-color: transparent;
+}
+
+.user_regenerate{
+  text-align: center;
+}
+
+.table_main .table_main_right a{
+  font-size: 25px;
+  vertical-align:top;
+}
+
+
+.gap40{height: 40px;}
+.gap20{height: 20px;}
+.gap50{height: 50px;}
+
+
+.table_container{
+  /* z-index: -1; */
+  width: fit-content;
+  background-color:#fff;
+  padding: 30px 20px 20px;
+  margin: -20px;
+}
+
+
 .table_rec{
   border-collapse: collapse;
-  margin: 30px 20px;
+  margin: 30px 20px 10px;
   text-align: center;
   align-content: center;
 }
@@ -71,9 +138,21 @@ table td img{
   display:block;
 }
 
-.regenerate_btn{
-  margin-left: 35%;
-  width: 200px;
+.contain_re{
+  width: auto;
+}
+.contain_re .re_left{
+  float: left;
+  margin: 0 0 50px 20%;
+  
+}
+
+.contain_re .re_right{
+  float: right;
+  margin: 0 20% 50px 0;
+}
+.regenerate_btn_left{
+  width: fit-content;
   height: 60px;
   font-size: large;
   color: #fff !important;
@@ -89,7 +168,31 @@ table td img{
   border-radius: 5px;
 }
 
-.regenerate_btn:hover{
+.regenerate_btn_left:hover{
+  background: #fff; 
+  opacity: 1;
+  color: #333 !important;
+  border-color: #f61b55;
+}
+
+.regenerate_btn_right{
+  width: fit-content;
+  height: 60px;
+  font-size: large;
+  color: #fff !important;
+  background: #f61b55;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px;
+  padding: 13px 24px;
+  transition-property: all;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+  border-radius: 5px;
+}
+
+.regenerate_btn_right:hover{
   background: #fff; 
   opacity: 1;
   color: #333 !important;

@@ -65,27 +65,122 @@
     </div>
 
     <section class="mealrec_content">
+        <div class="gap20"></div>  
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message == 'Breakfast'%} 
+                <div class="table_main">
+                    <div class="table_main_left">
+                        <input class='label' value="{{label_tbreakfast}}"></input>
+                    </div>
+                    <div class="table_main_right">
+                        <form class="user_regenerate" action="/regenerate_breakfast" method="POST">
+                            <a>Regenerate</a><input class="regenerate" name="rebreakfast" type="submit" value="" style="background-image: url(images/ic_refresh.png);"></input>
+                        </form>
+                    </div>                   
+                </div>
+                <div class="gap40"></div>                
+                <div class="table_container">                                     
+                    {{ table_b_html | safe }}
+                </div>  
+                <div class="gap50"></div>        
+            {%endif%}
 
-        <form class="user_regenerate" action="/dietrec_model" method="POST">
-            <input class="regenerate_btn" name="reall" type="submit" value="Regenerate All Meals"></input>
-                <h2>{{label_tbreakfast}}</h2>
-                {{ table_b_html | safe }}
-            <input class="regenerate_btn" name="rebreakfast" type="submit" value="Regenerate Breakfast"></input>
-        
+            {% if message == 'Lunch'%}
+                <div class="table_main">
+                    <div class="table_main_left">
+                        <input class='label' value="{{label_tlunch}}"></input>
+                    </div>
+                    <div class="table_main_right">
+                        <form class="user_regenerate" action="/regenerate_lunch" method="POST">
+                            <a>Regenerate</a><input class="regenerate" name="relunch" type="submit" value="" style="background-image: url(images/ic_refresh.png);"></input>
+                        </form>
+                    </div>                   
+                </div>
+                <div class="gap40"></div>                
+                <div class="table_container">                                     
+                    {{ table_l_html | safe }}
+                </div> 
+                <div class="gap50"></div>    
+                <!-- <input class='label' value="{{label_tlunch}}"></input>
+                <div class="table_container"> 
+                    <form class="user_regenerate" action="/regenerate_lunch" method="POST">
+                        <input class="regenerate" name="relunch" type="submit" value="Regenerate Lunch"></input>
+                    </form>
+                    {{ table_l_html | safe }}
+                </div> -->
+            {%endif%}
 
-            <h2>{{label_tlunch}}</h2>
-            {{ table_l_html | safe }}
+            {% if message == 'Dinner'%}
+                <div class="table_main">
+                    <div class="table_main_left">
+                        <input class='label' value="{{label_tdinner}}"></input>
+                    </div>
+                    <div class="table_main_right">
+                        <form class="user_regenerate" action="/regenerate_dinner" method="POST">
+                            <a>Regenerate</a><input class="regenerate" name="rebdinner" type="submit" value="" style="background-image: url(images/ic_refresh.png);"></input>
+                        </form>
+                    </div>                   
+                </div>
+                <div class="gap40"></div>                
+                <div class="table_container">                                     
+                    {{ table_dinner_html | safe }}
+                </div>  
+                <div class="gap50"></div>   
+                <!-- <input class='label' value="{{label_tdinner}}"></input>
+                <div class="table_container"> 
+                    <form class="user_regenerate" action="/regenerate_dinner" method="POST">
+                        <input class="regenerate" name="rebdinner" type="submit" value="Regenerate Dinner"></input>
+                    </form>
+                    {{ table_dinner_html | safe }}
+                </div> -->
+            {%endif%}
 
-            <h2>{{label_tdinner}}</h2>
-            {{ table_dinner_html | safe }}
+            {% if message == 'Dessert'%}
+                <div class="table_main">
+                    <div class="table_main_left">
+                        <input class='label' value="{{label_tdessert}}"></input>
+                    </div>
+                    <div class="table_main_right">
+                        <form class="user_regenerate" action="/regenerate_dessert" method="POST">
+                            <a>Regenerate</a><input class="regenerate" name="redessert" type="submit" value="" style="background-image: url(images/ic_refresh.png);"></input>
+                        </form>
+                    </div>                   
+                </div>
+                <div class="gap40"></div>                
+                <div class="table_container">                                     
+                    {{ table_dessert_html | safe }}
+                </div>  
+                <!-- <input class='label' value="{{label_tdessert}}"></input>
+                <div class="table_container">
+                    <form class="user_regenerate" action="/regenerate_dessert" method="POST">
+                        <input class="regenerate" name="redessert" type="submit" value="Regenerate Dessert"></input>
+                    </form>
+                    {{ table_dessert_html | safe }}
+                </div> -->
+            {%endif%}
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block body %}{% endblock %}
+
+        <div class="contain_re">
+            <div class="re_left">
+                <form class="user_regenerate" action="/regenerate_all" method="POST">
+                    <input class="regenerate_btn_left" name="reall" type="submit" value="Regenerate All Meals" ></input>
+                </form>
+            </div>
             
-            <h2>{{label_tdessert}}</h2>
-            {{ table_dessert_html | safe }}
-            
-        </form>
-        <form class="user_regenerate" action="/dietrec" method="POST">
-            <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
-        </form>
+            <div class="re_right">
+                <form class="user_regenerate" action="/dietrec" method="POST">
+                    <input class="regenerate_btn_right" type="submit" value="Change Your Calorie Input"></input>
+                </form>
+            </div>
+        </div>
+
+      
     </section>
 </body>
 </html>
