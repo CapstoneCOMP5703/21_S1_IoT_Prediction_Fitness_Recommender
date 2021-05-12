@@ -8,13 +8,13 @@ window.onload = function() {
         $(this).removeClass("focus");
     });
 
-    $(".submit_btn").on("click",function(){
-        $(".mealrec_content").show(); 
-        $(".mealrec_input").hide();
-    });
+    // $(".submit_btn").on("click",function(){
+    //     $(".mealrec_content").show(); 
+    //     $(".mealrec_input").hide();
+    // });
 
-    $(".regenerate_btn").on("click",function(){
-        $(".mealrec_input").show();
-        $(".mealrec_content").hide(); 
-    });
+    // $(".regenerate_btn").on("click",function(){
+    //     $(".mealrec_input").show();
+    //     $(".mealrec_content").hide(); 
+    // });
 }

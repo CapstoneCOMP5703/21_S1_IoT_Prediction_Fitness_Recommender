@@ -34,7 +34,12 @@
                     </li>
                     <li><a href="/activitylog">activity log</a></li>
                     <li class="menu-btn">
+                        Welcome {{session.user}} !
+                        {% if session.user %}
+                        <a href="/logout" class="signin-btn">log out</a>
+                        {% else %}
                         <a href="/login" class="signin-btn">sign in</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

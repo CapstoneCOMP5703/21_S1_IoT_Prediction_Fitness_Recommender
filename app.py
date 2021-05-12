@@ -1,11 +1,17 @@
+import pymysql
 from flask import Flask
 from flask import request, render_template, redirect, url_for, session, g,flash
+import traceback
 from dataclasses import dataclass
 from datetime import timedelta,datetime
+from hashlib import md5
+
+from pyecharts import options as opts
+from pyecharts.charts import Line
 
 app= Flask(__name__,static_url_path="/")
-app.config['SECRET_KEY'] = "sdfklas5fa2k42j"
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
+app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
 from SportRec_v2 import Model
 rf=Model()
@@ -13,44 +19,22 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-# import torch
+from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+import torch
 
 
 import pickle
 import pandas as pd
 calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
 
-@dataclass
-class User:
-    id: int
-    user_id: int
-    username: str
-    password: str
-
-users = [
-	User(1, 11111116,"Admin", "Hn123456"),
-	User(2, 222,"Eason", "888888"),
-	User(3, 333,"Tommy", "666666"),
-]
-
-@app.before_request
-def before_request():
-    g.user = None
-    if 'user_id' in session:
-        user = [u for u in users if u.id == session['user_id']][0] #todo 替换成数据库
-        g.user = user
-
 #路由主页
 @app.route("/")
 def homepage():           
     return render_template("homepage.html")
 
-#路由运动推荐，目前需要登录才能使用
+#路由运动推荐
 @app.route("/workoutrec",methods=['GET', 'POST'])
 def workoutRec():       
-    if not g.user:
-        return redirect(url_for('login'))    
     return render_template("workoutrec.html")
 
 @app.route("/sportrec_model",methods=['GET', 'POST'])
@@ -138,8 +122,6 @@ def dietrec_model():
     #save DietRec parameter into global variate
     diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
     session['diet_list']=diet_list
-
-    header=["Meal Type","Meal","Meal Calories","Ingredients List"]
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
@@ -624,35 +606,51 @@ def regenerate_dessert():
 #路由运动记录    
 @app.route("/activitylog")
 def activitylog(): 
-    #get mock data
-    input_data=pd.read_csv("test_calories1.csv")
-    user_data=input_data.iloc[:1]
-    print(user_data)
-    duration_seconds = int(user_data["duration"].tolist()[0])
-    distance = round(float(user_data["distance"].tolist()[0]),2)
-    avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[0]),0)
-    avg_speed = round(float(user_data["avg_speed"].tolist()[0]),2)
-    bike_check= int(user_data["sport_bike"].tolist()[0])
-    mbike_check= int(user_data["sport_mountain bike"].tolist()[0])
-    run_check= int(user_data["sport_run"].tolist()[0])
-    duration=cal_time(duration_seconds)
-    sport_type=check_sport_type(bike_check,mbike_check,run_check)
+    if session.get('user'):
+        #get mock data
+        input_data=pd.read_csv("test_calories1.csv")
+        user_data=input_data.iloc[:1]
+        print(user_data)
+        duration_seconds = int(user_data["duration"].tolist()[0])
+        distance = round(float(user_data["distance"].tolist()[0]),2)
+        avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[0]),0)
+        avg_speed = round(float(user_data["avg_speed"].tolist()[0]),2)
+        bike_check= int(user_data["sport_bike"].tolist()[0])
+        mbike_check= int(user_data["sport_mountain bike"].tolist()[0])
+        run_check= int(user_data["sport_run"].tolist()[0])
+        duration=cal_time(duration_seconds)
+        sport_type=check_sport_type(bike_check,mbike_check,run_check)
+        
+        print(distance)
+        system_time=str(datetime.now())
+        time=system_time.split('.')[0]
+        print(time)
+        #mike model
+        HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+        use_cuda=torch.cuda.is_available() 
+        HR_output = HR_track_model.predict()
+        output_pre, output_tar, x = '', '', "''"
+        for v in HR_output[0][0]:
+            output_pre = output_pre + str(v) + ','
+        for v in HR_output[0][1]:
+            output_tar = output_tar + str(v) + ','
+        output_pre, output_tar = output_pre[:-1], output_tar[:-1]
+        for i in range(50):
+            x = x + ", \"\""
+       
+        #oni model
+        acc_output = calories_cal_model.predict(input_data.iloc[:1])
+        print(acc_output)
+        actual_calories = int(acc_output)
+        return render_template("activitylog.html",actual_calories=actual_calories,
+        time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
+        avg_heart_rate=avg_heart_rate, heartrate_pre=output_pre, heartrate_tar=output_tar, 
+        xaxis=x)
+    else:
+        flash('只有登录后才能使用 //todo')
+        return redirect(url_for('login'))
+
     
-    print(distance)
-    system_time=str(datetime.now())
-    time=system_time.split('.')[0]
-    print(time)
-    #mike model
-    # HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
-    # use_cuda=torch.cuda.is_available() 
-    # HR_output = HR_track_model.predict()
-    # print(HR_output)
-    
-    #oni model
-    acc_output = calories_cal_model.predict(input_data.iloc[:1])
-    print(acc_output)
-    actual_calories = int(acc_output)
-    return render_template("activitylog.html",actual_calories=actual_calories,time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,avg_heart_rate=avg_heart_rate)
 
 def check_sport_type(bike_check,mbike_check,run_check):
     if bike_check == 1:
@@ -669,31 +667,125 @@ def cal_time(seconds):
     else:
         return "%02d:%02d:%02d" % (hours, mins, secs)
 
-
-#路由用户登录后显示的页面
-@app.route("/profile")
-def profile():        
-    return render_template("profile.html")
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    if g.user:
-        return redirect(url_for('profile'))
-
     if request.method == 'POST':
-        # login
-        session.pop('user_id', None)
-        username = request.form.get("username", None)
-        password = request.form.get("password", None)
-        print(username)
-        user = [u for u in users if u.username==username] #todo 替换成数据库
-        if len(user) > 0:
-            user = user[0]
-        if user and user.password == password:
-            session['user_id'] = user.id
-            return redirect(url_for('workoutRec'))
-        
+        db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
+        cursor = db.cursor()
+        username = request.form.get('username', None)
+        password = request.form.get('password', None)
+        sql = "select * from users where username= '{}'".format(username, encoding='utf-8') 
+        try:
+            # 执行sql语句
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            if (len(result)==0):
+                flash("The username does not exist!")
+                return redirect(url_for('login'))          
+            else:
+                if result[0][2] == md5(password.encode('utf-8')).hexdigest():
+                    print("Login successfully!") 
+                    session['user'] = request.form.get('username', None)
+                    return redirect(url_for('workoutRec'))
+                else:
+                    flash("Username or password is wrong!")
+                    return redirect(url_for('login'))
+            # 提交到数据库执行
+            db.commit()
+        except:
+            # 如果发生错误则回滚
+            traceback.print_exc()
+            db.rollback()
+        # 关闭数据库连接
+        db.close()
     return render_template("sign.html")
+
+@app.route("/signup", methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
+        cursor = db.cursor()
+        username = request.form.get('username', None)
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        repassword = request.form.get('repassword', None)
+        sql = "select * from users where username= '{}'".format(username, encoding='utf-8')
+        try:
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if result == None:
+                sql = 'INSERT INTO users (username, password, email) VALUES ("{}", "{}", "{}")'.format(username,md5(password.encode('utf-8')).hexdigest(), email, encoding='utf-8')
+                print (sql)
+                cursor.execute(sql)
+                flash("registered successfully, please sign in")
+                return redirect(url_for('login'))
+            else:
+                if result[0][2] == md5(password.encode('utf-8')).hexdigest():
+                    flash("please sign up with another name") 
+                    return redirect(url_for('signup'))
+                if username == None or password == None or email == None or repassword == None:
+                    flash("Username, password or email can not be null, please retype") 
+                    return redirect(url_for('signup'))
+                if password != repassword:
+                    flash("Inconsistency of password!")
+                    return redirect(url_for('signup'))
+                db.commit()
+        except:
+            # 如果发生错误则回滚
+            traceback.print_exc()
+            db.rollback()
+        # 关闭数据库连接
+        db.close()
+    return render_template("signup.html") 
+
+
+@app.route("/reset", methods=['GET', 'POST'])
+def reset():
+    if request.method == 'POST':     
+        db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic") #换成自己的root和password
+        cursor = db.cursor()
+        username = request.form.get('username', None)
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        repassword = request.form.get('repassword', None)
+        if len(password)>=6:
+            if password == repassword:
+                sql = "Update users SET password = '{}' WHERE username = '{}'".format(md5(password.encode('utf-8')).hexdigest(), username, encoding='utf-8') 
+                sql_2 = "Select * from users where username= '{}'".format(username, encoding='utf-8') 
+                try:          
+                    # 执行sql语句
+                    cursor.execute(sql_2)
+                    result = cursor.fetchall()
+                    if (len(result)==0):
+                        flash("The username does not exist!") 
+                        return redirect(url_for('reset'))     
+                    else:
+                        if result[0][3] == email:
+                            cursor.execute(sql)
+                            db.commit()
+                            print("Update successfully!") 
+                            return redirect(url_for('login'))
+                        else:
+                            flash("Wrong Email!")
+                            return redirect(url_for('reset'))         
+                except:
+                    # 如果发生错误则回滚
+                    traceback.print_exc()
+                    db.rollback()
+                # 关闭数据库连接
+                db.close()
+            else:
+                flash('Inconsistency of password!')
+                return redirect(url_for('reset'))
+        else:
+            flash("Password should be at least 6 characters in length")
+            return redirect(url_for('reset'))
+    return render_template("reset.html")  
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return render_template("homepage.html") 
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')

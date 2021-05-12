@@ -140,19 +140,18 @@ body {
 /* sign in hover */
 
   .menu-btn{
-      margin-left: 10px;
-     
+      margin-left: 30px;
+      
+      
   }
 
   .signin-btn{
+    color: #fff !important;
+    background: #f61b55;
     border-color: transparent;
     border-style: solid;
     border-width: 1px;
     padding: 13px 24px;
-    background: #fff; 
-    opacity: 1;
-    color: #333 !important;
-    border-color: #f61b55;
     transition-property: all;
     transition-duration: 0.5s;
     transition-timing-function: ease;
@@ -161,10 +160,10 @@ body {
   }
 
   .menu-btn a:hover{
-    background: #f61b55; 
+    background: #fff; 
     opacity: 1;
-    color: #fff !important;
-    border-color: transparent;
+    color: #333 !important;
+    border-color: #f61b55;
   }
 
   .txt{

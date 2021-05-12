@@ -1,0 +1,49 @@
+<html>
+     <!-- 引入 echarts.js -->
+ <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+<div id="main" style="width: 1000px; height: 500px"></div>
+<script>
+    window.onload = function(){
+        debugger
+        var chartDom = document.getElementById('main');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            animationDuration: 10000,
+            tooltip: {
+                trigger: 'axis'
+            },
+            title: [{
+                left: 'center',
+                text: 'heart rate real time monitoring'}
+            ],
+            xAxis: {
+                name: 'duration',
+                type: 'category',
+                data: [{{ xaxis | safe}}]
+            },
+            yAxis: {
+                name: 'heart rate',
+                type: 'value',
+                min: 140
+            },
+            series: [{
+                name: 'prediction',
+                data: [{{ heartrate_pre }}
+                ],
+                type: 'line'
+            },
+            {
+                name: 'ground truth',
+                data: [{{ heartrate_tar }}
+                ],
+                type: 'line'
+            }]
+        };
+
+        option && myChart.setOption(option);
+    };
+
+</script>
+</html>

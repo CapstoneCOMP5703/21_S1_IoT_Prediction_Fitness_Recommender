@@ -38,7 +38,12 @@
                     </li>
                     <li><a href="/activitylog">activity log</a></li>
                     <li class="menu-btn">
+                        Welcome {{session.user}} !
+                        {% if session.user %}
+                        <a href="/logout" class="signin-btn">log out</a>
+                        {% else %}
                         <a href="/login" class="signin-btn">sign in</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
@@ -46,96 +51,31 @@
     </header>
 
     <section class="logpage-area" style="background-image: url(images/log.jpg);">
-    <div class="log-area">
+    <div class="log-area"> 
         <div class="login">
             <form class="login-from" id="loginForm" method="POST" action="{{ url_for('login') }}">
                 <h1>Welcome to Fitastic</h1>
                 <div class="txt">
-                    <input type="text" name="username">
+                    <input type="text" name="username" required>
                     <span data-placeholder="Username"></span>
                 </div>
                 <div class="txt">
-                    <input type="password" name="password">
+                    <input type="password" name="password" required>
                     <span data-placeholder="Password"></span>
                 </div>
+                <div class="prompt">
+                    <h4>{{get_flashed_messages()[0]}}</h4>
+                </div>
                 <div>
-                    <input class="resetbtn" type="button" value="Forget your password?">
+                    <input class="resetbtn" type="button" onclick="location.href=('/reset')" value="Forget your password?">                       
                 </div>
                     <input class="logbtn" type="submit" value="Login">
                 <div class="btn_text">Don't have account? 
-                    <input class="signbtn" type="button" value="Sign up">
+                    <input class="signbtn" type="button" onclick="location.href=('/signup')" value="Sign up">
                 </div>
             </form>
         </div>
-        <div class="signup">
-            <form class="signup-from" method="POST" action="/signup">
-                <h1>Please Sign Up</h1>
-                <div class="txt">
-                    <input type="text" pattern="[A-Z]{1}[a-z]+">
-                    <span data-placeholder="Username"></span>
-                </div>
-                <div class="txt">
-                    <input type="email">
-                    <span data-placeholder="Email"></span>
-                </div>
-                <div class="txt">
-                    <input type="password">
-                    <span data-placeholder="Password"></span>
-                </div>
-                <div class="txt">
-                    <input type="password">
-                    <span data-placeholder="Please comfirm your password"></span>
-                </div>
-                <!-- <div>
-                    <span class="reset_txt">Reset Password Question</span>
-                    <select class="select_list" id="">
-                        <option value="option1">What is this course?</option>
-                        <option value="option2">Where is your hometown?</option>
-                        <option value="option3">What is your favorite song?</option>
-                    </select>
-                </div>
-                <div class="txt">
-                    <input type="text">
-                    <span data-placeholder="Answer"></span>
-                </div> -->
-                <input class="signupbtn" type="submit" value="Sign up">
-                <input class="signupbtn" type="reset" value="Clear">
-                <div class="sbtn_text">Already have account? 
-                    <input class="signbtn" type="button" value="Login!">
-                </div>
-            </form>
         </div>
-        <div class="resetIn">
-            <form class="reset-from" action="index.html">
-                <h1>Please Reset Your Password</h1>
-                <div class="txt">
-                    <input type="text">
-                    <span data-placeholder="Email"></span>
-                </div>
-                <div>
-                    <span class="reset_txt">Reset Password Question</span>
-                    <select class="select_list" id="">
-                        <option value="option1">What is this course?</option>
-                        <option value="option2">Where is your hometown?</option>
-                        <option value="option3">What is your favorite song?</option>
-                    </select>
-                </div>
-                <div class="txt">
-                    <input type="text">
-                    <span data-placeholder="Answer"></span>
-                </div>
-                <div class="txt">
-                    <input type="password">
-                    <span data-placeholder="New password"></span>
-                </div>
-                <input class="signupbtn" type="submit" value="Comfirm">
-                <input class="signupbtn" type="reset" value="Clear">
-                <div class="sbtn_text">Remember your password? 
-                    <input class="rbtn" type="button" value="Login!">
-                </div>
-            </form>
-        </div>
-    </div>
     </section>
 </body>
 </html>

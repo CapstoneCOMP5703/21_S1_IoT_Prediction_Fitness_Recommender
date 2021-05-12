@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="images/icon.png" type="image/x-icon">
 
     <!-- CSS Files -->
-    <link rel="stylesheet" type="text/css" href="css/login_main.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/workrec.css">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
@@ -42,7 +42,12 @@
                     </li>
                     <li><a href="/activitylog">activity log</a></li>
                     <li class="menu-btn">
-                        <a href="/login" class="signin-btn">Log Out</a>
+                        Welcome {{session.user}} !
+                        {% if session.user %}
+                        <a href="/logout" class="signin-btn">log out</a>
+                        {% else %}
+                        <a href="/login" class="signin-btn">sign in</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
