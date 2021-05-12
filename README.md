@@ -28,7 +28,8 @@ Fitastic is a LSTM based system that ultilizes the personal workout records with
 
 ### Configuration 2: Change sql configuration in app.py
 1. Open app.py: [https://github.com/CapstoneCOMP5703/CS25-2/blob/main/app.py](https://github.com/CapstoneCOMP5703/CS25-2/blob/main/users.sql)
-2. Change all mysql connection: `db = pymysql.connect(host="localhost",user="your_username",password="lyour_password",database="Fitastic")`
+2. Change all mysql connection: 
+`db = pymysql.connect(host="localhost",user="your_username",password="lyour_password",database="Fitastic")`
 
 ## Environment
 * python 3.8
