@@ -28,7 +28,7 @@
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
     <script>
         window.onload = function(){
-            debugger
+            // debugger
             var chartDom = document.getElementById('main');
             var myChart = echarts.init(chartDom);
             var option;
@@ -119,24 +119,36 @@
             <table class="report_table">
                 <tr>
                     <td><img src= "images/ic_al_time.png"></img></td>
-                    <td><table>
+                    <td><table class="inside_table">
                         <tr><td class="label">Sport Duration</td></tr>
                         <tr><td class="result">{{duration}}</td></tr>
                     </table></td>
                     <td><img src= "images/ic_al_cal.png"></img></td>
-                    <td><table>
+                    <td><table class="inside_table">
                         <tr><td class="label">Actual Calories Burned</td></tr>
                         <tr><td class="result">{{actual_calories}} kcal</td></tr>
                     </table></td>
                 </tr>
                 <tr>
+                    <td><img src= "images/ic_al_cal.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Expected Calories Burned</td></tr>
+                        <tr><td class="result">{{expected_calories}} kcal</td></tr>
+                    </table></td>
+                    <td><img src= "images/ic_al_cal.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">111</td></tr>
+                        <tr><td class="result">1111</td></tr>
+                    </table></td>
+                </tr>
+                <tr>
                     <td><img src= "images/ic_al_speed.png"></img></td>
-                    <td><table>
+                    <td><table class="inside_table">
                         <tr><td class="label">Average Speed</td></tr>
                         <tr><td class="result">{{avg_speed}}</td></tr>
                     </table></td>
                     <td><img src= "images/ic_al_heartrate.png"></img></td>
-                    <td><table>
+                    <td><table class="inside_table">
                         <tr><td class="label">Average Heart Rate</td></tr>
                         <tr><td class="result">{{avg_heart_rate}} BPM</td></tr>
                     </table></td>

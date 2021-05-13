@@ -1,3 +1,7 @@
+body{
+  text-align: center;
+}
+
 .banner-area{
   background-color: #b0b0b0;
   background-repeat: no-repeat;
@@ -49,6 +53,11 @@
     align-content: center;
   }
 
+  .report_table table td{
+    vertical-align: middle !important;
+    text-align: center;  
+  }
+
   .report_area h1{
     margin-top: 20px;
     font-size: 30px;
@@ -60,8 +69,14 @@
     margin-right: auto;
   }
 
+  tr{
+    text-align: center;
+    margin: auto;
+  }
   td {
-    text-align: left;
+    vertical-align: middle;
+    text-align: center;  
+    margin: auto;
   }
 
   img{
@@ -83,6 +98,11 @@
     font-size: large ;
   }
 
+  .inside_table{
+    align-items: center;
+    text-align: center;
+    margin: auto;
+  }
 
 
 
