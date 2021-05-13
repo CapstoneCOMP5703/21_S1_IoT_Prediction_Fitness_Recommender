@@ -52,12 +52,26 @@ def sportrec_model():
     if(calories < 100):
         flash('That is not enough for you, try more calories!')
         return render_template("workoutrec.html",)
+    
+    session['user_input_calories']=calories
 
     rf.load_data_from_path('./testdata.csv')
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
-    data=rf.predict_data(1111116, calories)
+    if session.get('user'):
+        data=rf.predict_data(session.get('userId'), calories)
+    else:
+        data=rf.predict_data(1, calories)
+        #flash 一个新用户的话
+    
+    #todo动态推荐
 
     run_time,bike_time,mbike_time=readsplitdata(data)
+    if run_time != "":
+        flash('run')
+    if bike_time != "":
+        flash('bike')
+    if mbike_time != "":
+        flash('mbike')
 
     return render_template("workrec_result.html",run_time=run_time,
                             bike_time=bike_time,mbike_time=mbike_time)
@@ -175,6 +189,11 @@ def append_list(header,input_list,start,end):
     for i in range(start,end):
         header.append(input_list[i])
     return header
+
+def append_url(header,input_list,start,end):
+    for i in range(start,end):
+        header.append(input_list[i])
+    return header
 def splitMeal(data):
     length=len(data)
     breakfast_num=0
@@ -193,6 +212,14 @@ def splitMeal(data):
             dessert_num=dessert_num+1
     return breakfast_num,lunch_num,dinner_num,dessert_num
 def generateBreakfastDataFrame(diet_data,breakfast_num):
+    
+    data_url=['Image']
+    # url=''.join(diet_data.get('img_urls'))
+    # print(url)
+    # urls = url.split(',')
+    # data_url.append(urls[0])
+    append_list(data_url,diet_data.get('img_urls'),0,breakfast_num)
+
     data_name=["Meal"]
     append_list(data_name,diet_data.get('Name'),0,breakfast_num)
 
@@ -202,7 +229,7 @@ def generateBreakfastDataFrame(diet_data,breakfast_num):
     data_cal=["Meal Calories"]
     append_list(data_cal,diet_data.get('Calorie_num'),0,breakfast_num)
 
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    df = pd.DataFrame(data=[data_url,data_name,data_cal,data_Ingredients_list])
     return df
 def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
     data_name=["Meal"]
@@ -607,6 +634,8 @@ def regenerate_dessert():
 @app.route("/activitylog")
 def activitylog(): 
     if session.get('user'):
+
+        calories = int(session.get('user_input_calories'))
         #get mock data
         input_data=pd.read_csv("test_calories1.csv")
         user_data=input_data.iloc[:1]
@@ -685,6 +714,7 @@ def login():
             else:
                 if result[0][2] == md5(password.encode('utf-8')).hexdigest():
                     print("Login successfully!") 
+                    session['userId'] = result[0][0]
                     session['user'] = request.form.get('username', None)
                     return redirect(url_for('workoutRec'))
                 else:
@@ -722,9 +752,6 @@ def signup():
             else:
                 if result[0][2] == md5(password.encode('utf-8')).hexdigest():
                     flash("please sign up with another name") 
-                    return redirect(url_for('signup'))
-                if username == None or password == None or email == None or repassword == None:
-                    flash("Username, password or email can not be null, please retype") 
                     return redirect(url_for('signup'))
                 if password != repassword:
                     flash("Inconsistency of password!")

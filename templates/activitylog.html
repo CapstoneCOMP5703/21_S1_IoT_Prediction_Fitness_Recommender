@@ -34,6 +34,7 @@
             var option;
 
             option = {
+                legend: {x:'right' },
                 animationDuration: 10000,
                 tooltip: {
                     trigger: 'axis'
@@ -55,7 +56,8 @@
                 series: [{
                     name: 'prediction',
                     data: [{{ heartrate_pre }}],
-                    type: 'line'
+                    type: 'line',
+                    symbolSize: 0
                 },
                 {
                     name: 'ground truth',

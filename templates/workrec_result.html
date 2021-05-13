@@ -72,33 +72,62 @@
     <section class="workrec_content">
         <h2>We have these personalized workout recommendations for you!</br>Select one to start!</h2>
         <table class="table_rec">
-            <tr>
-                <th id="th1">
-                    <a id="user_select_run" type="submit" href="/activitylog">
-                        <button style="background: url(images/running2.jpg);background-size: cover;"></button>
-                    </a>
-                </th>
-                <th>
-                    <a id="user_select_bile" type="submit" href="/activitylog">
-                        <button style="background: url(images/biking.jpg);background-size: cover;"></button>
-                    </a>
-                </th>
-                <th>
-                    <a id="user_select_mbike" type="submit" href="/activitylog">
-                        <button style="background: url(images/mountain_biking.png);background-size: cover;"></button>
-                    </a>
-                </th>
-            </tr>
-            <tr>
-                <td>Running</td>
-                <td>Biking</td>
-                <td>Mountain Biking</td>
-            </tr>
-            <tr>
-                <td>{{run_time}} mins</td>
-                <td>{{bike_time}} mins </td>
-                <td>{{mbike_time}} mins</td>
-            </tr>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}           
+                <tr>
+                    {% for message in messages %}
+                    {% if message == 'run'%} 
+                    <th id="th1">
+                        <a id="user_select_run" type="submit" href="/activitylog">
+                            <button style="background: url(images/running2.jpg);background-size: cover;"></button>
+                        </a>
+                    </th>
+                    {%endif%}
+                    {% if message == 'bike'%} 
+                    <th>
+                        <a id="user_select_bile" type="submit" href="/activitylog">
+                            <button style="background: url(images/biking.jpg);background-size: cover;"></button>
+                        </a>
+                    </th>
+                    {%endif%}
+                    {% if message == 'mbike'%} 
+                    <th>
+                        <a id="user_select_mbike" type="submit" href="/activitylog">
+                            <button style="background: url(images/mountain_biking.png);background-size: cover;"></button>
+                        </a>
+                    </th>
+                    {%endif%}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for message in messages %}
+                    {% if message == 'run'%} 
+                        <td>Running</td>
+                    {%endif%}
+                    {% if message == 'bike'%} 
+                        <td>Biking</td>
+                    {%endif%}
+                    {% if message == 'mbike'%} 
+                    <td>Mountain Biking</td>
+                    {%endif%}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for message in messages %}
+                    {% if message == 'run'%} 
+                        <td>{{run_time}} mins</td>
+                    {%endif%}
+                    {% if message == 'bike'%} 
+                        <td>{{bike_time}} mins</td>
+                    {%endif%}
+                    {% if message == 'mbike'%} 
+                    <td>{{mbike_time}} mins</td>
+                    {%endif%}
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% endwith %}   
+                {% block body %}{% endblock %}
         </table>
         <form class="user_regenerate" action="/workoutrec" method="POST">
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
