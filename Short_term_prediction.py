@@ -14,6 +14,8 @@ import os
 import multiprocessing
 from multiprocessing import Pool
 
+from heartrate_predict import dataInterpreter_predict
+
 use_cuda = torch.cuda.is_available()
 
 class dataInterpreter(object):
@@ -1037,20 +1039,28 @@ class da_rnn:
         loss = self.loss_func(y_pred, y_target)
 
         return loss.data.item()
-    
-    def predict(self):
-        testDataGen = self.endo_reader.generator_for_autotrain(self.batch_size, self.num_steps, "test")
+
+    def predict(self, id):
+        predict_reader = dataInterpreter_predict(self.T, self.inputAtts, self.includeUser, self.includeSport,
+                                                 self.includeTemporal, self.targetAtts,
+                                                 trimmed_workout_len=self.trimmed_workout_len,
+                                                 predictFN='./predict_v2.pkl')
+
+        predict_reader.preprocess_data(id)
+
+        testDataGen = predict_reader.generator_for_autotrain(self.batch_size, self.num_steps)
         test_loss = 0
         test_batch_num = 0
         result = []
-        
+
         for test_batch in testDataGen:
             result_temp = []
             self.encoder.eval()
             self.context_encoder.eval()
             self.decoder.eval()
 
-            attr_inputs, context_input_1, context_input_2, input_variable, y_history, y_target = self.get_batch(test_batch) 
+            attr_inputs, context_input_1, context_input_2, input_variable, y_history, y_target = self.get_batch(
+                test_batch)
             context_embedding = self.context_encoder(context_input_1, context_input_2)
             input_weighted, input_encoded = self.encoder(attr_inputs, context_embedding, input_variable)
             y_pred = self.decoder(input_encoded, y_history)
