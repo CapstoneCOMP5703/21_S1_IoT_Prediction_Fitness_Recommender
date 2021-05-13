@@ -158,9 +158,6 @@ def dietrec_model():
         # df_merge = pd.merge(df_b, df_breakfast,left_on=None, right_on=None, left_index=False, right_index=False)
         # df_html_b = df_merge.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
 
-
-
-
         df_breakfast= generateBreakfastDataFrame(diet_data,breakfast_num)
         df_b=df_breakfast.T
         print(df_b)
@@ -218,7 +215,7 @@ def dietrec_model():
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
     label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert,image_url=url)
+    label_tdessert=label_tdessert)
 
 def getBreakfastImageUrls(diet_data,breakfast_num):
     img_list=[]
