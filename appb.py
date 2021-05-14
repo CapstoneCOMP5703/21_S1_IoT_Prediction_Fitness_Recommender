@@ -9,6 +9,7 @@ import pandas as pd
 
 from pyecharts import options as opts
 from pyecharts.charts import Line
+from jinja2 import Markup
 
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
@@ -51,7 +52,7 @@ def sportrec_model():
     calories=int(calories_get) 
     #limit user input
     if(calories > 1000):
-        flash('That is too much for you, try fewer calories!')
+        flash('That is to0 much for you, try fewer calories!')
         return render_template("workoutrec.html",)
     if(calories < 100):
         flash('That is not enough for you, try more calories!')
@@ -152,26 +153,11 @@ def dietrec_model():
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast,breakfast_Ingredients_list=generateBreakfastDataFrame(diet_data,breakfast_num)
-        df_breakfast=df_breakfast.T
+        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
         df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
-        
-        # output_b_a=get_ingredients(breakfast_Ingredients_list[0])
-        # output_b_b=get_ingredients(breakfast_Ingredients_list[1])
-        # output_b_c=get_ingredients(breakfast_Ingredients_list[2])
-        # output_b_d=get_ingredients(breakfast_Ingredients_list[3])
-        # output_b_e=get_ingredients(breakfast_Ingredients_list[4])
-
-        output=''
-        for i in range(0,breakfast_num):
-            output_new=output+str(i)
-            output_new=get_ingredients(breakfast_Ingredients_list[i])
-        print(output_new)
-        
-
     else:
         df_html_b=''
         label_tbreakfast=''
@@ -209,20 +195,7 @@ def dietrec_model():
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
     label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert
-    # output_b_a=output_b_a,output_b_b=output_b_b,
-    # output_b_c=output_b_c,output_b_d=output_b_d,output_b_e=output_b_e
-    )
-
-def get_ingredients(breakfast_Ingredients_list):
-    length = len(breakfast_Ingredients_list)
-    output=""
-    for i in range(0,length):
-        ingredients=[]
-        ingredients.append(breakfast_Ingredients_list[i].replace("[","").replace("]","").replace("'",""))
-        output=output+ingredients[0]+'</br>'
-    output='<a> '+ output + '</a>'
-    return output
+    label_tdessert=label_tdessert)
 
 def push_img_urls(images):
     image_url=[]
@@ -260,17 +233,11 @@ def getDessertImageUrls(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num
     return img_list
 
 def path_to_image_html(path):
-    return '<img src="'+ path + '" width="60";background-size: cover; >'
-
-def append_name(header,input_list,start,end):
-    for i in range(start,end):
-        header.append(input_list[i])
-    return header
+    return '<img src="'+ path + '" width="60"   background-position: center center; background-size: cover;>'
 
 def append_list(header,input_list,start,end):
     for i in range(start,end):
-        input_lists = input_list[i].split(',')
-        header.append(input_lists)
+        header.append(input_list[i])
     return header
 
 def append_cal(header,input_list,start,end):
@@ -300,7 +267,7 @@ def splitMeal(data):
 
 def generateBreakfastDataFrame(diet_data,breakfast_num):
     data_name=[]
-    append_name(data_name,diet_data.get('Name'),0,breakfast_num)
+    append_list(data_name,diet_data.get('Name'),0,breakfast_num)
 
     data_Ingredients_list=[]
     append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),0,breakfast_num)
@@ -310,8 +277,7 @@ def generateBreakfastDataFrame(diet_data,breakfast_num):
 
     df = pd.DataFrame(data=[data_name,data_cal])
    
-    return df,data_Ingredients_list
-
+    return df
 def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
     data_name=[]
     append_list(data_name,diet_data.get('Name'),breakfast_num,breakfast_num+lunch_num)
@@ -322,9 +288,8 @@ def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
     data_cal=[]
     append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num,breakfast_num+lunch_num)
 
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    df = pd.DataFrame(data=[data_name,data_cal])
     return df   
-    
 def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
     data_name=[]
     append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
@@ -335,9 +300,8 @@ def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
     data_cal=[]
     append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
 
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    df = pd.DataFrame(data=[data_name,data_cal])
     return df
-    
 def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num):
     data_name=[]
     append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
@@ -348,7 +312,7 @@ def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,desser
     data_cal=[]
     append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
 
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
+    df = pd.DataFrame(data=[data_name,data_cal])
     return df
 
 @app.route("/regenerate_all",methods=['GET', 'POST'])
@@ -731,7 +695,7 @@ def regenerate_dessert():
 @app.route("/activitylog")
 def activitylog(): 
     #only logged user can use this function
-    if session.get('user'):
+    # if session.get('user'):
         expected_calories = session.get('user_input_calories')
         #user should select one sport before this page
         if expected_calories == None:
@@ -758,38 +722,29 @@ def activitylog():
             HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
             use_cuda=torch.cuda.is_available() 
             HR_output = HR_track_model.predict()
+            #get mock speed data
+            speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
+            mock_data = speed_altitude_mock.iloc[1]
+            sport = mock_data["sport"]
+            speed = mock_data["speed"]
+            altitude = mock_data["altitude"]
             #set echarts
-            output_pre, output_tar, x = '', '', "''"
-            for v in HR_output[0][0]:
-                output_pre = output_pre + str(v) + ','
-            for v in HR_output[0][1]:
-                output_tar = output_tar + str(v) + ','
-            output_pre, output_tar = output_pre[:-1], output_tar[:-1]
+            x = []
             for i in range(50):
-                x = x + ", \"\""
-        
+                x.append('')
             #Fit-track model
-
-            # 您本次消耗500kcal
-            # 如果您的体重在       数值
-            # 40-50               80
-            # 50-60               70
-            # 60-70               40
-            # 80-90               39
-
-            # 0-20 是什么什么
-            # 21-50 是什么什么
-
             acc_output = calories_cal_model.predict(input_data.iloc[:1])
             actual_calories = int(acc_output)
             return render_template("activitylog.html",actual_calories=actual_calories,
             time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
             avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
-            heartrate_pre=output_pre, heartrate_tar=output_tar,xaxis=x
+            heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
+            xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
+            sport=Markup(json.dumps(sport))
             )   
-    else:
-        flash('Sorry, please log in to use this function!')
-        return redirect(url_for('login'))
+    # else:
+    #     flash('Sorry, please log in to use this function!')
+    #     return redirect(url_for('login'))
 
 def check_sport_type(bike_check,mbike_check,run_check):
     if bike_check == 1:

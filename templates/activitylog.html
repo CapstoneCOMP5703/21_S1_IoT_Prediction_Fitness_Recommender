@@ -29,11 +29,13 @@
     <script>
         window.onload = function(){
             // debugger
-            var chartDom = document.getElementById('main');
-            var myChart = echarts.init(chartDom);
-            var option;
+            var chartDom1 = document.getElementById('main1');
+            var myChart1 = echarts.init(chartDom1);
+            var chartDom2 = document.getElementById('main2');
+            var myChart2 = echarts.init(chartDom2);
+            var option1,option2;
 
-            option = {
+            option1 = {
                 legend: {x:'right' },
                 animationDuration: 10000,
                 tooltip: {
@@ -41,12 +43,45 @@
                 },
                 title: [{
                     left: 'center',
-                    text: 'Heart Rate Real-time Monitoring'}
+                    text: 'Workout Speed and Altitude detection('+ {{ sport }} +')'}
+                ],
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: {{ xaxis }}
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    name: 'altitude',
+                    data: {{ altitude }},
+                    type: 'line',
+                    areaStyle: {},
+                    symbolSize: 0
+                },
+                {
+                    name: 'speed',
+                    data: {{ speed }},
+                    type: 'line',
+                    symbolSize: 0
+                }]
+            };
+
+            option2 = {
+                legend: {x:'right' },
+                animationDuration: 10000,
+                tooltip: {
+                    trigger: 'axis'
+                },
+                title: [{
+                    left: 'center',
+                    text: 'heart rate real time monitoring'}
                 ],
                 xAxis: {
                     name: 'duration',
                     type: 'category',
-                    data: [{{ xaxis | safe}}]
+                    data: {{ xaxis }}
                 },
                 yAxis: {
                     name: 'heart rate',
@@ -55,18 +90,19 @@
                 },
                 series: [{
                     name: 'prediction',
-                    data: [{{ heartrate_pre }}],
+                    data: {{ heartrate_pre }},
                     type: 'line',
                     symbolSize: 0
                 },
                 {
                     name: 'ground truth',
-                    data: [{{ heartrate_tar }}
-                    ],
-                    type: 'line'
+                    data: {{ heartrate_tar }},
+                    type: 'line',
+                    symbolSize: 0
                 }]
             };
-            option && myChart.setOption(option);
+            option1 && myChart1.setOption(option1);
+            option2 && myChart2.setOption(option2);
         };
     </script>    
 </head>
@@ -114,8 +150,8 @@
         <div class="report">
             <a>{{time}}</a>
             <h1>{{distance}} <a class="label_report"> Kilometres</a></h1>      
-            <div id="main" style="width: 1000px; height: 500px"></div>            
-                  
+            <div id="main1" style="width: 1000px; height: 500px"></div>            
+            <div id="main2" style="width: 1000px; height: 300px"></div>     
             <table class="report_table">
                 <tr>
                     <td><img src= "images/ic_al_time.png"></img></td>
@@ -129,7 +165,7 @@
                         <tr><td class="result">{{actual_calories}} kcal</td></tr>
                     </table></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td><img src= "images/ic_al_cal.png"></img></td>
                     <td><table class="inside_table">
                         <tr><td class="label">Expected Calories Burned</td></tr>
@@ -140,7 +176,7 @@
                         <tr><td class="label">111</td></tr>
                         <tr><td class="result">1111</td></tr>
                     </table></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td><img src= "images/ic_al_speed.png"></img></td>
                     <td><table class="inside_table">

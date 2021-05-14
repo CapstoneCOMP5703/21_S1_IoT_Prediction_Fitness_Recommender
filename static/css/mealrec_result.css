@@ -119,11 +119,13 @@
   align-content: center;
 }
 
+
 table td, table th{
   border: 1px solid #C0C0C0;
+  border-radius: 5px 2px;
   color: #21373d;
   height: 30px;
-  width: 300px;
+  width: 250px;
 }
 
 table thead th{
@@ -131,25 +133,36 @@ table thead th{
   width: 100px;
 }
 
+.table_rec tbody tr td{
+  text-align: center;
+}
+
 
 table td img{
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   display:block;
+  border-radius: 5px 2px;
+  margin: 10px auto;
+  background-position: center center; 
+  background-size: cover;
+  box-shadow:rgba(0,0,0,0.2) 0 1px 5px 0px;
 }
+
+
 
 .contain_re{
   width: auto;
 }
 .contain_re .re_left{
   float: left;
-  margin: 0 0 50px 20%;
+  margin: 0 0 50px 10%;
   
 }
 
 .contain_re .re_right{
   float: right;
-  margin: 0 20% 50px 0;
+  margin: 0 10% 50px 0;
 }
 .regenerate_btn_left{
   width: fit-content;

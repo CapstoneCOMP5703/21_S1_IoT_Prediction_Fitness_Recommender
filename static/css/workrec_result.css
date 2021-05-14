@@ -120,4 +120,8 @@
     border-color: #f61b55;
   }
   
+  .sport_img{
+    border-radius: 5px 2px;
+    box-shadow:rgba(0,0,0,0.2) 0 1px 5px 0px;
+  }
   

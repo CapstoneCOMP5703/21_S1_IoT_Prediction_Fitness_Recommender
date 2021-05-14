@@ -1,15 +1,52 @@
 <html>
      <!-- 引入 echarts.js -->
- <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
-<div id="main" style="width: 1000px; height: 500px"></div>
+	<script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+<div id="main1" style="width: 1000px; height: 300px"></div>
+     <div id="main2" style="width: 1000px; height: 300px"></div>
 <script>
     window.onload = function(){
         debugger
-        var chartDom = document.getElementById('main');
-        var myChart = echarts.init(chartDom);
-        var option;
+        var chartDom1 = document.getElementById('main1');
+        var myChart1 = echarts.init(chartDom1);
+        var chartDom2 = document.getElementById('main2');
+        var myChart2 = echarts.init(chartDom2);
+        var option1,option2;
 
-        option = {
+        option1 = {
+            legend: {x:'right' },
+            animationDuration: 10000,
+            tooltip: {
+                trigger: 'axis'
+            },
+            title: [{
+                left: 'center',
+                text: 'Workout Speed and Altitude detection('+ {{ sport }} +')'}
+            ],
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: {{ xaxis }}
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                name: 'altitude',
+                data: {{ altitude }},
+                type: 'line',
+                areaStyle: {},
+                symbolSize: 0
+            },
+            {
+                name: 'speed',
+                data: {{ speed }},
+                type: 'line',
+                symbolSize: 0
+            }]
+        };
+
+        option2 = {
+            legend: {x:'right' },
             animationDuration: 10000,
             tooltip: {
                 trigger: 'axis'
@@ -21,7 +58,7 @@
             xAxis: {
                 name: 'duration',
                 type: 'category',
-                data: [{{ xaxis | safe}}]
+                data: {{ xaxis }}
             },
             yAxis: {
                 name: 'heart rate',
@@ -30,19 +67,19 @@
             },
             series: [{
                 name: 'prediction',
-                data: [{{ heartrate_pre }}
-                ],
-                type: 'line'
+                data: {{ heartrate_pre }},
+                type: 'line',
+                symbolSize: 0
             },
             {
                 name: 'ground truth',
-                data: [{{ heartrate_tar }}
-                ],
-                type: 'line'
+                data: {{ heartrate_tar }},
+                type: 'line',
+                symbolSize: 0
             }]
         };
-
-        option && myChart.setOption(option);
+        option1 && myChart1.setOption(option1);
+        option2 && myChart2.setOption(option2);
     };
 
 </script>
