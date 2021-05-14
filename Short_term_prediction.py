@@ -1040,7 +1040,29 @@ class da_rnn:
 
         return loss.data.item()
 
-    def predict(self, id):
+    def predict(self):
+        testDataGen = self.endo_reader.generator_for_autotrain(self.batch_size, self.num_steps, "test")
+        test_loss = 0
+        test_batch_num = 0
+        result = []
+
+        for test_batch in testDataGen:
+            result_temp = []
+            self.encoder.eval()
+            self.context_encoder.eval()
+            self.decoder.eval()
+
+            attr_inputs, context_input_1, context_input_2, input_variable, y_history, y_target = self.get_batch(
+                test_batch)
+            context_embedding = self.context_encoder(context_input_1, context_input_2)
+            input_weighted, input_encoded = self.encoder(attr_inputs, context_embedding, input_variable)
+            y_pred = self.decoder(input_encoded, y_history)
+            result_temp.append(y_pred.detach().cpu().numpy().tolist())
+            result_temp.append(y_target.detach().cpu().numpy().tolist())
+            result.append(result_temp)
+        return result
+
+    def predict_v2(self, id):
         predict_reader = dataInterpreter_predict(self.T, self.inputAtts, self.includeUser, self.includeSport,
                                                  self.includeTemporal, self.targetAtts,
                                                  trimmed_workout_len=self.trimmed_workout_len,
