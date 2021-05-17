@@ -15,6 +15,7 @@ from jinja2 import Markup
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
+db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
 
 from SportRec_v2 import Model
 rf=Model()
@@ -29,6 +30,8 @@ import torch
 import pickle
 import pandas as pd
 calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
+
+HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
 
 #homepage
 @app.route("/")
@@ -53,7 +56,7 @@ def sportrec_model():
     calories=int(calories_get) 
     #limit user input
     if(calories > 1000):
-        flash('That is to0 much for you, try fewer calories!')
+        flash('That is too much for you, try fewer calories!')
         return render_template("workoutrec.html",)
     if(calories < 100):
         flash('That is not enough for you, try more calories!')
@@ -144,18 +147,22 @@ def dietrec_model():
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
 
     #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+    diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
     session['diet_list']=diet_list
 
     meal_type=diet_data.get('Meal_Type')
     #read how many meals user selected
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
 
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -165,8 +172,8 @@ def dietrec_model():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -175,8 +182,8 @@ def dietrec_model():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -185,8 +192,8 @@ def dietrec_model():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
@@ -205,31 +212,10 @@ def push_img_urls(images):
         image_url.append(image_to_html)
     return image_url
 
-def getBreakfastImageUrls(diet_data,breakfast_num):
+def getMealImageUrls(diet_data,start,end):
     img_list=[]
     data_img_urls=diet_data.get('img_urls') 
-    for i in range(0,breakfast_num):
-        img_list.append(data_img_urls[i])
-    return img_list
-
-def getLunchImageUrls(diet_data,breakfast_num,lunch_num):
-    img_list=[]
-    data_img_urls=diet_data.get('img_urls') 
-    for i in range(breakfast_num,breakfast_num+lunch_num):
-        img_list.append(data_img_urls[i])
-    return img_list
-
-def getDinnerImageUrls(diet_data,breakfast_num,lunch_num,dinner_num):
-    img_list=[]
-    data_img_urls=diet_data.get('img_urls') 
-    for i in range(breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num):
-        img_list.append(data_img_urls[i])
-    return img_list
-
-def getDessertImageUrls(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num):
-    img_list=[]
-    data_img_urls=diet_data.get('img_urls') 
-    for i in range(breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num):
+    for i in range(start,end):
         img_list.append(data_img_urls[i])
     return img_list
 
@@ -266,54 +252,18 @@ def splitMeal(data):
             dessert_num=dessert_num+1
     return breakfast_num,lunch_num,dinner_num,dessert_num
 
-def generateBreakfastDataFrame(diet_data,breakfast_num):
+def generateMealDataFrame(diet_data,start,end):
     data_name=[]
-    append_list(data_name,diet_data.get('Name'),0,breakfast_num)
+    append_list(data_name,diet_data.get('Name'),start,end)
 
     data_Ingredients_list=[]
-    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),0,breakfast_num)
+    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),start,end)
 
     data_cal=[]
-    append_cal(data_cal,diet_data.get('Calorie_num'),0,breakfast_num)
+    append_cal(data_cal,diet_data.get('Calorie_num'),start,end)
 
     df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
    
-    return df
-def generateLunchDataFrame(diet_data,breakfast_num,lunch_num):
-    data_name=[]
-    append_list(data_name,diet_data.get('Name'),breakfast_num,breakfast_num+lunch_num)
-
-    data_Ingredients_list=[]
-    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num,breakfast_num+lunch_num)
-
-    data_cal=[]
-    append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num,breakfast_num+lunch_num)
-
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
-    return df   
-def generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num):
-    data_name=[]
-    append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
-
-    data_Ingredients_list=[]
-    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
-
-    data_cal=[]
-    append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num,breakfast_num+lunch_num+dinner_num)
-
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
-    return df
-def generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num):
-    data_name=[]
-    append_list(data_name,diet_data.get('Name'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
-
-    data_Ingredients_list=[]
-    append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
-
-    data_cal=[]
-    append_cal(data_cal,diet_data.get('Calorie_num'),breakfast_num+lunch_num+dinner_num,breakfast_num+lunch_num+dinner_num+dessert_num)
-
-    df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
     return df
 
 @app.route("/regenerate_all",methods=['GET', 'POST'])
@@ -344,12 +294,16 @@ def regenerate_all():
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
 
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -359,8 +313,8 @@ def regenerate_all():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -369,8 +323,8 @@ def regenerate_all():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -379,8 +333,8 @@ def regenerate_all():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
@@ -419,12 +373,16 @@ def regenerate_breakfast():
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
 
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -434,8 +392,8 @@ def regenerate_breakfast():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -444,8 +402,8 @@ def regenerate_breakfast():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -454,8 +412,8 @@ def regenerate_breakfast():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
@@ -495,11 +453,16 @@ def regenerate_lunch():
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
 
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
+
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -509,8 +472,8 @@ def regenerate_lunch():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -519,8 +482,8 @@ def regenerate_lunch():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -529,8 +492,8 @@ def regenerate_lunch():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
@@ -569,12 +532,16 @@ def regenerate_dinner():
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
 
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -584,8 +551,8 @@ def regenerate_dinner():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -594,8 +561,8 @@ def regenerate_dinner():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -604,14 +571,14 @@ def regenerate_dinner():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
         df_html_dessert=''
         label_tdessert=''
-    
+
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
     label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
@@ -644,12 +611,16 @@ def regenerate_dessert():
 
     meal_type=diet_data.get('Meal_Type')
     breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
 
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateBreakfastDataFrame(diet_data,breakfast_num).T
-        df_breakfast.insert(0,'images',push_img_urls(getBreakfastImageUrls(diet_data, breakfast_num)))
+        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
         label_tbreakfast = 'Recommonded Breakfast'
@@ -659,8 +630,8 @@ def regenerate_dessert():
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateLunchDataFrame(diet_data,breakfast_num,lunch_num).T
-        df_lunch.insert(0,'images',push_img_urls(getLunchImageUrls(diet_data, breakfast_num,lunch_num)))
+        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tlunch='Recommonded Lunch'
     else:
@@ -669,8 +640,8 @@ def regenerate_dessert():
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateDinnerDataFrame(diet_data,breakfast_num,lunch_num,dinner_num).T
-        df_dinner.insert(0,'images',push_img_urls(getDinnerImageUrls(diet_data, breakfast_num, lunch_num,dinner_num)))
+        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdinner='Recommonded Dinner'
     else:
@@ -679,14 +650,13 @@ def regenerate_dessert():
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateDessertDataFrame(diet_data,breakfast_num,lunch_num,dinner_num,dessert_num).T
-        df_dessert.insert(0,'image',push_img_urls(getDessertImageUrls(diet_data, breakfast_num, lunch_num,dinner_num,dessert_num)))
+        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
         label_tdessert='Recommonded Dessert'
     else:
         df_html_dessert=''
         label_tdessert=''
-    
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
     label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
@@ -696,7 +666,7 @@ def regenerate_dessert():
 @app.route("/activitylog")
 def activitylog(): 
     #only logged user can use this function
-    # if session.get('user'):
+    if session.get('user'):
         expected_calories = session.get('user_input_calories')
         #user should select one sport before this page
         if expected_calories == None:
@@ -720,7 +690,6 @@ def activitylog():
             time=system_time.split('.')[0]
 
             #HR-track model
-            HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
             use_cuda=torch.cuda.is_available() 
             HR_output = HR_track_model.predict()
             #get mock speed data
@@ -745,9 +714,9 @@ def activitylog():
             xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
             sport=Markup(json.dumps(sport))
             )   
-    # else:
-    #     flash('Sorry, please log in to use this function!')
-    #     return redirect(url_for('login'))
+    else:
+        flash('Sorry, please log in to use this function!')
+        return redirect(url_for('login'))
 
 def check_sport_type(bike_check,mbike_check,run_check):
     if bike_check == 1:
@@ -768,7 +737,6 @@ def cal_time(seconds):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
         cursor = db.cursor()
         username = request.form.get('username', None)
         password = request.form.get('password', None)
@@ -802,7 +770,6 @@ def login():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        db = pymysql.connect(host="localhost",user="root",password="12345678",database="Fitastic")
         cursor = db.cursor()
         username = request.form.get('username', None)
         email = request.form.get('email', None)
@@ -819,7 +786,7 @@ def signup():
                 sql = 'INSERT INTO users (username, password, email) VALUES ("{}", "{}", "{}")'.format(username,md5(password.encode('utf-8')).hexdigest(), email, encoding='utf-8')
                 cursor.execute(sql)
                 db.commit()
-                flash("registered successfully, please sign in")
+                flash("Register successfully, please sign in")
                 return redirect(url_for('login'))
             else:
                 if result[0]!= 0:
@@ -828,15 +795,13 @@ def signup():
                 db.commit()
         except Exception as err:
             print(err)
-        # 关闭数据库连接
+        # 关闭数据库连接    
         db.close()
     return render_template("signup.html")
-
 
 @app.route("/reset", methods=['GET', 'POST'])
 def reset():
     if request.method == 'POST':     
-        db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic") #换成自己的root和password
         cursor = db.cursor()
         username = request.form.get('username', None)
         email = request.form.get('email', None)

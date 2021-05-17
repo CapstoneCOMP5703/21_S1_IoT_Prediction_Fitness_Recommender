@@ -28,7 +28,7 @@
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
     <script>
         window.onload = function(){
-            // debugger
+            debugger
             var chartDom1 = document.getElementById('main1');
             var myChart1 = echarts.init(chartDom1);
             var chartDom2 = document.getElementById('main2');
@@ -43,7 +43,7 @@
                 },
                 title: [{
                     left: 'center',
-                    text: 'Workout Speed and Altitude detection('+ {{ sport }} +')'}
+                    text: 'Workout Speed and Altitude Detection'}
                 ],
                 xAxis: {
                     type: 'category',
@@ -54,14 +54,14 @@
                     type: 'value'
                 },
                 series: [{
-                    name: 'altitude',
+                    name: 'Altitude (km)',
                     data: {{ altitude }},
                     type: 'line',
                     areaStyle: {},
                     symbolSize: 0
                 },
                 {
-                    name: 'speed',
+                    name: 'Speed (km/h)',
                     data: {{ speed }},
                     type: 'line',
                     symbolSize: 0
@@ -76,26 +76,26 @@
                 },
                 title: [{
                     left: 'center',
-                    text: 'heart rate real time monitoring'}
+                    text: 'Real-time Heart Rate Monitoring'}
                 ],
                 xAxis: {
-                    name: 'duration',
+                    name: 'Duration',
                     type: 'category',
                     data: {{ xaxis }}
                 },
                 yAxis: {
-                    name: 'heart rate',
+                    name: 'Heart Rate (BPM)',
                     type: 'value',
                     min: 140
                 },
                 series: [{
-                    name: 'prediction',
+                    name: 'Prediction',
                     data: {{ heartrate_pre }},
                     type: 'line',
                     symbolSize: 0
                 },
                 {
-                    name: 'ground truth',
+                    name: 'Actual',
                     data: {{ heartrate_tar }},
                     type: 'line',
                     symbolSize: 0
@@ -128,6 +128,7 @@
                         <a href="/logout" class="signin-btn">log out</a>
                         {% else %}
                         <a href="/login" class="signin-btn">sign in</a>
+                        <a href="/signup" class="signin-btn">sign up</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -150,7 +151,7 @@
         <div class="report">
             <a>{{time}}</a>
             <h1>{{distance}} <a class="label_report"> Kilometres</a></h1>      
-            <div id="main1" style="width: 1000px; height: 500px"></div>            
+            <div id="main1" style="width: 1000px; height: 300px"></div>            
             <div id="main2" style="width: 1000px; height: 300px"></div>     
             <table class="report_table">
                 <tr>
@@ -181,7 +182,7 @@
                     <td><img src= "images/ic_al_speed.png"></img></td>
                     <td><table class="inside_table">
                         <tr><td class="label">Average Speed</td></tr>
-                        <tr><td class="result">{{avg_speed}}</td></tr>
+                        <tr><td class="result">{{avg_speed}} km/h</td></tr>
                     </table></td>
                     <td><img src= "images/ic_al_heartrate.png"></img></td>
                     <td><table class="inside_table">

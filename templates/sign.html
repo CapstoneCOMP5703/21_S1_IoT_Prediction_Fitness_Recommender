@@ -43,6 +43,7 @@
                         <a href="/logout" class="signin-btn">log out</a>
                         {% else %}
                         <a href="/login" class="signin-btn">sign in</a>
+                        <a href="/signup" class="signin-btn">sign up</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -67,11 +68,14 @@
                     <h4>{{get_flashed_messages()[0]}}</h4>
                 </div>
                 <div>
+                    <input class="logbtn" type="submit" value="Login">
+                </div>
+                </br>
+                <div>
                     <input class="resetbtn" type="button" onclick="location.href=('/reset')" value="Forget your password?">                       
                 </div>
-                    <input class="logbtn" type="submit" value="Login">
-                <div class="btn_text">Don't have account? 
-                    <input class="signbtn" type="button" onclick="location.href=('/signup')" value="Sign up">
+                <div>
+                    <input class="resetbtn" type="button" onclick="location.href=('/signup')" value="Create a new Account? ">
                 </div>
             </form>
         </div>

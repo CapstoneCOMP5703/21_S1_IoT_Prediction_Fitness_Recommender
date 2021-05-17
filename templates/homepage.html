@@ -39,6 +39,7 @@
                         <a href="/logout" class="signin-btn">log out</a>
                         {% else %}
                         <a href="/login" class="signin-btn">sign in</a>
+                        <a href="/signup" class="signin-btn">sign up</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -49,7 +50,11 @@
     <section class="banner-area"  style="background-image: url(images/running.jpg);">
         <div class="banner-text">
             <h1>Take Our Fitness and Diet Recommendation To Your Next Plan</h1>
-            <h2>Please Sign In to get our personalize recommendations</h2>
+            {% if session.user %}
+            <h2>Welcome {{session.user}} to get our personalized recommendations</h2>
+            {% else %}
+            <h2>Please sign in to get our personalized recommendations</h2>
+            {% endif %}
         </div>
     </section>
 

@@ -70,6 +70,7 @@
   background: none;
   border: none;
   margin: 0 0 10px 0;
+  cursor: pointer;
 }
 
 .logbtn{
@@ -84,6 +85,9 @@
   transition-timing-function: ease;
   transition-delay: 0s;
   border-radius: 5px;
+  width: 100%;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .logbtn:hover{
@@ -145,14 +149,13 @@
   border-style: solid;
   border-width: 1px;
   padding: 10px 20px;
-  margin-left: 10px;
   transition-property: all;
   transition-duration: 0.5s;
   transition-timing-function: ease;
   transition-delay: 0s;
   border-radius: 5px;
-  width: 92px;
-  height: 40px;
+  width: 49%;
+  cursor: pointer;
 }
 
 .signupbtn:hover{
