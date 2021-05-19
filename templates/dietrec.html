@@ -28,6 +28,84 @@
     </script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+        <script>
+            function checkclick_breakfast(){
+                var checkimg = document.getElementById("checkimg_breakfast");
+                if($("#select_breakfast").is(':checked')){
+                    checkimg.src="/images/breakfast.png";   
+                    $("#select_breakfast").attr("checked",false);                
+                }else{                   
+                    checkimg.src="/images/breakfast_selected.png";
+                    $("#select_breakfast").attr("checked",true);
+                }
+                return checkimg.src
+            }
+            function checkclick_lunch(){
+                var checkimg = document.getElementById("checkimg_lunch");
+                if($("#select_lunch").is(':checked')){
+                    checkimg.src="/images/lunch.png";
+                    $("#select_lunch").attr("checked",false);
+                }else{
+                    checkimg.src="/images/lunch_selected.png";
+                    $("#select_lunch").attr("checked",true);
+                }
+                return checkimg.src
+            }
+            function checkclick_dinner(){
+                var checkimg = document.getElementById("checkimg_dinner");
+                if($("#select_dinner").is(':checked')){
+                    checkimg.src="/images/dinner.png";
+                    $("#select_dinner").attr("checked",false);
+                }else{
+                    checkimg.src="/images/dinner_selected.png";
+                    $("#select_dinner").attr("checked",true);
+                }
+                return checkimg.src
+            }
+            function checkclick_dessert(){
+                var checkimg = document.getElementById("checkimg_dessert");
+                if($("#select_dessert").is(':checked')){
+                    checkimg.src="/images/dessert.png";
+                    $("#select_dessert").attr("checked",false);
+                }else{
+                    checkimg.src="/images/dessert_selected.png";
+                    $("#select_dessert").attr("checked",true);
+                }
+                return checkimg.src
+            }
+            function checkclick_anything(){
+                var checkimg = document.getElementById("checkimg_anything");
+                var checkimg_vegan = document.getElementById("checkimg_vegan");
+                if($("#select_anything").is(':checked')){
+                    checkimg.src="/images/anything.png";
+                    checkimg_vegan.src="/images/vegan_selected.png";
+                    $("#select_anything").attr("checked",false);
+                    $("#select_vegan").attr("checked",true);
+                }else{
+                    checkimg.src="/images/anything_selected.png";
+                    checkimg_vegan.src="/images/vegan.png";
+                    $("#select_anything").attr("checked",true);
+                    $("#select_vegan").attr("checked",false);
+                }
+                return checkimg.src
+            }
+            function checkclick_vegan(){
+                var checkimg = document.getElementById("checkimg_vegan");
+                var checkimg_anything = document.getElementById("checkimg_anything");
+                if($("#select_vegan").is(':checked')){    
+                    checkimg.src="/images/vegan.png";
+                    checkimg_anything.src="/images/anything_selected.png";
+                    $("#select_vegan").attr("checked",false);
+                    $("#select_anything").attr("checked",true);
+                }else{
+                    checkimg.src="/images/vegan_selected.png";
+                    checkimg_anything.src="/images/anything.png";
+                    $("#select_vegan").attr("checked",true);
+                    $("#select_anything").attr("checked",false);
+                }
+                return checkimg.src
+            }
+        </script>
 </head>
 <body>
     <header class="header-main">
@@ -67,31 +145,74 @@
 
     <div class="intro"> 
         <!-- <h1>Put your fitness plan on autopilot </h1> -->
-        <a>Fitastic creates personalized diet plans based on the calories you want to consume.</br>Create your diet plan right here in seconds.</a>
+        <a>Fitastic creates personalized diet plans based on the calories you want to eat. 
+        </br>Create your diet plan right here in seconds.</a>
     </div>
 
     <form class="mealrec_input" action="/dietrec_model" method="POST">
-        <div class="txt">
+        <div class="user_diet_selection">
+            <table class="meal_type">
+                <tr>
+                    <td colspan="2">
+                        <label for="Anything">
+                            <img class="checkbox" alt="" src="/images/anything_selected.png" id="checkimg_anything" onclick="this.src=checkclick_anything();">
+                        </label>
+                    </br>
+                        <input id="select_anything" name="cbox" type="checkbox" style="display: none;" value="Anything" checked="checked"> Anything
+                    </td>
+                    <td colspan="2">
+                        <label for="Vegan">
+                            <img class="checkbox" alt="" src="/images/vegan.png" id="checkimg_vegan" onclick="this.src=checkclick_vegan();">
+                        </label>
+                    </br>
+                        <input id="select_vegan" name="cbox" type="checkbox" style="display: none;" value="Vegan"> Vegan
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="eat_calorie">
             <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
-                onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                onafterpaste="this.value=this.value.replace(/\D/g,'')" required>
             <span data-placeholder="I want to eat:"></span>
             <span data-placeholder="Calories" class="span_cal"></span>
         </div>
         <div class="user_diet_selection">
-            <input id="select_breakfast" name="cbox" type="checkbox" value="Breakfast">Breakfast
-            <label for="Breakfast"></label>
-            
-            <input id="select_lunch" name="cbox" type="checkbox" value="Lunch">Lunch
-            <label for="Lunch"></label>
-
-            <input id="select_dinner" name="cbox" type="checkbox" value="Dinner"> Dinner
-            <label for="Dinner"></label>
-
-            <input id="select_snack" name="cbox" type="checkbox" value="Dessert"> Dessert
-            <label for="Dessert"></label>
-
-            <input id="select_vegan" name="cbox" type="checkbox" value="Vegan"> Vegan
-            <label for="Vegan"></label>
+            <table class="meal_type">  
+                <tr>
+                    <td>
+                        <h3>In: </h3>
+                    </td>
+                    <td>
+                        <label for="Breakfast">
+                            <img class="checkbox" alt="" src="/images/breakfast_selected.png" id="checkimg_breakfast" onclick="this.src=checkclick_breakfast();">
+                        </label>
+                    </br>
+                        <input id="select_breakfast" name="cbox" type="checkbox" style="display: none;" value="Breakfast" checked="checked">Breakfast 
+                    </td>
+                    <td>
+                        <label for="Lunch">
+                            <img class="checkbox" alt="" src="/images/lunch.png" id="checkimg_lunch" onclick="this.src=checkclick_lunch();">
+                        </label>
+                    </br>
+                        <input id="select_lunch" name="cbox" type="checkbox" style="display: none;" value="Lunch">Lunch
+                    </td>
+                    <td>
+                        <label for="Dinner">
+                            <img class="checkbox" alt="" src="/images/dinner.png" id="checkimg_dinner" onclick="this.src=checkclick_dinner();">
+                        </label>
+                    </br>
+                        <input id="select_dinner" name="cbox" type="checkbox" style="display: none;" value="Dinner"> Dinner
+                    </td>
+                    <td>
+                        <label for="Dessert">
+                            <img class="checkbox" alt="" src="/images/dessert.png" id="checkimg_dessert" onclick="this.src=checkclick_dessert();">
+                        </label>
+                    </br>
+                        <input id="select_dessert" name="cbox" type="checkbox" style="display: none;" value="Dessert"> Dessert
+                    </td>
+                </tr>
+                
+            </table>
         </div>
         <h4>{{get_flashed_messages()[0]}}</h4>
         <div class="user_submit">

@@ -31,7 +31,7 @@ import pickle
 import pandas as pd
 calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
 
-# HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
 
 #homepage
 @app.route("/")
@@ -113,6 +113,7 @@ def mealRec():
 def dietrec_model():
     #get user input
     cbox=request.values.getlist("cbox")
+    print(cbox)
     calories_get=request.form.get("calories")
     #limit user input
     if(calories_get == "" or cbox==""):

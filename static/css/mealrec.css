@@ -25,7 +25,7 @@
 
 .mealrec_input{
   visibility: visible;
-  width: 30%;
+  width: 40%;
   min-width: fit-content;
   margin-left: auto;
   margin-right: auto;
@@ -34,14 +34,15 @@
   color: red;
 }
 
-.txt{
+.eat_calorie{
   border-bottom: 2px solid #adadad;
   position: relative;
-  margin-top: 50px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  z-index: 1;
 }
 
-.txt input{
+.eat_calorie input{
   font-size: 23px;
   color: #333333;
   border: none;
@@ -58,7 +59,7 @@
   position: absolute;
 }
 
-.txt span::before{
+.eat_calorie span::before{
   content: attr(data-placeholder);
   position: absolute; 
   top: 10%;
@@ -70,7 +71,7 @@
   transition: .5s;
 }
 
-.txt span::after{
+.eat_calorie span::after{
   content: '';
   position: absolute;
   width: 0%;
@@ -106,7 +107,7 @@
 .submit_btn{
   margin-left: 35%;
   width: 180px;
-  height: 60px;
+  height: 50px;
   font-size: large;
   color: #fff !important;
   background: #f61b55;
@@ -122,8 +123,31 @@
 }
 
 .submit_btn:hover{
+  cursor: pointer;
   background: #fff; 
   opacity: 1;
   color: #333 !important;
   border-color: #f61b55;
+}
+
+.user_diet_selection{
+  margin-top: 30px;
+}
+
+.checkbox{
+  width:70px;
+  height:70px;
+}
+
+.checkbox:hover{
+  cursor: pointer;
+}
+
+.meal_type{
+  margin:auto;
+  width:100%;
+}
+
+.meal_type tr td{
+  text-align: center;
 }
