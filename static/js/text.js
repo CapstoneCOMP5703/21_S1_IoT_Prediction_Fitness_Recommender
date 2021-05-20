@@ -9,6 +9,15 @@ window.onload = function() {
         $(this).removeClass("focus");
     });
 
+    $(".eat_calorie input").on("focus",function(){
+        $(this).addClass("focus");
+    });
+    
+    $(".eat_calorie input").on("blur",function(){
+        if($(this).val() =="")
+        $(this).removeClass("focus");
+    });
+    
     // $(".signbtn").on("click",function(){
     //     if($(".signup").css("display")=="none"){
     //         $(".login").hide();
