@@ -23,7 +23,8 @@ rf=Model()
 from Recipe_Recommendation import DietRec
 dietRec = DietRec()
 
-from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+from short_term_prediction_updated_v5 import da_rnn, dataInterpreter, contextEncoder, encoder, decoder,dataInterpreter_predict
 import torch
 
 
@@ -31,7 +32,8 @@ import pickle
 import pandas as pd
 calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
 
-HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+# HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
+HR_track_model = torch.load('./model_epoch_04.pt')
 
 #homepage
 @app.route("/")
@@ -480,8 +482,8 @@ def regenerate_dessert():
     label_tdessert=label_tdessert)
 
 #路由运动记录    
-@app.route("/activitylog")
-def activitylog(): 
+@app.route("/activitylog_run")
+def activitylog_run(): 
     #only logged user can use this function
     if session.get('user'):
         expected_calories = session.get('user_input_calories')
@@ -490,16 +492,17 @@ def activitylog():
             flash('Sorry, please get one recommended sport first!')
             return redirect(url_for('workoutRec'))
         else:
+            flash('run')
             #get mock data
             input_data=pd.read_csv("test_calories1.csv")
-            user_data=input_data.iloc[:1]
-            duration_seconds = int(user_data["duration"].tolist()[0])
-            distance = round(float(user_data["distance"].tolist()[0]),2)
-            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[0]),0)
-            avg_speed = round(float(user_data["avg_speed"].tolist()[0]),2)
-            bike_check= int(user_data["sport_bike"].tolist()[0])
-            mbike_check= int(user_data["sport_mountain bike"].tolist()[0])
-            run_check= int(user_data["sport_run"].tolist()[0])
+            user_data=input_data.iloc[:10]
+            duration_seconds = int(user_data["duration"].tolist()[3])
+            distance = round(float(user_data["distance"].tolist()[3]),2)
+            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[3]),0)
+            avg_speed = round(float(user_data["avg_speed"].tolist()[3]),2)
+            bike_check= int(user_data["sport_bike"].tolist()[3])
+            mbike_check= int(user_data["sport_mountain bike"].tolist()[3])
+            run_check= int(user_data["sport_run"].tolist()[3])
             duration=cal_time(duration_seconds)
             sport_type=check_sport_type(bike_check,mbike_check,run_check)
             
@@ -508,7 +511,130 @@ def activitylog():
 
             #HR-track model
             use_cuda=torch.cuda.is_available() 
-            HR_output = HR_track_model.predict()
+            HR_output = HR_track_model.predict(id = 605119015)
+            hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
+            hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
+
+            #get mock speed data
+            speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
+
+            #1 for bike, 2 for mbike, 3 for run
+            mock_data = speed_altitude_mock.iloc[2]
+            sport = mock_data["sport"]
+            speed = mock_data["speed"]
+            altitude = mock_data["altitude"]
+            #set echarts
+            x = []
+            for i in range(50):
+                x.append('')
+            #Fit-track model
+            acc_output = calories_cal_model.predict(input_data.iloc[3:4])
+            actual_calories = int(acc_output)
+            return render_template("activitylog.html",actual_calories=actual_calories,
+            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
+            avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
+            heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
+            xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
+            hr_max=hr_max,hr_min=hr_min,
+            sport=Markup(json.dumps(sport))
+            )   
+    else:
+        flash('Sorry, please log in to use this function!')
+        return redirect(url_for('login'))
+
+@app.route("/activitylog_bike")
+def activitylog_bike(): 
+    #only logged user can use this function
+    if session.get('user'):
+        expected_calories = session.get('user_input_calories')
+        #user should select one sport before this page
+        if expected_calories == None:
+            flash('Sorry, please get one recommended sport first!')
+            return redirect(url_for('workoutRec'))
+        else:
+            flash('bike')
+            #get mock data
+            input_data=pd.read_csv("test_calories1.csv")
+            user_data=input_data.iloc[:10]
+            duration_seconds = int(user_data["duration"].tolist()[7])
+            distance = round(float(user_data["distance"].tolist()[7]),2)
+            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[7]),0)
+            avg_speed = round(float(user_data["avg_speed"].tolist()[7]),2)
+            bike_check= int(user_data["sport_bike"].tolist()[7])
+            mbike_check= int(user_data["sport_mountain bike"].tolist()[7])
+            run_check= int(user_data["sport_run"].tolist()[7])
+            duration=cal_time(duration_seconds)
+            sport_type=check_sport_type(bike_check,mbike_check,run_check)
+            
+            system_time=str(datetime.now())
+            time=system_time.split('.')[0]
+
+            #HR-track model
+            use_cuda=torch.cuda.is_available() 
+            HR_output = HR_track_model.predict(id = 328420333)
+            hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
+            hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
+
+            #get mock speed data
+            speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
+
+            #0 for bike, 1 for mbike, 2 for run
+            mock_data = speed_altitude_mock.iloc[0]
+            sport = mock_data["sport"]
+            speed = mock_data["speed"]
+            altitude = mock_data["altitude"]
+            #set echarts
+            x = []
+            for i in range(50):
+                x.append('')
+            #Fit-track model
+            acc_output = calories_cal_model.predict(input_data.iloc[7:8])
+            actual_calories = int(acc_output)
+            return render_template("activitylog.html",actual_calories=actual_calories,
+            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
+            avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
+            heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
+            xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
+            hr_max=hr_max,hr_min=hr_min,
+            sport=Markup(json.dumps(sport))
+            )   
+    else:
+        flash('Sorry, please log in to use this function!')
+        return redirect(url_for('login'))
+
+@app.route("/activitylog_mbike")
+def activitylog_mbike(): 
+    #only logged user can use this function
+    if session.get('user'):
+        expected_calories = session.get('user_input_calories')
+        #user should select one sport before this page
+        if expected_calories == None:
+            flash('Sorry, please get one recommended sport first!')
+            return redirect(url_for('workoutRec'))
+        else:
+            flash('mbike')
+            #get mock data
+            input_data=pd.read_csv("test_calories1.csv")
+            user_data=input_data.iloc[:10]
+            duration_seconds = int(user_data["duration"].tolist()[5])
+            distance = round(float(user_data["distance"].tolist()[5]),2)
+            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[5]),0)
+            avg_speed = round(float(user_data["avg_speed"].tolist()[5]),2)
+            bike_check= int(user_data["sport_bike"].tolist()[5])
+            mbike_check= int(user_data["sport_mountain bike"].tolist()[5])
+            run_check= int(user_data["sport_run"].tolist()[5])
+            duration=cal_time(duration_seconds)
+            sport_type=check_sport_type(bike_check,mbike_check,run_check)
+            
+            system_time=str(datetime.now())
+            time=system_time.split('.')[0]
+
+            #HR-track model
+            use_cuda=torch.cuda.is_available() 
+            HR_output = HR_track_model.predict(id = 373904132)
+            hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
+            hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
+
             #get mock speed data
             speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
 
@@ -522,13 +648,14 @@ def activitylog():
             for i in range(50):
                 x.append('')
             #Fit-track model
-            acc_output = calories_cal_model.predict(input_data.iloc[:1])
+            acc_output = calories_cal_model.predict(input_data.iloc[5:6])
             actual_calories = int(acc_output)
             return render_template("activitylog.html",actual_calories=actual_calories,
             time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
             avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
             heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
             xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
+            hr_max=hr_max,hr_min=hr_min,
             sport=Markup(json.dumps(sport))
             )   
     else:

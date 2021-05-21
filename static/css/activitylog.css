@@ -48,7 +48,7 @@ body{
   .report_table{
     border:0px; 
     border-style: none;
-    width: fit-content;
+    width: 50%;
     margin: 10px auto 10px;
     align-content: center;
   }
@@ -104,5 +104,55 @@ body{
     margin: auto;
   }
 
+  .heading{
+    font-size:25px;
+    padding-top: 30px;
+  }
 
+  .suggestions{
+    text-align: center;
+    background-color: rgba(176,176,176,0.2);
+  }
 
+  .suggestion{
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+  }
+
+  .suggestion th{
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+  }
+
+  .suggestion td{
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+  }
+
+  .formula{
+    font-size: 13px;
+  }
+
+  .gender{
+    text-decoration:underline;
+    display: inline;
+  }
+
+  .note{
+    width: 90%;
+    margin: auto;
+    padding-bottom: 10px;
+  }
+
+  .female{
+    width: 25px;
+    height: 25px;
+  }
+
+  .male{
+    width: 25px;
+    height: 25px;
+  }

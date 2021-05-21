@@ -67,7 +67,7 @@
 
     <div class="intro"> 
         <!-- <h1>Put your fitness plan on autopilot </h1> -->
-        <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn. Create your fitness plan right here in seconds.</a>
+        <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn.</br> Create your fitness plan right here in seconds.</a>
     </div>
 
     <section class="workrec_content">
@@ -79,21 +79,21 @@
                     {% for message in messages %}
                     {% if message == 'run'%} 
                     <th id="th1">
-                        <a id="user_select_run" type="submit" href="/activitylog">
+                        <a id="user_select_run" type="submit" href="/activitylog_run">
                             <button class= "sport_img" style="background: url(images/running2.jpg);background-size: cover;"></button>
                         </a>
                     </th>
                     {%endif%}
                     {% if message == 'bike'%} 
                     <th>
-                        <a id="user_select_bile" type="submit" href="/activitylog">
+                        <a id="user_select_bile" type="submit" href="/activitylog_bike">
                             <button class= "sport_img" style="background: url(images/biking.jpg);background-size: cover;"></button>
                         </a>
                     </th>
                     {%endif%}
                     {% if message == 'mbike'%} 
                     <th>
-                        <a id="user_select_mbike" type="submit" href="/activitylog">
+                        <a id="user_select_mbike" type="submit" href="/activitylog_mbike">
                             <button class= "sport_img" style="background: url(images/mountain_biking.png);background-size: cover;"></button>
                         </a>
                     </th>
