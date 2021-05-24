@@ -58,6 +58,7 @@
   float: right;
   margin-top: 20px;
   text-align: center;
+  width: 70%;
 
 }
 
@@ -83,6 +84,16 @@
   background-size: cover;
   border-width: 0px;
   background-color: transparent;
+}
+
+.table_left{
+  float: left;
+  /* padding-right: 10%; */
+}
+
+.table_right{
+  margin-left: 10%;
+  float:right;
 }
 
 .user_regenerate{

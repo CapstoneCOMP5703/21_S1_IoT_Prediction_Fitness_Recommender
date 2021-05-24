@@ -79,23 +79,26 @@
                     {% for message in messages %}
                     {% if message == 'run'%} 
                     <th id="th1">
-                        <a id="user_select_run" type="submit" href="/activitylog_run">
-                            <button class= "sport_img" style="background: url(images/running2.jpg);background-size: cover;"></button>
-                        </a>
+                        <form action="/activitylog" method="POST">
+                            <input type="hidden" value="run" name="hidden"></input>
+                            <button class= "sport_img" type="submit" style="background: url(images/running2.jpg);background-size: cover;"></button>
+                        </form>
                     </th>
                     {%endif%}
                     {% if message == 'bike'%} 
                     <th>
-                        <a id="user_select_bile" type="submit" href="/activitylog_bike">
-                            <button class= "sport_img" style="background: url(images/biking.jpg);background-size: cover;"></button>
-                        </a>
+                        <form action="/activitylog" method="POST">
+                            <input type="hidden" value="bike" name="hidden"></input>
+                            <button class= "sport_img" type="submit" style="background: url(images/biking.jpg);background-size: cover;"></button>
+                        </form>
                     </th>
                     {%endif%}
                     {% if message == 'mbike'%} 
                     <th>
-                        <a id="user_select_mbike" type="submit" href="/activitylog_mbike">
-                            <button class= "sport_img" style="background: url(images/mountain_biking.png);background-size: cover;"></button>
-                        </a>
+                        <form action="/activitylog" method="POST">
+                            <input type="hidden" value="mbike" name="hidden"></input>
+                            <button class= "sport_img" type="submit" style="background: url(images/mountain_biking.png);background-size: cover;"></button>
+                        </form>
                     </th>
                     {%endif%}
                     {% endfor %}

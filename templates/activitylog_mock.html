@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Page Title -->
+    <title>Fitastic</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/icon.png" type="image/x-icon">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/activitylog.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <!-- JS Files-->
+    <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+    <script src="https://www.gstatic.com/charts/loader.js">
+        //Google Chart
+    </script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+</head>
+<body>
+    <header class="header-main">
+        <div class="container">
+            <div class="logo-area">
+                <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <div class="main-menu">
+                <ul>
+                    <li class="active"><a href="/">home</a></li>
+                    <li class="rec"><a href="#" >recommendations</a>
+                        <ul class="sub-menu">
+                            <li><a href="/workoutrec">workout recommendation</a></li>
+                            <li><a href="/dietrec">diet recommendation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/activitylog">activity log</a></li>
+                    <li class="menu-btn">
+                        Welcome {{session.user}} !
+                        {% if session.user %}
+                        <a href="/logout" class="signin-btn">log out</a>
+                        {% else %}
+                        <a href="/login" class="signin-btn">sign in</a>
+                        <a href="/signup" class="signin-btn">sign up</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}           
+            {% for message in messages %}
+            {% if message == 'run'%} 
+                <section class="banner-area"  style="background-image: url(images/bg_activitylog.jpeg);">
+                    <div class="banner-text">
+                        <h1>Current Workout Type - <b>Run</b></h1>
+                    </div>
+                </section>
+            {%endif%}
+            {% if message == 'bike'%} 
+                <section class="banner-area"  style="background-image: url(images/bg_activitylog.jpeg);">
+                    <div class="banner-text">
+                        <h1>Current Workout Type - <b>Bike</b></h1>
+                    </div>
+                </section>
+            {%endif%}
+            {% if message == 'mbike'%} 
+                <section class="banner-area"  style="background-image: url(images/bg_activitylog.jpeg);">
+                    <div class="banner-text">
+                        <h1>Current Workout Type - <b>Mountain Bike</b></h1>
+                    </div>
+                </section>
+            {%endif%}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}   
+    {% block body %}{% endblock %}
+
+
+
+    <section class="report_area">
+        <div class="report">
+            <a>{{time}}</a>
+            <h1>{{distance}} <a class="label_report"> Kilometres</a></h1> 
+            <table class="report_table">
+                <tr>
+                    <td><img src= "images/ic_al_time.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Sport Duration</td></tr>
+                        <tr><td class="result">{{duration}}</td></tr>
+                    </table></td>
+                    <td><img src= "images/ic_al_cal.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Actual Calories Burned</td></tr>
+                        <tr><td class="result">{{actual_calories}} kcal</td></tr>
+                    </table></td>
+                </tr>
+                <!-- <tr>
+                    <td><img src= "images/ic_al_cal.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Expected Calories Burned</td></tr>
+                        <tr><td class="result">{{expected_calories}} kcal</td></tr>
+                    </table></td>
+                    <td><img src= "images/ic_al_cal.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">111</td></tr>
+                        <tr><td class="result">1111</td></tr>
+                    </table></td>
+                </tr> -->
+                <tr>
+                    <td><img src= "images/ic_al_speed.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Average Speed</td></tr>
+                        <tr><td class="result">{{avg_speed}} km/h</td></tr>
+                    </table></td>
+                    <td><img src= "images/0a9584858800cb839e7c92051a916b5.png"></img></td>
+                    <td><table class="inside_table">
+                        <tr><td class="label">Average Heart Rate</td></tr>
+                        <tr><td class="result">{{avg_heart_rate}} BPM</td></tr>
+                    </table></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="suggestions">
+            <h2 class="heading">Suggestion</h2>
+            <h4>Would you want to maintain stable weight? </br>Then, please try to keep your “Calories In=Calories Out”</h4>
+            <p class="formula"><i>* Calories in=Intake calories per day</br>* Calories out=Workout burned + Digestion + BMR</i></p>
+            <p class="gender"><b>For Female</b></p>
+            <img src="images/female.png" class="female"></br></br>
+            <table class="suggestion">
+                <tr>
+                    <th>Age</th>
+                    <th>Average BMR</th>
+                    <th>Intake average calories</th>
+                    <th>Suggested workout burned calories</th>
+                </tr>
+                <tr>
+                    <td>20-25</td>
+                    <td>1360</td>
+                    <td>2200</td>
+                    <td>510 &lt; Actual calories burned &lt; 620 </td>
+                </tr>
+                <tr>
+                    <td>26-30</td>
+                    <td>1360</td>
+                    <td>2000</td>
+                    <td>340 &lt; Actual calories burned &lt; 440 </td>
+                </tr>
+                <tr>
+                    <td>31-50</td>
+                    <td>1320</td>
+                    <td>2000</td>
+                    <td>380 &lt; Actual calories burned &lt; 480 </td>
+                </tr>
+                <tr>
+                    <td>50+</td>
+                    <td>1230</td>
+                    <td>1800</td>
+                    <td>300 &lt; Actual calories burned &lt; 390 </td>
+                </tr>
+            
+            </table>
+            </br>
+            <p class="gender"><b>For Male</b></p>
+            <img src="images/male.png" class="male">
+            </br></br>
+            <table class="suggestion">
+                <tr>
+                    <th>Age</th>
+                    <th>Average BMR</th>
+                    <th>Intake average calories</th>
+                    <th>Suggested workout burned calories</th>
+                </tr>
+                <tr>
+                    <td>19-25</td>
+                    <td>1770</td>
+                    <td>2800</td>
+                    <td>764.5 &lt; Actual calories burned &lt; 853 </td>
+                </tr>
+                <tr>
+                    <td>26-30</td>
+                    <td>1770</td>
+                    <td>2600</td>
+                    <td>564.5 &lt; Actual calories burned &lt; 653 </td>
+                </tr>
+                <tr>
+                    <td>31-45</td>
+                    <td>1680</td>
+                    <td>2600</td>
+                    <td>668 &lt; Actual calories burned &lt; 752 </td>
+                </tr>
+                <tr>
+                    <td>46-65</td>
+                    <td>1530</td>
+                    <td>2400</td>
+                    <td>468 &lt; Actual calories burned &lt; 552 </td>
+                </tr>
+            </table>
+    
+            <div class="note">
+                <p><i>*** Our recommended ranges of calorie burned for workout are based on the average calorie intake for different genders and different ages. If you actually burn more calories than the recommended maximum after exercise, please increase your calorie intake in your diet as appropriate. </br>Calculation formular is: <b>Intake calories=Workout burned + Digestion (10%-15% of your intake) + BMR )</b></i></p>
+            </div>  
+        </div>
+
+    </section>
+    
+</body>
+</html>

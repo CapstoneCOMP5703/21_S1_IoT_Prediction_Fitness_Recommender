@@ -1,6 +1,7 @@
+import flask
 import pymysql
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, g,flash
+from flask import request, render_template, redirect, url_for, session, g,flash, jsonify
 import traceback
 from dataclasses import dataclass
 from datetime import timedelta,datetime
@@ -37,7 +38,7 @@ HR_track_model = torch.load('./model_epoch_04.pt')
 
 #homepage
 @app.route("/")
-def homepage():           
+def homepage():      
     return render_template("homepage.html")
 
 #SportRec page
@@ -113,38 +114,116 @@ def mealRec():
 #DietRec result page
 @app.route("/dietrec_model",methods=['GET', 'POST'])
 def dietrec_model():
-    #get user input
-    cbox=request.values.getlist("cbox")
-    print(cbox)
-    calories_get=request.form.get("calories")
-    #limit user input
-    if(calories_get == "" or cbox==""):
-        flash('Please enter valid inputs!')
-        return render_template("dietrec.html",)
-    calories=int(calories_get)
     #set default value
     s_breakfast,s_lunch,s_dinner,s_dessert,s_vegan = 0,0,0,0,0
     count,re,re_breakfast,re_lunch,re_dinner,re_dessert=0,0,0,0,0,0
-    #read user input
-    for c in cbox:
-        if c =='Breakfast':
-            s_breakfast=1
-            count=count+1
-        elif c =='Lunch':
-            s_lunch=1
-            count=count+1
-        elif c=='Dinner':
-            s_dinner=1
-            count=count+1
-        elif c=='Dessert':
-            s_dessert=1
-            count=count+1
-        else:
-            s_vegan=1
-    #limit user input
-    if(count == 0):
-        flash('Please choose at least one meal type!')
-        return render_template("dietrec.html",)
+
+    if request.form.get("hidden") == "regenerate_all":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        #when user regenerate all meals, set other re into 0
+        re_breakfast=0
+        re_lunch=0
+        re_dinner=0
+        re_dessert=0
+        re=re+1
+    elif request.form.get("hidden") == "regenerate_breakfast":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        re_breakfast=diet_list[8]
+        re_lunch=diet_list[9]
+        re_dinner=diet_list[10]
+        re_dessert=diet_list[11]
+        re_breakfast=re_breakfast+1
+    elif request.form.get("hidden") == "regenerate_lunch":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        re_breakfast=diet_list[8]
+        re_lunch=diet_list[9]
+        re_dinner=diet_list[10]
+        re_dessert=diet_list[11]
+        re_lunch=re_lunch+1
+    elif request.form.get("hidden") == "regenerate_dinner":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        re_breakfast=diet_list[8]
+        re_lunch=diet_list[9]
+        re_dinner=diet_list[10]
+        re_dessert=diet_list[11]
+        re_dinner=re_dinner+1
+    elif request.form.get("hidden") == "regenerate_dessert":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        re_breakfast=diet_list[8]
+        re_lunch=diet_list[9]
+        re_dinner=diet_list[10]
+        re_dessert=diet_list[11]
+        re_dessert=re_dessert+1
+    else:
+        #get user input
+        cbox=request.values.getlist("cbox")
+        print(cbox)
+        calories_get=request.form.get("calories")
+        #limit user input
+        if(calories_get == "" or cbox==""):
+            flash('Please enter valid inputs!')
+            return render_template("dietrec.html",)
+        calories=int(calories_get)
+        #read user input
+        for c in cbox:
+            if c =='Breakfast':
+                s_breakfast=1
+                count=count+1
+            elif c =='Lunch':
+                s_lunch=1
+                count=count+1
+            elif c=='Dinner':
+                s_dinner=1
+                count=count+1
+            elif c=='Dessert':
+                s_dessert=1
+                count=count+1
+            else:
+                s_vegan=1
+        #limit user input
+        if(count == 0):
+            flash('Please choose at least one meal type!')
+            return render_template("dietrec.html",)
     #load DietRec model
     diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
@@ -153,12 +232,69 @@ def dietrec_model():
     diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
     session['diet_list']=diet_list
 
-    df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert= generateMealTable(diet_data)
-    
+    df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal= generateMealTable(diet_data)
+   
+    total_calories= int(sum_breakfast_cal)+int(sum_lunch_cal)+int(sum_dinner_cal)+int(sum_dessert_cal)
+
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
+    sum_breakfast_cal=sum_breakfast_cal,sum_lunch_cal=sum_lunch_cal,
+    sum_dinner_cal=sum_dinner_cal,sum_dessert_cal=sum_dessert_cal,total_calories=total_calories)
+
+def generateMealTableNoIgre(diet_data):
+    meal_type=diet_data.get('Meal_Type')
+    #read how many meals user selected
+    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
+    breakfast_end=breakfast_num
+    lunch_end=breakfast_num+lunch_num
+    dinner_end=breakfast_num+lunch_num+dinner_num
+    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
+
+    #check which meal should be recommonded
+    if breakfast_num != 0:
+        flash('Breakfast')
+        df_breakfast,sum_breakfast_cal=generateMealDataFrameNoIgre(diet_data,0,breakfast_end)
+        df_breakfast=df_breakfast.T
+        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
+        df_breakfast.insert(3,'button',"breakfast")
+        print(df_breakfast)
+        # use pandas method to auto generate html
+        df_html_b = df_breakfast.to_html(classes="table_rec",border=0,bold_rows = bool,formatters=dict(images=path_to_image_html,button=value_to_button_html),header=False,index=False,escape=False) 
+    else:
+        sum_breakfast_cal=0
+        df_html_b=''
+
+    if lunch_num !=0:
+        flash('Lunch')
+        df_lunch,sum_lunch_cal=generateMealDataFrameNoIgre(diet_data,breakfast_end,lunch_end)
+        df_lunch=df_lunch.T
+        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
+        df_html_l = df_lunch.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
+    else:
+        sum_lunch_cal=0
+        df_html_l=''
+
+    if dinner_num !=0:
+        flash('Dinner')
+        df_dinner,sum_dinner_cal=generateMealDataFrameNoIgre(diet_data,lunch_end,dinner_end)
+        df_dinner=df_dinner.T
+        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
+        df_html_dinner = df_dinner.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
+    else:
+        sum_dinner_cal=0
+        df_html_dinner=''
+        
+    if dessert_num !=0:   
+        flash('Dessert')
+        df_dessert,sum_dessert_cal=generateMealDataFrameNoIgre(diet_data,dinner_end,dessert_end)
+        df_dessert=df_dessert.T
+        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
+        df_html_dessert = df_dessert.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
+    else:
+        sum_dessert_cal=0
+        df_html_dessert=''
+
+    return df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal
 
 def generateMealTable(diet_data):
     meal_type=diet_data.get('Meal_Type')
@@ -172,46 +308,46 @@ def generateMealTable(diet_data):
     #check which meal should be recommonded
     if breakfast_num != 0:
         flash('Breakfast')
-        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
+        df_breakfast,sum_breakfast_cal=generateMealDataFrame(diet_data,0,breakfast_end)
+        df_breakfast=df_breakfast.T
         df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",border=0,bold_rows = bool,formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
-        label_tbreakfast = 'Recommended Breakfast'
     else:
+        sum_breakfast_cal=0
         df_html_b=''
-        label_tbreakfast=''
 
     if lunch_num !=0:
         flash('Lunch')
-        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
+        df_lunch,sum_lunch_cal=generateMealDataFrame(diet_data,breakfast_end,lunch_end)
+        df_lunch=df_lunch.T
         df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
         df_html_l = df_lunch.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tlunch='Recommended Lunch'
     else:
+        sum_lunch_cal=0
         df_html_l=''
-        label_tlunch=''
 
     if dinner_num !=0:
         flash('Dinner')
-        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
+        df_dinner,sum_dinner_cal=generateMealDataFrame(diet_data,lunch_end,dinner_end)
+        df_dinner=df_dinner.T
         df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
         df_html_dinner = df_dinner.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tdinner='Recommended Dinner'
     else:
+        sum_dinner_cal=0
         df_html_dinner=''
-        label_tdinner=''
         
     if dessert_num !=0:   
         flash('Dessert')
-        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
+        df_dessert,sum_dessert_cal=generateMealDataFrame(diet_data,dinner_end,dessert_end)
+        df_dessert=df_dessert.T
         df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
         df_html_dessert = df_dessert.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tdessert='Recommended Dessert'
     else:
+        sum_dessert_cal=0
         df_html_dessert=''
-        label_tdessert=''
 
-    return df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert
+    return df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal
 
 def push_img_urls(images):
     image_url=[]
@@ -230,17 +366,22 @@ def getMealImageUrls(diet_data,start,end):
 def path_to_image_html(path):
     return '<img src="'+ path + '" width="60"   background-position: center center; background-size: cover;>'
 
+def value_to_button_html(value):
+    return '<form action="/diet_result" method="POST"><input type="hidden" name= "hidden" value='+value+'></input><input type="submit" value="details"></input></form> '
+
 def append_list(header,input_list,start,end):
     for i in range(start,end):
         header.append(input_list[i])
     return header
 
 def append_cal(header,input_list,start,end):
+    sum_cal=0
     for i in range(start,end):
         data = str(input_list[i])
         data_cal = data + ' kcal'
         header.append(data_cal)
-    return header
+        sum_cal = sum_cal+int(data)
+    return header,sum_cal
 
 def splitMeal(data):
     length=len(data)
@@ -268,221 +409,25 @@ def generateMealDataFrame(diet_data,start,end):
     append_list(data_Ingredients_list,diet_data.get('Ingredients_list'),start,end)
 
     data_cal=[]
-    append_cal(data_cal,diet_data.get('Calorie_num'),start,end)
+    data_cal,sum_cal=append_cal(data_cal,diet_data.get('Calorie_num'),start,end)
 
     df = pd.DataFrame(data=[data_name,data_cal,data_Ingredients_list])
    
-    return df
+    return df,sum_cal
 
-@app.route("/regenerate_all",methods=['GET', 'POST'])
-def regenerate_all():
-    diet_list=session.get('diet_list')
-    calories = diet_list[0]
-    count= diet_list[1]
-    s_breakfast =diet_list[2]
-    s_lunch=diet_list[3]
-    s_dinner =diet_list[4]
-    s_dessert=diet_list[5]
-    s_vegan=diet_list[6]
-    re=diet_list[7]
-    #when user regenerate all meals, set other re into 0
-    re_breakfast=0
-    re_lunch=0
-    re_dinner=0
-    re_dessert=0
-    re=re+1
+def generateMealDataFrameNoIgre(diet_data,start,end):
+    data_name=[]
+    append_list(data_name,diet_data.get('Name'),start,end)
 
-    #load DietRec model
-    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
+    data_cal=[]
+    data_cal,sum_cal=append_cal(data_cal,diet_data.get('Calorie_num'),start,end)
 
-    #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
-
-    df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert= generateMealTable(diet_data)
-    
-    return render_template("dietrec_result.html",table_b_html=df_html_b,
-    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
-    
-@app.route("/regenerate_breakfast",methods=['GET', 'POST'])
-def regenerate_breakfast():
-    diet_list=session.get('diet_list')
-    calories = diet_list[0]
-    count= diet_list[1]
-    s_breakfast =diet_list[2]
-    s_lunch=diet_list[3]
-    s_dinner =diet_list[4]
-    s_dessert=diet_list[5]
-    s_vegan=diet_list[6]
-    re=diet_list[7]
-    re_breakfast=diet_list[8]
-    re_lunch=diet_list[9]
-    re_dinner=diet_list[10]
-    re_dessert=diet_list[11]
-    re_breakfast=re_breakfast+1
-
-    #load DietRec model
-    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-
-    #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
-
-    df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert= generateMealTable(diet_data)
-    
-    return render_template("dietrec_result.html",table_b_html=df_html_b,
-    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
-
-@app.route("/regenerate_lunch",methods=['GET', 'POST'])
-def regenerate_lunch():
-    diet_list=session.get('diet_list')
-    calories = diet_list[0]
-    count= diet_list[1]
-    s_breakfast =diet_list[2]
-    s_lunch=diet_list[3]
-    s_dinner =diet_list[4]
-    s_dessert=diet_list[5]
-    s_vegan=diet_list[6]
-    re=diet_list[7]
-    re_breakfast=diet_list[8]
-    re_lunch=diet_list[9]
-    re_dinner=diet_list[10]
-    re_dessert=diet_list[11]
-    re_lunch=re_lunch+1
-
-    #load DietRec model
-    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-
-    #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
-
-    df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert= generateMealTable(diet_data)
-    
-    return render_template("dietrec_result.html",table_b_html=df_html_b,
-    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
-
-@app.route("/regenerate_dinner",methods=['GET', 'POST'])
-def regenerate_dinner():
-    diet_list=session.get('diet_list')
-    calories = diet_list[0]
-    count= diet_list[1]
-    s_breakfast =diet_list[2]
-    s_lunch=diet_list[3]
-    s_dinner =diet_list[4]
-    s_dessert=diet_list[5]
-    s_vegan=diet_list[6]
-    re=diet_list[7]
-    re_breakfast=diet_list[8]
-    re_lunch=diet_list[9]
-    re_dinner=diet_list[10]
-    re_dessert=diet_list[11]
-    re_dinner=re_dinner+1
-
-    #load DietRec model
-    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-
-    #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
-
-    df_html_b,label_tbreakfast,df_html_l,label_tlunch,df_html_dinner,label_tdinner,df_html_dessert,label_tdessert= generateMealTable(diet_data)
-
-    return render_template("dietrec_result.html",table_b_html=df_html_b,
-    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
-
-@app.route("/regenerate_dessert",methods=['GET', 'POST'])
-def regenerate_dessert():
-    diet_list=session.get('diet_list')
-    calories = diet_list[0]
-    count= diet_list[1]
-    s_breakfast =diet_list[2]
-    s_lunch=diet_list[3]
-    s_dinner =diet_list[4]
-    s_dessert=diet_list[5]
-    s_vegan=diet_list[6]
-    re=diet_list[7]
-    re_breakfast=diet_list[8]
-    re_lunch=diet_list[9]
-    re_dinner=diet_list[10]
-    re_dessert=diet_list[11]
-    re_dessert=re_dessert+1
-
-    #load DietRec model
-    diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
-    s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-
-    #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
-
-    meal_type=diet_data.get('Meal_Type')
-    breakfast_num,lunch_num,dinner_num,dessert_num=splitMeal(meal_type)
-    breakfast_end=breakfast_num
-    lunch_end=breakfast_num+lunch_num
-    dinner_end=breakfast_num+lunch_num+dinner_num
-    dessert_end=breakfast_num+lunch_num+dinner_num+dessert_num
-
-    #check which meal should be recommonded
-    if breakfast_num != 0:
-        flash('Breakfast')
-        df_breakfast=generateMealDataFrame(diet_data,0,breakfast_end).T
-        df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
-        # use pandas method to auto generate html
-        df_html_b = df_breakfast.to_html(classes="table_rec",border=0,formatters=dict(images=path_to_image_html),header=False,index=False,escape=False) 
-        label_tbreakfast = 'Recommended Breakfast'
-    else:
-        df_html_b=''
-        label_tbreakfast=''
-
-    if lunch_num !=0:
-        flash('Lunch')
-        df_lunch=generateMealDataFrame(diet_data,breakfast_end,lunch_end).T
-        df_lunch.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,breakfast_end,lunch_end)))
-        df_html_l = df_lunch.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tlunch='Recommended Lunch'
-    else:
-        df_html_l=''
-        label_tlunch=''
-
-    if dinner_num !=0:
-        flash('Dinner')
-        df_dinner=generateMealDataFrame(diet_data,lunch_end,dinner_end).T
-        df_dinner.insert(0,'images',push_img_urls(getMealImageUrls(diet_data, lunch_end,dinner_end)))
-        df_html_dinner = df_dinner.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tdinner='Recommended Dinner'
-    else:
-        df_html_dinner=''
-        label_tdinner=''
-        
-    if dessert_num !=0:   
-        flash('Dessert')
-        df_dessert=generateMealDataFrame(diet_data,dinner_end,dessert_end).T
-        df_dessert.insert(0,'image',push_img_urls(getMealImageUrls(diet_data,dinner_end,dessert_end)))
-        df_html_dessert = df_dessert.to_html(classes="table_rec",border=0,formatters=dict(image=path_to_image_html),header=False,index=False,escape=False) 
-        label_tdessert='Recommended Dessert'
-    else:
-        df_html_dessert=''
-        label_tdessert=''
-    return render_template("dietrec_result.html",table_b_html=df_html_b,
-    table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
-    label_tbreakfast=label_tbreakfast,label_tlunch=label_tlunch,label_tdinner=label_tdinner,
-    label_tdessert=label_tdessert)
+    df = pd.DataFrame(data=[data_name,data_cal])
+   
+    return df,sum_cal
 
 #路由运动记录    
-@app.route("/activitylog_run")
+@app.route("/activitylog",methods=['GET', 'POST'])
 def activitylog_run(): 
     #only logged user can use this function
     if session.get('user'):
@@ -492,7 +437,16 @@ def activitylog_run():
             flash('Sorry, please get one recommended sport first!')
             return redirect(url_for('workoutRec'))
         else:
-            flash('run')
+            if request.form.get("hidden")=="run":
+                flash('run')
+                sport_type='run'
+            elif request.form.get("hidden")=="bike":
+                flash('bike')
+                sport_type='bike'
+            else:
+                flash('mountain bike')
+                sport_type='mbike'
+                
             #get mock data
             input_data=pd.read_csv("test_calories1.csv")
             user_data=input_data.iloc[:10]
@@ -511,7 +465,7 @@ def activitylog_run():
 
             #HR-track model
             use_cuda=torch.cuda.is_available() 
-            HR_output = HR_track_model.predict(id = 605119015)
+            HR_output = HR_track_model.predict(id = 328420333)
             hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
             hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
 
@@ -529,126 +483,6 @@ def activitylog_run():
                 x.append('')
             #Fit-track model
             acc_output = calories_cal_model.predict(input_data.iloc[3:4])
-            actual_calories = int(acc_output)
-            return render_template("activitylog.html",actual_calories=actual_calories,
-            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
-            avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
-            heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
-            xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
-            hr_max=hr_max,hr_min=hr_min,
-            sport=Markup(json.dumps(sport))
-            )   
-    else:
-        flash('Sorry, please log in to use this function!')
-        return redirect(url_for('login'))
-
-@app.route("/activitylog_bike")
-def activitylog_bike(): 
-    #only logged user can use this function
-    if session.get('user'):
-        expected_calories = session.get('user_input_calories')
-        #user should select one sport before this page
-        if expected_calories == None:
-            flash('Sorry, please get one recommended sport first!')
-            return redirect(url_for('workoutRec'))
-        else:
-            flash('bike')
-            #get mock data
-            input_data=pd.read_csv("test_calories1.csv")
-            user_data=input_data.iloc[:10]
-            duration_seconds = int(user_data["duration"].tolist()[7])
-            distance = round(float(user_data["distance"].tolist()[7]),2)
-            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[7]),0)
-            avg_speed = round(float(user_data["avg_speed"].tolist()[7]),2)
-            bike_check= int(user_data["sport_bike"].tolist()[7])
-            mbike_check= int(user_data["sport_mountain bike"].tolist()[7])
-            run_check= int(user_data["sport_run"].tolist()[7])
-            duration=cal_time(duration_seconds)
-            sport_type=check_sport_type(bike_check,mbike_check,run_check)
-            
-            system_time=str(datetime.now())
-            time=system_time.split('.')[0]
-
-            #HR-track model
-            use_cuda=torch.cuda.is_available() 
-            HR_output = HR_track_model.predict(id = 328420333)
-            hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
-            hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
-
-            #get mock speed data
-            speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
-
-            #0 for bike, 1 for mbike, 2 for run
-            mock_data = speed_altitude_mock.iloc[0]
-            sport = mock_data["sport"]
-            speed = mock_data["speed"]
-            altitude = mock_data["altitude"]
-            #set echarts
-            x = []
-            for i in range(50):
-                x.append('')
-            #Fit-track model
-            acc_output = calories_cal_model.predict(input_data.iloc[7:8])
-            actual_calories = int(acc_output)
-            return render_template("activitylog.html",actual_calories=actual_calories,
-            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
-            avg_heart_rate=avg_heart_rate,expected_calories=expected_calories,
-            heartrate_pre=json.dumps(HR_output[0][0]),heartrate_tar=json.dumps(HR_output[0][1]),
-            xaxis=Markup(json.dumps(x)),altitude=Markup(altitude),speed=Markup(speed),
-            hr_max=hr_max,hr_min=hr_min,
-            sport=Markup(json.dumps(sport))
-            )   
-    else:
-        flash('Sorry, please log in to use this function!')
-        return redirect(url_for('login'))
-
-@app.route("/activitylog_mbike")
-def activitylog_mbike(): 
-    #only logged user can use this function
-    if session.get('user'):
-        expected_calories = session.get('user_input_calories')
-        #user should select one sport before this page
-        if expected_calories == None:
-            flash('Sorry, please get one recommended sport first!')
-            return redirect(url_for('workoutRec'))
-        else:
-            flash('mbike')
-            #get mock data
-            input_data=pd.read_csv("test_calories1.csv")
-            user_data=input_data.iloc[:10]
-            duration_seconds = int(user_data["duration"].tolist()[5])
-            distance = round(float(user_data["distance"].tolist()[5]),2)
-            avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[5]),0)
-            avg_speed = round(float(user_data["avg_speed"].tolist()[5]),2)
-            bike_check= int(user_data["sport_bike"].tolist()[5])
-            mbike_check= int(user_data["sport_mountain bike"].tolist()[5])
-            run_check= int(user_data["sport_run"].tolist()[5])
-            duration=cal_time(duration_seconds)
-            sport_type=check_sport_type(bike_check,mbike_check,run_check)
-            
-            system_time=str(datetime.now())
-            time=system_time.split('.')[0]
-
-            #HR-track model
-            use_cuda=torch.cuda.is_available() 
-            HR_output = HR_track_model.predict(id = 373904132)
-            hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
-            hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
-
-            #get mock speed data
-            speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
-
-            #1 for bike, 2 for mbike, 3 for run
-            mock_data = speed_altitude_mock.iloc[1]
-            sport = mock_data["sport"]
-            speed = mock_data["speed"]
-            altitude = mock_data["altitude"]
-            #set echarts
-            x = []
-            for i in range(50):
-                x.append('')
-            #Fit-track model
-            acc_output = calories_cal_model.predict(input_data.iloc[5:6])
             actual_calories = int(acc_output)
             return render_template("activitylog.html",actual_calories=actual_calories,
             time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,

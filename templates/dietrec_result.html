@@ -28,6 +28,11 @@
     </script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+        <script>
+            function openwin(){
+                window.open(herf="/",'newwindow',"width=600,height=600,toolbar= no, menubar=no, scrollbars=no, resizable=no, location=no, status=no") 
+            } 
+        </script>
 </head>
 <body>
     <header class="header-main">
@@ -77,8 +82,10 @@
                 <a>Today's Meal Plan</a>
             </div>
             <div class="outtable_main_right">
-                <form class="user_regenerate" action="/regenerate_all" method="POST">
-                    <a>Regenerate all meals</a><input class="regenerate" name="reall" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
+                <form class="user_regenerate" action="/dietrec_model" method="POST">
+                    <a>Regenerate all meals</a>
+                    <input type="hidden" value="regenerate_all" name="hidden"></input>
+                    <input class="regenerate" name="reall" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
                 </form>
             </div>
         </div>
@@ -106,37 +113,44 @@
             {% if message == 'Breakfast'%} 
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="{{label_tbreakfast}}"></input>
+                        <input class='label' value="Recommended Breakfast"></input>
                     </div>
                     <div class="table_main_right">
-                        <form class="user_regenerate" action="/regenerate_breakfast" method="POST">
-                            <a>Regenerate</a><input class="regenerate" name="rebreakfast" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
-                        </form>
+                        <div class="table_left">
+                            <a>Total Breakfast Calories: {{sum_breakfast_cal}}</a>
+                        </div>
+                        <div class="table_right">
+                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                                <a>Regenerate</a>
+                                <input type="hidden" value="regenerate_breakfast" name="hidden"></input>
+                                <input class="regenerate" name="rebreakfast" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
+                            </form>
+                        </div>
                     </div>                   
                 </div>
                 <div class="gap40"></div>                
                 <div class="table_container">                                     
                     {{ table_b_html | safe }}
                 </div>
-                <!-- <div class="ingredient">
-                    {{output_b_a | safe}}
-                    {{output_b_b | safe}}
-                    {{output_b_c | safe}}
-                    {{output_b_d | safe}}
-                    {{output_b_e | safe}}
-                </div>   -->
                 <div class="gap50"></div>        
             {%endif%}
 
             {% if message == 'Lunch'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="{{label_tlunch}}"></input>
+                        <input class='label' value="Recommended Lunch"></input>
                     </div>
                     <div class="table_main_right">
-                        <form class="user_regenerate" action="/regenerate_lunch" method="POST">
-                            <a>Regenerate</a><input class="regenerate" name="relunch" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
-                        </form>
+                        <div class="table_left">
+                            <a>Total Lunch Calories: {{sum_lunch_cal}}</a>
+                        </div>
+                        <div class="table_right">
+                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                                <a>Regenerate</a>
+                                <input type="hidden" value="regenerate_lunch" name="hidden"></input>
+                                <input class="regenerate" name="relunch" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
+                            </form>
+                        </div>
                     </div>                   
                 </div>
                 <div class="gap40"></div>                
@@ -149,12 +163,19 @@
             {% if message == 'Dinner'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="{{label_tdinner}}"></input>
+                        <input class='label' value="Recommended Dinner"></input>
                     </div>
                     <div class="table_main_right">
-                        <form class="user_regenerate" action="/regenerate_dinner" method="POST">
-                            <a>Regenerate</a><input class="regenerate" name="rebdinner" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
-                        </form>
+                        <div class="table_left">
+                            <a>Total Dinner Calories: {{sum_dinner_cal}}</a>
+                        </div>
+                        <div class="table_right">
+                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                                <a>Regenerate</a>
+                                <input type="hidden" value="regenerate_dinner" name="hidden"></input>
+                                <input class="regenerate" name="rebdinner" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
+                            </form>
+                        </div>
                     </div>                   
                 </div>
                 <div class="gap40"></div>                
@@ -167,12 +188,19 @@
             {% if message == 'Dessert'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="{{label_tdessert}}"></input>
+                        <input class='label' value="Recommended Dessert"></input>
                     </div>
                     <div class="table_main_right">
-                        <form class="user_regenerate" action="/regenerate_dessert" method="POST">
-                            <a>Regenerate</a><input class="regenerate" name="redessert" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
-                        </form>
+                        <div class="table_left">
+                            <a>Total Dessert Calories: {{sum_dessert_cal}}</a>
+                        </div>
+                        <div class="table_right">
+                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                                <a>Regenerate</a>
+                                <input type="hidden" value="regenerate_dessert" name="hidden"></input>
+                                <input class="regenerate" name="redessert" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
+                            </form>
+                        </div>
                     </div>                   
                 </div>
                 <div class="gap40"></div>                
@@ -185,9 +213,6 @@
         {% endwith %}
 
         {% block body %}{% endblock %}
-
-
-      
     </section>
 </body>
 </html>
