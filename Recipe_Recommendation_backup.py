@@ -1,15 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
-
-
-# In[2]:
-
 
 class DietRec():
     #find the closet row
@@ -49,8 +39,8 @@ class DietRec():
     
     #main function
     def recipe_rec(self, calorie, meal_num, breakfast, lunch, dinner, dessert, vegan, index_number, index_number_br, index_number_lun, index_number_din, index_number_des):
-        #get the recipe data
-        recipe = pd.read_csv("/Users/apple/Downloads/recipes.csv")
+        
+        recipe = pd.read_csv("./recipes.csv")
 
         #determine the meal type(s)
         meal_type_dic = {"breakfast":breakfast, "lunch":lunch, "dinner":dinner, "dessert":dessert} 
@@ -73,20 +63,20 @@ class DietRec():
         meal_pre = vegan
         
         #the output for all meal types
-        rec_list={"Name":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
+        rec_list={"Name":[],"Ingredients_list":[],"Directions_list":[],"Prep_time":[],"Cook_time":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
 
         if meal_num == 1:
-            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,index_number)
+            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,meal_regeneration_list[0])
 
         elif meal_num == 2:           
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.5,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, meal_regeneration_list[0]),calorie)
-            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, meal_regeneration_list[1])
+            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre,meal_regeneration_list[1])
             return rec_list 
 
         elif meal_num == 3:
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, meal_regeneration_list[0]),calorie)
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, meal_regeneration_list[1]),calorie)
-            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[2], meal_pre),meal_type_list[2],meal_pre, meal_regeneration_list[2])    
+            self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[2], meal_pre),meal_type_list[2],meal_pre,meal_regeneration_list[2])    
             return rec_list
 
         elif meal_num == 4:
@@ -100,4 +90,3 @@ if __name__ == '__main__':
     dietRec = DietRec()
     data = dietRec.recipe_rec(2000,2,0,1,1,0,0,0,1,0,0,4)
     print(data)
-
