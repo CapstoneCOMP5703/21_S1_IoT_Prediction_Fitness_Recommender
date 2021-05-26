@@ -18,13 +18,15 @@ app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
 
-from SportRec_v2 import Model
-rf=Model()
+# from SportRec_v2 import Model
+# rf=Model()
 
 from Recipe_Recommendation import DietRec
+from DetailsDisplay import DetailsDisplay
 dietRec = DietRec()
+detailsDisplay = DetailsDisplay()
 
-# from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+# # from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
 # from short_term_prediction_updated_v5 import da_rnn, dataInterpreter, contextEncoder, encoder, decoder,dataInterpreter_predict
 # import torch
 
@@ -134,6 +136,8 @@ def dietrec_model():
         re_dinner=0
         re_dessert=0
         re=re+1
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_breakfast":
         diet_list=session.get('diet_list')
         calories = diet_list[0]
@@ -149,6 +153,8 @@ def dietrec_model():
         re_dinner=diet_list[10]
         re_dessert=diet_list[11]
         re_breakfast=re_breakfast+1
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_lunch":
         diet_list=session.get('diet_list')
         calories = diet_list[0]
@@ -164,6 +170,8 @@ def dietrec_model():
         re_dinner=diet_list[10]
         re_dessert=diet_list[11]
         re_lunch=re_lunch+1
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_dinner":
         diet_list=session.get('diet_list')
         calories = diet_list[0]
@@ -179,6 +187,8 @@ def dietrec_model():
         re_dinner=diet_list[10]
         re_dessert=diet_list[11]
         re_dinner=re_dinner+1
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_dessert":
         diet_list=session.get('diet_list')
         calories = diet_list[0]
@@ -194,10 +204,27 @@ def dietrec_model():
         re_dinner=diet_list[10]
         re_dessert=diet_list[11]
         re_dessert=re_dessert+1
-    else:
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
+    elif request.form.get("hidden") == "close":
+        diet_list=session.get('diet_list')
+        calories = diet_list[0]
+        count= diet_list[1]
+        s_breakfast =diet_list[2]
+        s_lunch=diet_list[3]
+        s_dinner =diet_list[4]
+        s_dessert=diet_list[5]
+        s_vegan=diet_list[6]
+        re=diet_list[7]
+        re_breakfast=diet_list[8]
+        re_lunch=diet_list[9]
+        re_dinner=diet_list[10]
+        re_dessert=diet_list[11]
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
+    else:     
         #get user input
         cbox=request.values.getlist("cbox")
-        print(cbox)
         calories_get=request.form.get("calories")
         #limit user input
         if(calories_get == "" or cbox==""):
@@ -224,22 +251,33 @@ def dietrec_model():
         if(count == 0):
             flash('Please choose at least one meal type!')
             return render_template("dietrec.html",)
+
+        diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
+        session['diet_list']=diet_list
+
     #load DietRec model
     diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
 
     #save DietRec parameter into global variate
-    diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
-    session['diet_list']=diet_list
 
-    df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal= generateMealTable(diet_data)
+    df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal= generateMealTableNoIgre(diet_data)
    
     total_calories= int(sum_breakfast_cal)+int(sum_lunch_cal)+int(sum_dinner_cal)+int(sum_dessert_cal)
 
     return render_template("dietrec_result.html",table_b_html=df_html_b,
     table_l_html=df_html_l,table_dinner_html=df_html_dinner,table_dessert_html=df_html_dessert,
     sum_breakfast_cal=sum_breakfast_cal,sum_lunch_cal=sum_lunch_cal,
-    sum_dinner_cal=sum_dinner_cal,sum_dessert_cal=sum_dessert_cal,total_calories=total_calories)
+    sum_dinner_cal=sum_dinner_cal,sum_dessert_cal=sum_dessert_cal,total_calories=total_calories
+    )
+
+@app.route("/food_details",methods=['GET', 'POST'])
+def food_details(): 
+    food_name=request.form.get("hidden")
+    ingredient_list,direction_list,img_url,calorie,prep_time,cook_time,meal_type = detailsDisplay.details_display(food_name)
+    print(ingredient_list[0],direction_list[0],img_url[0],calorie[0],prep_time[0],cook_time[0],meal_type[0])
+
+    return render_template("food_details.html",food_name=food_name)
 
 def generateMealTableNoIgre(diet_data):
     meal_type=diet_data.get('Meal_Type')
@@ -256,8 +294,8 @@ def generateMealTableNoIgre(diet_data):
         df_breakfast,sum_breakfast_cal=generateMealDataFrameNoIgre(diet_data,0,breakfast_end)
         df_breakfast=df_breakfast.T
         df_breakfast.insert(0,'images',push_img_urls(getMealImageUrls(diet_data,0,breakfast_end)))
-        df_breakfast.insert(3,'button',"breakfast")
-        print(df_breakfast)
+        print("+++++++++",generateMealNameNoIgre(diet_data,0,breakfast_end))
+        df_breakfast.insert(3,'button',generateMealNameNoIgre(diet_data,0,breakfast_end))
         # use pandas method to auto generate html
         df_html_b = df_breakfast.to_html(classes="table_rec",border=0,bold_rows = bool,formatters=dict(images=path_to_image_html,button=value_to_button_html),header=False,index=False,escape=False) 
     else:
@@ -367,8 +405,9 @@ def path_to_image_html(path):
     return '<img src="'+ path + '" width="60"   background-position: center center; background-size: cover;>'
 
 def value_to_button_html(value):
-    return '<form action="/diet_result" method="POST"><input type="hidden" name= "hidden" value='+value+'></input><input type="submit" value="details"></input></form> '
-
+    print("value_to_button_html: ",value)
+    return "<form  action='/food_details' method='POST'><input type='hidden' name= 'hidden' value='"+value+"'></input><input type='submit' href = 'javascript:void(0) 'onclick = 'popWin();' value='Details'></input></form>"
+    
 def append_list(header,input_list,start,end):
     for i in range(start,end):
         header.append(input_list[i])
@@ -426,6 +465,17 @@ def generateMealDataFrameNoIgre(diet_data,start,end):
    
     return df,sum_cal
 
+def generateMealNameNoIgre(diet_data,start,end):
+    data_name=[]
+    data_names=diet_data.get('Name') 
+    print("food name333:",data_names)
+    for i in range(start,end):
+        data_name.append(data_names[i])
+
+    print(data_name)
+    return data_name
+
+
 #路由运动记录    
 @app.route("/activitylog",methods=['GET', 'POST'])
 def activitylog_run(): 
@@ -463,7 +513,7 @@ def activitylog_run():
             system_time=str(datetime.now())
             time=system_time.split('.')[0]
 
-            #HR-track model
+            # #HR-track model
             # use_cuda=torch.cuda.is_available() 
             # HR_output = HR_track_model.predict(id = 328420333)
             # hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
@@ -484,9 +534,8 @@ def activitylog_run():
             #Fit-track model
             acc_output = calories_cal_model.predict(input_data.iloc[3:4])
             actual_calories = int(acc_output)
-            return render_template("activitylog_mock.html",actual_calories=actual_calories,
-            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
-            avg_heart_rate=avg_heart_rate,expected_calories=expected_calories
+            return render_template("activitylog.html",actual_calories=actual_calories,
+            time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed
             )   
     else:
         flash('Sorry, please log in to use this function!')
