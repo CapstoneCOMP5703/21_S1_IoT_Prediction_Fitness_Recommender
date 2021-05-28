@@ -57,7 +57,7 @@
             <form class="reset-from" method="POST" action="{{ url_for('reset') }}">
                 <h1>Please Reset Your Password</h1>
                 <div class="txt">
-                    <input type="text" name="username" required>
+                    <input type="text" id="username" name="username" required>
                     <span data-placeholder="Username"></span>
                 </div>
                 <div class="txt">
@@ -124,7 +124,7 @@
                     <span data-placeholder="Confirm new password"></span>
                 </div>
                 <div class="prompt">
-                    <h4>{{get_flashed_messages()[0]}}</h4>
+                    <h4 id="message">{{get_flashed_messages()[0]}}</h4>
                 </div>
                 <div>
                     <input class="signupbtn" type="submit" value="Confirm">
@@ -138,5 +138,23 @@
         </div>
         </div>
     </section>
+    <script>
+        var username = document.getElementById("username");
+        var message = document.getElementById("message");
+
+        if("oninput" in username){
+            username.addEventListener("input",getWord,false);
+        }else{
+            username.onpropertychange = getWord;
+        }
+
+        function getWord(){
+            if(username.value == "") {
+
+            } else{
+                message.innerText = "";
+            }
+        }
+    </script>
 </body>
 </html>

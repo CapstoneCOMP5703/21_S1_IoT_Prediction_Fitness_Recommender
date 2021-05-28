@@ -57,7 +57,7 @@
             <form class="signup-from" method="POST" action="{{ url_for('signup') }}">
                 <h1>Please Fill in the Blank</h1>
                 <div class="txt">
-                    <input type="text" name="username" required>
+                    <input type="text" id="username" name="username" required>
                     <!-- pattern="[A-Z]{1}[a-z]+"-->
                     <span data-placeholder="Username"></span>
                 </div>
@@ -121,14 +121,14 @@
                         </script>
                     </div>
                 <div class="txt">
-                    <input type="password" name="repassword" required>
+                    <input type="password" id="repassword" name="repassword" required>
                     <span data-placeholder="Confirm your password"></span>
                 </div>
                 <div class="prompt">
-                    <h4>{{get_flashed_messages()[0]}}</h4>
+                    <h4 id="message">{{get_flashed_messages()[0]}}</h4>
                 </div>
                 <div>
-                    <input class="signupbtn" type="submit" value="Confirm">
+                    <input class="signupbtn" type="submit" id = "submit" value="Confirm">
                     <input class="signupbtn" type="reset" value="Clear">
                 </div>
                 </br>
@@ -139,5 +139,23 @@
         </div>
         </div>
     </section>
+    <script>
+        var username = document.getElementById("username");
+        var message = document.getElementById("message");
+
+        if("oninput" in username){
+            username.addEventListener("input",getWord,false);
+        }else{
+            username.onpropertychange = getWord;
+        }
+
+        function getWord(){
+            if(username.value == "") {
+
+            } else{
+                message.innerText = "";
+            }
+        }
+    </script>
 </body>
 </html>

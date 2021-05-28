@@ -1,15 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import pandas as pd
 import numpy as np
-
-
-# In[2]:
-
 
 class DietRec():
     #find the closet row
@@ -50,7 +40,7 @@ class DietRec():
     #main function
     def recipe_rec(self, calorie, meal_num, breakfast, lunch, dinner, dessert, vegan, index_number, index_number_br, index_number_lun, index_number_din, index_number_des):
         #get the recipe data
-        recipe = pd.read_csv("/Users/apple/Downloads/recipes.csv")
+        recipe = pd.read_csv("./recipes.csv")
 
         #determine the meal type(s)
         meal_type_dic = {"breakfast":breakfast, "lunch":lunch, "dinner":dinner, "dessert":dessert} 

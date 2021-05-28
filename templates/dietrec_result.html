@@ -113,7 +113,7 @@
             {% if message == 'Breakfast'%} 
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="Recommended Breakfast"></input>
+                        <input class='label' value="Breakfast"></input>
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
@@ -138,7 +138,7 @@
             {% if message == 'Lunch'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="Recommended Lunch"></input>
+                        <input class='label' value="Lunch"></input>
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
@@ -163,7 +163,7 @@
             {% if message == 'Dinner'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="Recommended Dinner"></input>
+                        <input class='label' value="Dinner"></input>
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
@@ -188,7 +188,7 @@
             {% if message == 'Dessert'%}
                 <div class="table_main">
                     <div class="table_main_left">
-                        <input class='label' value="Recommended Dessert"></input>
+                        <input class='label' value="Dessert"></input>
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
@@ -216,11 +216,50 @@
     </section>
 
     <div id="light" class="pop_win">
-        <form  action="/dietrec_model" method="POST">
+        <form  action="" method="POST" target='nm_iframe'>
             <input type="hidden" value="close" name="hidden"></input>
             <input class="close" name="close" type="submit" value="" onclick = "closeWin();" style="cursor:pointer;border-width:0;background-image: url(images/close.png);background-size: cover;float: right;"></input>
         </form>
         <!-- todo -->
+        <p id="name_display"></p >
+        <p id="ingredients_display"></p>
+        <p id="direction_display"></p>
+        <p id="cook_time_display"></p>
+        <p id="prep_time_display"></p>
+        <p id="img_display"></p>
+        <p id="calorie_display"></p>
+    </div>
+    <div id="fade" class="black_overlay"></div>
+    <img src="" alt="">
+
+    <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe>  
+
+    <script type="text/javascript">
+        function popWin(name,ingredients,direction,cook_time,prep_time,img_url,calorie){
+            scrollTo(0,0);
+            document.getElementById('light').style.display='block';
+            document.getElementById('fade').style.display='block';
+            document.getElementById('name_display').innerText = name;
+            document.getElementById('ingredients_display').innerHTML = ingredients;
+            document.getElementById('direction_display').innerHTML = direction;
+            document.getElementById('cook_time_display').innerText = cook_time;
+            document.getElementById('prep_time_display').innerText = prep_time;
+            img_display = '<img src="'+img_url+'" alt="food_img"> </img>'
+            document.getElementById('img_display').innerHTML = img_display;
+            document.getElementById('calorie_display').innerText = calorie;
+        }
+
+        function closeWin() {
+            document.getElementById('light').style.display = 'none';
+            document.getElementById('fade').style.display = 'none'
+        }
+    </script>
+
+    <!-- <div id="light" class="pop_win">
+        <form  action="/dietrec_model" method="POST">
+            <input type="hidden" value="close" name="hidden"></input>
+            <input class="close" name="close" type="submit" value="" onclick = "closeWin();" style="cursor:pointer;border-width:0;background-image: url(images/close.png);background-size: cover;float: right;"></input>
+        </form>
         {{food_name}}
     </div>
     <div id="fade" class="black_overlay"></div>
@@ -236,6 +275,6 @@
             document.getElementById('light').style.display = 'none';
             document.getElementById('fade').style.display = 'none'
         }
-    </script>
+    </script> -->
 </body>
 </html>
