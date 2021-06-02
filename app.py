@@ -41,6 +41,8 @@ calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
 # HR_track_model = torch.load('./model_heartrate_01.pt', map_location=torch.device('cpu'))
 HR_track_model = torch.load('./model_epoch_04.pt')
 
+userId=7178673  
+
 #homepage
 @app.route("/")
 def homepage():      
@@ -63,7 +65,7 @@ def sportrec_model():
     #parse str into int
     calories=int(calories_get) 
     #limit user input
-    if(calories > 1000):
+    if(calories > 2001):
         flash('That is too much for you, try fewer calories!')
         return render_template("workoutrec.html",)
     if(calories < 100):
@@ -76,10 +78,12 @@ def sportrec_model():
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
     if session.get('user'):
         #get the userId to predict personalized result
-        data=rf.predict_data(session.get('userId'), calories)
+        data=rf.predict_data(userId, calories)
+        # data=rf.predict_data(session.get('userId'), calories)
     else:
         #give new user a general result
         data=rf.predict_data(1, calories)
+        # data=rf.predict_data(1, calories)
         flash('//todo 解释这是新用户的托底数据')
     
     #get the sport duration
@@ -124,6 +128,7 @@ def dietrec_model():
     count,re,re_breakfast,re_lunch,re_dinner,re_dessert=0,0,0,0,0,0
 
     if request.form.get("hidden") == "regenerate_all":
+        print("regenerate_all")
         diet_list=session.get('diet_list')
         calories = diet_list[0]
         count= diet_list[1]
@@ -142,6 +147,7 @@ def dietrec_model():
         diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
         session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_breakfast":
+        print("regenerate_breakfast")
         diet_list=session.get('diet_list')
         calories = diet_list[0]
         count= diet_list[1]
@@ -159,6 +165,7 @@ def dietrec_model():
         diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
         session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_lunch":
+        print("regenerate_lunch")
         diet_list=session.get('diet_list')
         calories = diet_list[0]
         count= diet_list[1]
@@ -176,6 +183,7 @@ def dietrec_model():
         diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
         session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_dinner":
+        print("regenerate_dinner")
         diet_list=session.get('diet_list')
         calories = diet_list[0]
         count= diet_list[1]
@@ -193,6 +201,7 @@ def dietrec_model():
         diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
         session['diet_list']=diet_list
     elif request.form.get("hidden") == "regenerate_dessert":
+        print("regenerate_dessert")
         diet_list=session.get('diet_list')
         calories = diet_list[0]
         count= diet_list[1]
@@ -371,7 +380,7 @@ def value_to_button_html(value):
     prep_time=prep_time[index_value[0]]
     img_url=img_url[index_value[0]]
     calorie=str(calorie[index_value[0]])
-    return "<input type='button' href = 'javascript:void(0)' onclick = 'popWin(&apos;"+ value +"&apos;,&apos;"+ ingredient_list +"&apos;,&apos;"+ direction_list +"&apos;,&apos;"+ cook_time +"&apos;,&apos;"+ prep_time +"&apos;,&apos;"+ img_url +"&apos;,&apos;"+ calorie +"&apos;);' value='Details'></input>"
+    return "<input type='button'  id='details_button' href = 'javascript:void(0)' onclick = 'popWin(&apos;"+ value +"&apos;,&apos;"+ ingredient_list +"&apos;,&apos;"+ direction_list +"&apos;,&apos;"+ cook_time +"&apos;,&apos;"+ prep_time +"&apos;,&apos;"+ img_url +"&apos;,&apos;"+ calorie +"&apos;);' value='Details'></input>"
 
 def append_list(header,input_list,start,end):
     for i in range(start,end):
@@ -430,103 +439,85 @@ def activitylog():
     #only logged user can use this function
     if session.get('user'):
         expected_calories = session.get('user_input_calories')
+        # userId=session.get('userId')
         #user should select one sport before this page
         if expected_calories == None:
             flash('Sorry, please get one recommended sport first!')
             return redirect(url_for('workoutRec'))
         else:
+            data = pd.read_csv('mock_dataset.csv')
+            
             if request.form.get("hidden")=="run":
                 print("user selected run!")
                 flash('run')
                 sport_type='run'
+                calories = data.Calories[(data.User_Id==userId) & (data.Sport_run==1)].tolist()
+                print("calories",calories)
+                calories_target = index_number(calories,expected_calories)
+                workoutId= int(data.Id[(data.User_Id==userId) & (data.Calories==calories_target) & (data.Sport_run==1)])
+                print("workoutId",workoutId)
             elif request.form.get("hidden")=="bike":
                 print("user selected bike!")
                 flash('bike')
                 sport_type='bike'
-            else:
+                calories = data.Calories[(data.User_Id==userId) & (data.Sport_bike==1)].tolist()
+                calories_target = index_number(calories,expected_calories)
+                workoutId= int(data.Id[(data.User_Id==userId) & (data.Calories==calories_target) & (data.Sport_bike==1)])
+                print("workoutId",workoutId)
+            elif request.form.get("hidden")=="mbike":
                 print("user selected mbike!")
                 flash('mbike')
                 sport_type='mbike'
-                
+                calories = data.Calories[(data.User_Id==userId) & (data.Sport_mountain_bike==1)].tolist()
+                calories_target = index_number(calories,expected_calories)
+                workoutId= int(data.Id[(data.User_Id==userId) & (data.Calories==calories_target) & (data.Sport_mountain_bike==1)])
+                print("workoutId",workoutId)
+            else:
+                flash('Please retype calories!')
+                return redirect(url_for('workoutRec'))
             
-            
-            #get mock data
-            # input_data=pd.read_csv("test_calories1.csv")
-            # user_data=input_data.iloc[:10]
-            # duration_seconds = int(user_data["duration"].tolist()[3])
-            # distance = round(float(user_data["distance"].tolist()[3]),2)
-            # avg_heart_rate = round(float(user_data["avg_heart_rate"].tolist()[3]),0)
-            # avg_speed = round(float(user_data["avg_speed"].tolist()[3]),2)
-            # bike_check= int(user_data["sport_bike"].tolist()[3])
-            # mbike_check= int(user_data["sport_mountain bike"].tolist()[3])
-            # run_check= int(user_data["sport_run"].tolist()[3])
-            # duration=cal_time(duration_seconds)
-            # sport_type=check_sport_type(bike_check,mbike_check,run_check)
+            speed = data.Speed_Adjusted[data.Id==workoutId].tolist()[0]
+            altitude =data.Altitude[data.Id==workoutId].tolist()[0]
 
-            userId=2595849
-
-            # speed_altitude_mock_data = pd.read_csv('speed_altitude_mock_new.csv')
-            speed_altitude_mock_data = pd.read_csv('speed_altitude_mock.csv')
-            calories = speed_altitude_mock_data.Calories[speed_altitude_mock_data.User_Id==userId].tolist()
-            print(calories)
-            calories_target = index_number(calories,expected_calories)
-            workoutId= int(speed_altitude_mock_data.Id[(speed_altitude_mock_data.User_Id==userId) & (speed_altitude_mock_data.Calories==calories_target)])
-            speed = speed_altitude_mock_data.Speed_Adjusted[speed_altitude_mock_data.Id==workoutId].tolist()[0]
-            altitude =speed_altitude_mock_data.Altitude[speed_altitude_mock_data.Id==workoutId].tolist()[0]
-            print("workoutId",workoutId)
-
-            input_data=pd.read_csv("calorie_updated_version.csv")
-            user_data=input_data[input_data.id==workoutId]
-            print(user_data)
-            duration_seconds = int(user_data["duration"])
-            distance = round(float(user_data["distance"]))
-            avg_heart_rate = round(float(user_data["avg_heart_rate"]))
-            avg_speed = round(float(user_data["avg_speed"]))
-            bike_check= int(user_data["sport_bike"])
-            mbike_check= int(user_data["sport_mountain bike"])
-            run_check= int(user_data["sport_run"])
+            duration_seconds = data.Duration[data.Id==workoutId].tolist()[0]
             duration=cal_time(duration_seconds)
-            sport_type=check_sport_type(bike_check,mbike_check,run_check)
             
+            distance_meter = data.Distance[data.Id==workoutId].tolist()[0]
+            distance=round(float(distance_meter))
+
+            avg_heart_rate_original=data.avg_heart_rate[data.Id==workoutId].tolist()[0]
+            avg_heart_rate = round(float(avg_heart_rate_original))
+
+            avg_speed_original=data.avg_speed[data.Id==workoutId].tolist()[0]
+            avg_speed=round(float(avg_speed_original))
+
+            bike_check= int(data.Sport_bike[data.Id==workoutId].tolist()[0])
+            mbike_check= int(data. Sport_mountain_bike[data.Id==workoutId].tolist()[0])
+            run_check= int(data.Sport_run[data.Id==workoutId].tolist()[0])
+            sport_type=check_sport_type(bike_check,mbike_check,run_check)
+
+            user_data = pd.DataFrame([[workoutId,userId,duration_seconds,distance_meter,avg_heart_rate_original,avg_speed_original,bike_check,mbike_check,run_check]], columns=['id', 'userId','duration','distance','avg_heart_rate','avg_speed','sport_bike','sport_mountain bike','sport_run'])
+            print(user_data)
+
             system_time=str(datetime.now())
             time=system_time.split('.')[0]
-            
 
+            #Fit-track model
+            acc_output = calories_cal_model.predict(user_data)
+            print("acc_output",acc_output)
+            actual_calories = int(acc_output)
+            
             #HR-track model
             use_cuda=torch.cuda.is_available() 
             HR_output = HR_track_model.predict(id = workoutId)
             hr_min=int(min(min(HR_output[0][0]),min(HR_output[0][1]))-10)
             hr_max=int(max(max(HR_output[0][0]),max(HR_output[0][1]))+10)
 
-            #get mock speed data
-            # speed_altitude_mock = pd.read_csv("speed_altitude_mock.csv")
-
-
-            
-            # mock_data = speed_altitude_mock_new.iloc[2]
-            # sport = mock_data["sport"]
-            # for index, row in speed_altitude_mock_new.iterrows():
-            #     if (int(row['Id'])==workoutId):
-            #         speed = row["Speed Adjusted"]
-            #         altitude = row["Altitude"]
-            #         print("altitudealtitudealtitudealtitudealtitude")
-            #     break
-
-            #1 for bike, 2 for mbike, 3 for run
-            # mock_data = speed_altitude_mock.iloc[2]
-            # sport = mock_data["sport"]
-            # speed = mock_data["speed"]
-            # altitude = mock_data["altitude"]
-
-
             #set echarts
             x = []
             for i in range(290):
                 x.append('')
-            #Fit-track model
-            acc_output = calories_cal_model.predict(user_data)
-            print("acc_output",acc_output)
-            actual_calories = int(acc_output)
+
 
             return render_template("activitylog.html",actual_calories=actual_calories,
             time=time,distance=distance,sport_type=sport_type,duration=duration,avg_speed=avg_speed,
@@ -678,14 +669,11 @@ if __name__ == '__main__':
 
 
 #todo
-# 1.  signup flash之后password清空     （demi）
-# 2.  unit testing                     （peter可能不做） https://pypi.org/project/flask-unittest/
-# 3.  check image的版权 cc0 license    （oni）
-# 4.  动态的navigation                   （peter （basecase，回到最顶端））
-# 5.  floating window for diet           （peter demi 已实现）
-# 6.  end semester 表格                  （whole team）
-# 7.  draft report                       （whole team）
-# 8.  换data的instruction                （monica，oni，mike，demi）
-# 9.  ideal user 可以用三个运动          （mike，oni 集成几个用户到一个）
-# 10. Usability testing
+# 1.  unit testing                     （peter可能不做） https://pypi.org/project/flask-unittest/
+# 2.  check image的版权 cc0 license    （oni）
+# 3.  draft report                       （whole team）
+# 4.  换data的instruction                （monica，oni，mike，demi）
+# 5.  Usability testing
+# 6.  数据库                            （demi）
+
 

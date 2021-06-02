@@ -55,13 +55,23 @@
                 },
                 yAxis: [{
                     type: 'value',
-                    name: 'Mile per Hour(MPH)',
+                    name: 'Meter',
+                    axisLine:{
+                        lineStyle:{
+                            color:'#CB5350',
+                        }
+                    } 
                 }, {
                     type: 'value',
-                    name: 'Meter',
+                    name: 'Mile per Hour(MPH)',
+                    axisLine:{
+                        lineStyle:{
+                            color:'#2F4554',
+                        }
+                    }
                 }],
                 series: [{
-                    name: 'Altitude (km)',
+                    name: 'Altitude (m)',
                     data: {{ altitude }},
                     type: 'line',
                     areaStyle: {},
@@ -182,9 +192,10 @@
     <section class="report_area">
         <div class="report">
             <a>{{time}}</a>
-            <h1>{{distance}} <a class="label_report"> Kilometres</a></h1>      
-            <div id="main1" style="width: 1000px; height: 300px"></div>            
-            <div id="main2" style="width: 1000px; height: 300px"></div>     
+        </br>    
+            <div id="main1" style="width: 1000px; height: 300px; margin-top: 20px;"></div>            
+            <div id="main2" style="width: 1000px; height: 300px"></div>    
+            <h1><a class="label_report">Distance:</a> {{distance}} <a class="label_report"> Kilometers</a></h1>  
             <table class="report_table">
                 <tr>
                     <td><img src= "images/ic_al_time.png"></img></td>
@@ -307,6 +318,17 @@
         </div>
 
     </section>
-    
+
+    <div style="position:fixed;right: 30px;bottom:100px;">
+        <img id="backtotop" src= "images/totop.png"></img>
+        <a>Back to Top</a>
+    </div>
+
+    <script>
+        backtotop .onclick = function(){
+            var top = document.body.scrollTop || document.documentElement.scrollTop
+            scrollBy(0,-top);
+        }
+    </script>
 </body>
 </html>

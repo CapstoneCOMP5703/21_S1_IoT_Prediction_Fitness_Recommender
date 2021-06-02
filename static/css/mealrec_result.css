@@ -154,7 +154,7 @@ table td img{
   width: 100px;
   height: 100px;
   display:block;
-  border-radius: 5px 2px;
+  border-radius: 10px;
   margin: 10px auto;
   background-position: center center; 
   background-size: cover;
@@ -325,4 +325,124 @@ table td img{
 .close{
   width: 25px;
   height: 25px;
+}
+
+#name{
+  text-align: center;
+}
+
+#name_display{
+  text-transform: capitalize;
+}
+
+#contents{
+  margin-top: 30px;
+  height:fit-content;
+}
+
+#image_display{
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+}
+
+#img_display{
+  margin-left: 20px;
+  display:inline;
+}
+
+#image{
+  width:20%;
+  float:left;
+  display:inline;
+}
+
+#prepare{
+  width: 25%;
+  float:left;
+  display: inline;
+  margin-top: 20px;
+}
+
+#pre{
+  width:20px;
+  height:20px;
+  display: inline;
+}
+
+#prep_time_display{
+  font-weight: bold;
+  display: inline;
+}
+
+.des{
+  display: inline;
+}
+
+#cook{
+  margin-left: 10px;
+  width:25%;
+  float:left;
+  display: inline;
+  margin-top: 20px;
+}
+
+#coo{
+  width:20px;
+  height:20px;
+  display: inline;
+}
+
+#cook_time_display{
+  font-weight: bold;
+  display: inline;
+}
+
+#calorie{
+  display: inline;
+  width: 20%;
+  float:right;
+  margin-top: 20px;
+}
+
+#calorie_display{
+  font-size: larger;
+  font-weight: bold;
+  display: inline;
+}
+
+#ingredient{
+  float: left;
+  width:30%;
+  margin-left: 20px;
+}
+
+#direction{
+  float: right;
+  width:60%;
+}
+
+#details_button{
+  cursor: pointer;
+  width: fit-content;
+  height: 40px;
+  font-size: 15px;
+  color: #fff !important;
+  background: #8ab9c9;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px;
+  padding: 2px 24px;
+  transition-property: all;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
+  transition-delay: 0s;
+  border-radius: 5px;
+}
+
+#details_button:hover{
+  background: #fff; 
+  opacity: 1;
+  color: #333 !important;
+  border-color: #8ab9c9;
 }

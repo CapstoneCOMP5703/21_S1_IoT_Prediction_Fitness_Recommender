@@ -94,7 +94,7 @@
         
         <div class="outtable_main2">
             <div class="outtable_main_left">
-                <a>Total calories: {{total_calories}}</a>
+                <a>Total calories: <b>{{total_calories}}</b></a>
             </div>
             <div class="outtable_main_right">
                 <form class="user_regenerate" action="/dietrec" method="POST">
@@ -117,7 +117,7 @@
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
-                            <a>Total Breakfast Calories: {{sum_breakfast_cal}}</a>
+                            <a>Total Breakfast Calories: <b>{{sum_breakfast_cal}}</b></a>
                         </div>
                         <div class="table_right">
                             <form class="user_regenerate" action="/dietrec_model" method="POST">
@@ -142,7 +142,7 @@
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
-                            <a>Total Lunch Calories: {{sum_lunch_cal}}</a>
+                            <a>Total Lunch Calories: <b>{{sum_lunch_cal}}</b></a>
                         </div>
                         <div class="table_right">
                             <form class="user_regenerate" action="/dietrec_model" method="POST">
@@ -167,7 +167,7 @@
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
-                            <a>Total Dinner Calories: {{sum_dinner_cal}}</a>
+                            <a>Total Dinner Calories: <b>{{sum_dinner_cal}}</b></a>
                         </div>
                         <div class="table_right">
                             <form class="user_regenerate" action="/dietrec_model" method="POST">
@@ -192,7 +192,7 @@
                     </div>
                     <div class="table_main_right">
                         <div class="table_left">
-                            <a>Total Dessert Calories: {{sum_dessert_cal}}</a>
+                            <a>Total Dessert Calories: <b>{{sum_dessert_cal}}</b></a>
                         </div>
                         <div class="table_right">
                             <form class="user_regenerate" action="/dietrec_model" method="POST">
@@ -220,17 +220,42 @@
             <input type="hidden" value="close" name="hidden"></input>
             <input class="close" name="close" type="submit" value="" onclick = "closeWin();" style="cursor:pointer;border-width:0;background-image: url(images/close.png);background-size: cover;float: right;"></input>
         </form>
-        <!-- todo -->
-        <p id="name_display"></p >
-        <p id="ingredients_display"></p>
-        <p id="direction_display"></p>
-        <p id="cook_time_display"></p>
-        <p id="prep_time_display"></p>
-        <p id="img_display"></p>
-        <p id="calorie_display"></p>
+        
+        <div id="name">
+            <h2 id="name_display"></h2>
+        </div>
+        <div id="contents">
+            <div id="image"> 
+                <p id="img_display"></p>
+            </div>
+            <div id="prepare">
+                <img id="pre" src="images/prepare.png"/>
+                <p id="prep_time_display"></p>
+                <p class="des">to prepare</p>
+            </div>
+            <div id="cook">
+                <img id="coo" src="images/cook.png"/>
+                <p id="cook_time_display"></p>
+                <p class="des">to cook</p>
+            </div>
+            <div id="calorie">
+                <p id="calorie_display"></p>
+                <p class="des">Calories</p>
+            </div>
+        </div>
+    </br></br></br></br></br></br>
+        <div id="details">
+            <div id="ingredient">
+                <h3>Ingredients</h3>
+                <p id="ingredients_display"></p>
+            </div>
+            <div id="direction">
+                <h3>Directions</h3>
+                <p id="direction_display"></p>
+            </div>       
+        </div>  
     </div>
     <div id="fade" class="black_overlay"></div>
-    <img src="" alt="">
 
     <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe>  
 
@@ -244,7 +269,7 @@
             document.getElementById('direction_display').innerHTML = direction;
             document.getElementById('cook_time_display').innerText = cook_time;
             document.getElementById('prep_time_display').innerText = prep_time;
-            img_display = '<img src="'+img_url+'" alt="food_img"> </img>'
+            img_display = '<img id="image_display" src="'+img_url+'" alt="food_img"> </img>'
             document.getElementById('img_display').innerHTML = img_display;
             document.getElementById('calorie_display').innerText = calorie;
         }
@@ -254,7 +279,17 @@
             document.getElementById('fade').style.display = 'none'
         }
     </script>
+    <div style="position:fixed;right: 30px;bottom:100px;">
+        <img id="backtotop" src= "images/totop.png"></img>
+        <a>Back to Top</a>
+    </div>
 
+    <script>
+        backtotop .onclick = function(){
+            var top = document.body.scrollTop || document.documentElement.scrollTop
+            scrollBy(0,-top);
+        }
+    </script>
     <!-- <div id="light" class="pop_win">
         <form  action="/dietrec_model" method="POST">
             <input type="hidden" value="close" name="hidden"></input>

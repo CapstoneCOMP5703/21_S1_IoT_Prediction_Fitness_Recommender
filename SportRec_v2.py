@@ -63,7 +63,8 @@ class Model:
             mountain_data = pd.DataFrame([[2, calories, 150, 20]], columns=['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed'])
             mountain_res = self.mountain_clf.predict(mountain_data)[0]
         else:
-            try:
+            run_length = len(self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'run')])
+            if  run_length != 0:
                 # according to ID index users' records
                 run_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'run')]
                 # extract features
@@ -74,26 +75,64 @@ class Model:
                 run_pred_list = self.run_clf.predict(run_data)
                 # output result
                 run_res = np.mean(run_pred_list)
-            except:
+            else:
                 run_res = -1
 
-            try:
+            # try:
+            #     # according to ID index users' records
+            #     run_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'run')]
+            #     print(run_data)
+            #     # extract features
+            #     run_data = run_data[['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed']]
+            #     # define calories
+            #     run_data['calories'] = calories
+            #     # predict historical records
+            #     run_pred_list = self.run_clf.predict(run_data)
+            #     # output result
+            #     run_res = np.mean(run_pred_list)
+            # except:
+            #     run_res = -1
+            bike_length=len(self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'bike')])
+            if bike_length != 0:
                 bike_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'bike')]
                 bike_data = bike_data[['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed']]
                 bike_data['calories'] = calories
+                print("2222222222222222222222")
                 bike_pred_list = self.bike_clf.predict(bike_data)
+                print("3333333333333333333333")
                 bike_res = np.mean(bike_pred_list)
-            except:
+            else:
                 bike_res = -1
 
-            try:
+            # try:
+            #     bike_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'bike')]
+            #     bike_data = bike_data[['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed']]
+            #     bike_data['calories'] = calories
+            #     print("2222222222222222222222")
+            #     bike_pred_list = self.bike_clf.predict(bike_data)
+            #     print("3333333333333333333333")
+            #     bike_res = np.mean(bike_pred_list)
+            # except:
+            #     bike_res = -1
+
+            mbike_length=len(self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'mountain bike')])
+            if mbike_length != 0:
                 mountain_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'mountain bike')]
                 mountain_data = mountain_data[['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed']]
                 mountain_data['calories'] = calories
                 mountain_pred_list = self.mountain_clf.predict(mountain_data)
                 mountain_res = np.mean(mountain_pred_list)
-            except:
+            else:
                 mountain_res = -1
+
+            # try:
+            #     mountain_data = self.test_df[(self.test_df.userId == userId) & (self.test_df.sport == 'mountain bike')]
+            #     mountain_data = mountain_data[['gender_idx', 'calories', 'avg_heart_rate', 'avg_speed']]
+            #     mountain_data['calories'] = calories
+            #     mountain_pred_list = self.mountain_clf.predict(mountain_data)
+            #     mountain_res = np.mean(mountain_pred_list)
+            # except:
+            #     mountain_res = -1
 
         res_dict = {'run': run_res, 'bike': bike_res, 'mountainbike': mountain_res}
 
@@ -110,8 +149,8 @@ if __name__ == '__main__':
     rf.load_data_from_path('./testdata.csv')
     # load model
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
-    # predict 
-    data = rf.predict_data(11111116, 400)
+    # predict
+    data = rf.predict_data(217473, 800)
     # print
     print(data)
 
