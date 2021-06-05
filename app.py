@@ -21,7 +21,8 @@ from config import config
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
-db = pymysql.connect(host=config.host, user=config.user, password=config.password, database=config.database)
+# db = pymysql.connect(host=config.host,port=config.port, user=config.user, password=config.password, database=config.database)
+db = pymysql.connect(host="sh-cdb-rle6a9ic.sql.tencentcdb.com",port=59992,user="root",password="capstone25_2",database="Fitastic")
 
 from SportRec_v2 import Model
 rf=Model()
@@ -34,7 +35,6 @@ detailsDisplay = DetailsDisplay()
 # from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
 from short_term_prediction_updated_v5 import da_rnn, dataInterpreter, contextEncoder, encoder, decoder,dataInterpreter_predict
 import torch
-
 
 import pickle
 import pandas as pd
