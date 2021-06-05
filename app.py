@@ -1,25 +1,20 @@
-import flask
 import pymysql
 from pymysql.cursors import DictCursor
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, g,flash, jsonify
+from flask import request, render_template, redirect, url_for, session, flash
 import traceback
-from dataclasses import dataclass
 from datetime import timedelta,datetime
 from hashlib import md5
-import pandas as pd
 import json
-import numpy as np
-from decimal import *
 
-from pyecharts import options as opts
-from pyecharts.charts import Line
 from jinja2 import Markup
+
+from config import config
 
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
-db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
+db = pymysql.connect(host=config.host, user=config.user, password=config.password, database=config.database)
 
 from SportRec_v2 import Model
 rf=Model()
@@ -30,7 +25,6 @@ dietRec = DietRec()
 detailsDisplay = DetailsDisplay()
 
 # from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
-from short_term_prediction_updated_v5 import da_rnn, dataInterpreter, contextEncoder, encoder, decoder,dataInterpreter_predict
 import torch
 
 
