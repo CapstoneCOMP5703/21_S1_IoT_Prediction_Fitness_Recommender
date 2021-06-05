@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Page Title -->
+    <title>Fitastic</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/icon.png" type="image/x-icon">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/workrec.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+    <!-- JS Files-->
+    <!-- <script tpye="text/javascript" src="js/workout.js"></script> -->
+    <script tpye="text/javascript" src="js/text.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+    
+</head>
+<body>
+    <header class="header-main">
+        <div class="container">
+            <div class="logo-area">
+                <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
+            </div>
+            <div class="main-menu">
+                <ul>
+                    <li class="active"><a href="/">home</a></li>
+                    <li class="rec"><a href="#" >recommendations</a>
+                        <ul class="sub-menu">
+                            <li><a href="/workoutrec">workout recommendation</a></li>
+                            <li><a href="/dietrec">diet recommendation</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/activitylog">activity log</a></li>
+                    <li class="menu-btn">
+                        Welcome {{session.user}} !
+                        {% if session.user %}
+                        <a href="/logout" class="signin-btn">log out</a>
+                        {% else %}
+                        <a href="/login" class="signin-btn">sign in</a>
+                        <a href="/signup" class="signin-btn">sign up</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+
+    <section class="workrec-area" style="background-image: url(images/workrec.jpg);">
+        <div class="workrec-text">
+            <h1>Workout Recommendation</h1>
+        </div>
+    </section>
+
+    <div class="intro"> 
+        <!-- <h1>Put your fitness plan on autopilot </h1> -->
+        <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn.</br> Create your fitness plan right here in seconds.</a>
+    </div>
+
+    <form class="workrec-input" name="workrec-input" action="/sportrec_model" method="POST">
+        <div class="txt">
+            <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
+                onafterpaste="this.value=this.value.replace(/\D/g,'')">
+            <span data-placeholder="I want to burn:  (100-2000)"></span>
+            <span data-placeholder="Calories" class="span_cal"></span>
+        </div>
+        <h4>{{get_flashed_messages()[0]}}</h4>
+        <div class="user_submit">
+            <input class="submit_btn" type="submit" value="Recommend Me"></input>
+        </div>
+        <div></div>
+        
+    </form>
+</body>
+</html>
