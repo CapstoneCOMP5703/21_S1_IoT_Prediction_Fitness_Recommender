@@ -1,0 +1,12 @@
+FROM pytorch/pytorch
+
+RUN apt update 
+RUN apt install git -y
+RUN apt install wget -y
+
+RUN wget https://fitastichr.s3.amazonaws.com/model_epoch_04.pt
+RUN wget https://fitastichr.s3.amazonaws.com/mock_dataset.csv
+RUN wget https://fitastichr.s3.amazonaws.com/processed_endomondoHR_proper_interpolate_1k.csv
+RUN wget https://fitastichr.s3.amazonaws.com/processed_endomondoHR_proper_interpolate_5k.csv
+RUN wget https://fitastichr.s3.amazonaws.com/recipes.csv
+
