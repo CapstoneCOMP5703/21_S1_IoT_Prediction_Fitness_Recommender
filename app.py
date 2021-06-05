@@ -556,38 +556,41 @@ def cal_time(seconds):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        cursor = db.cursor(DictCursor)
         # get input values from form
         username = request.form.get('username', None)
         password = request.form.get('password', None)
 
         # sql statement
         sql = "select * from users where username= %s"
-        try:
-            # execute sql statement
-            cursor.execute(sql, username)
-            result = cursor.fetchall()
-            # when no result found in the database
-            if (len(result)==0):
-                flash("The username does not exist!")
-                return redirect(url_for('login'))          
-            # when one result found in the database
-            else:
-                # encrypt the password
-                if result[0]["password"] == hashlib.sha512(password.encode('utf-8')).hexdigest():
-                    # store the session
-                    session['userId'] = result[0]["user_id"]
-                    session['user'] = request.form.get('username', None)
-                    return redirect(url_for('workoutrec'))
-                else:
-                    flash("Username or password is wrong!")
-                    return redirect(url_for('login'))
-            db.commit()
-        except:
-            # rollback when mistake
-            traceback.print_exc()
-            db.rollback()
-        # close the database connection
+        while True:
+            try:
+                with db.cursor(DictCursor) as cursor:
+                    # execute sql statement
+                    cursor.execute(sql, username)
+                    result = cursor.fetchall()
+                    # when no result found in the database
+                    if (len(result)==0):
+                        flash("The username does not exist!")
+                        return redirect(url_for('login'))          
+                    # when one result found in the database
+                    else:
+                        # encrypt the password
+                        if result[0]["password"] == hashlib.sha512(password.encode('utf-8')).hexdigest():
+                            # store the session
+                            session['userId'] = result[0]["user_id"]
+                            session['user'] = request.form.get('username', None)
+                            return redirect(url_for('workoutRec'))
+                        else:
+                            flash("Username or password is wrong!")
+                            return redirect(url_for('login'))
+                db.commit()
+                break
+            except Exception:
+                # rollback when mistake
+                traceback.print_exc()
+                db.rollback()
+                db.ping(True)
+            # close the database connection
         db.close()
     return render_template("sign.html")
 
@@ -595,7 +598,6 @@ def login():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        cursor = db.cursor(DictCursor)
         # get input values from form
         username = request.form.get('username', None)
         email = request.form.get('email', None)
@@ -604,32 +606,36 @@ def signup():
 
         # sql statement
         sql = "select count(*) from users where username= %s"
-        try:
-            # execute sql statement
-            cursor.execute(sql, username)
-            result = cursor.fetchall()
+        while True:
+            try:
+                with db.cursor(DictCursor) as cursor:
+                    # execute sql statement
+                    cursor.execute(sql, username)
+                    result = cursor.fetchall()
 
-            # no same name found in the database
-            if result[0]["count(*)"]== 0:
-                if password != repassword:
-                    flash("Inconsistency of password!")
-                    return redirect(url_for('signup'))
-                else:
-                    # sql statement for adding new user to the database
-                    sql = 'INSERT INTO users (username, password, email) VALUES (%s, %s, %s)'
-                    cursor.execute(sql,(username,hashlib.sha512(password.encode('utf-8')).hexdigest(),email))
-                    db.commit()
-                    flash("Register successfully, please sign in")
-                    return redirect(url_for('login'))
-            # same name found in the database
-            else:
-                flash("please sign up with another name") 
-                return redirect(url_for('signup'))
+                    # no same name found in the database
+                    if result[0]["count(*)"]== 0:
+                        if password != repassword:
+                            flash("Inconsistency of password!")
+                            return redirect(url_for('signup'))
+                        else:
+                            # sql statement for adding new user to the database
+                            sql = 'INSERT INTO users (username, password, email) VALUES (%s, %s, %s)'
+                            cursor.execute(sql,(username,hashlib.sha512(password.encode('utf-8')).hexdigest(),email))
+                            db.commit()
+                            flash("Register successfully, please sign in")
+                            return redirect(url_for('login'))
+                    # same name found in the database
+                    else:
+                        flash("please sign up with another name") 
+                        return redirect(url_for('signup'))
                 db.commit()
-        except:
-            # rollback when mistake
-            traceback.print_exc()
-            db.rollback()
+                break
+            except Exception:
+                # rollback when mistake
+                traceback.print_exc()
+                db.rollback()
+                db.ping(True)
         # close the database connection   
         db.close()
     return render_template("signup.html")
@@ -638,48 +644,51 @@ def signup():
 @app.route("/reset", methods=['GET', 'POST'])
 def reset():
     if request.method == 'POST':     
-        cursor=db.cursor(DictCursor)
         # get input values from form
         username = request.form.get('username', None)
         email = request.form.get('email', None)
         password = request.form.get('password', None)
         repassword = request.form.get('repassword', None)
         
-        try:   
-            # when the length of password is more than 5
-            if len(password)>=6:
-                # when confirmed password is same as the password 
-                if password == repassword:
-                    # sql statement for updating the password
-                    sql = "Update users SET password = %s WHERE username = %s"
-                    sql_2 = "Select * from users where username= %s"       
-                    # execute sql statement 
-                    cursor.execute(sql_2, username)
-                    result = cursor.fetchall()
-                
-                    # when no result found in the database
-                    if (len(result)==0):
-                        flash("The username does not exist!") 
-                        return redirect(url_for('reset'))     
-                    else:
-                    # verifying email
-                        if result[0]["email"] == email:
-                            cursor.execute(sql,(hashlib.sha512(password.encode('utf-8')).hexdigest(), username))
-                            db.commit()
-                            return redirect(url_for('login'))
+        while True:
+            try:  
+                with db.cursor(DictCursor) as cursor: 
+                    # when the length of password is more than 5
+                    if len(password)>=6:
+                        # when confirmed password is same as the password 
+                        if password == repassword:
+                            # sql statement for updating the password
+                            sql = "Update users SET password = %s WHERE username = %s"
+                            sql_2 = "Select * from users where username= %s"       
+                            # execute sql statement 
+                            cursor.execute(sql_2, username)
+                            result = cursor.fetchall()
+                        
+                            # when no result found in the database
+                            if (len(result)==0):
+                                flash("The username does not exist!") 
+                                return redirect(url_for('reset'))     
+                            else:
+                            # verifying email
+                                if result[0]["email"] == email:
+                                    cursor.execute(sql,(hashlib.sha512(password.encode('utf-8')).hexdigest(), username))
+                                    return redirect(url_for('login'))
+                                else:
+                                    flash("Wrong Email!")
+                                    return redirect(url_for('reset')) 
                         else:
-                            flash("Wrong Email!")
-                            return redirect(url_for('reset')) 
-                else:
-                    flash('Inconsistency of password!')
-                    return redirect(url_for('reset'))
-            else:
-                flash("Password should be at least 6 characters in length")
-                return redirect(url_for('reset'))                     
-        except:
-            # rollback when mistake
-            traceback.print_exc()
-            db.rollback()
+                            flash('Inconsistency of password!')
+                            return redirect(url_for('reset'))
+                    else:
+                        flash("Password should be at least 6 characters in length")
+                        return redirect(url_for('reset')) 
+                db.commit()
+                break
+            except Exception:
+                # rollback when mistake
+                traceback.print_exc()
+                db.rollback()
+                db.ping(True)
         # close the database connection 
         db.close()
 
@@ -691,6 +700,7 @@ def logout():
     # clear session
     session.clear()
     return render_template("homepage.html")
+
     
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=3000)
