@@ -52,7 +52,7 @@ def homepage():
 
 #SportRec page
 @app.route("/workoutrec",methods=['GET', 'POST'])
-def workoutRec():       
+def workoutrec():       
     return render_template("workoutrec.html")
 
 #SportRec result page
@@ -445,7 +445,7 @@ def activitylog():
         #user should select one sport before this page
         if expected_calories == None:
             flash('Sorry, please get one recommended sport first!')
-            return redirect(url_for('workoutRec'))
+            return redirect(url_for('workoutrec'))
         else:
             data = pd.read_csv('mock_dataset.csv')
             
@@ -476,7 +476,7 @@ def activitylog():
                 print("workoutId",workoutId)
             else:
                 flash('Please retype calories!')
-                return redirect(url_for('workoutRec'))
+                return redirect(url_for('workoutrec'))
             
             speed = data.Speed_Adjusted[data.Id==workoutId].tolist()[0]
             altitude =data.Altitude[data.Id==workoutId].tolist()[0]
@@ -578,7 +578,7 @@ def login():
                     # store the session
                     session['userId'] = result[0]["user_id"]
                     session['user'] = request.form.get('username', None)
-                    return redirect(url_for('workoutRec'))
+                    return redirect(url_for('workoutrec'))
                 else:
                     flash("Username or password is wrong!")
                     return redirect(url_for('login'))
