@@ -18,28 +18,20 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     <!-- JS Files-->
-    <!-- <script tpye="text/javascript" src="js/diet.js"></script> -->
-
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <script src="https://www.gstatic.com/charts/loader.js">
-        //Google Chart
     </script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
-        <script>
-            function openwin(){
-                window.open(herf="/",'newwindow',"width=600,height=600,toolbar= no, menubar=no, scrollbars=no, resizable=no, location=no, status=no") 
-            } 
-        </script>
 </head>
 <body>
     <header class="header-main">
         <div class="container">
+            <!-- Fitastic Logo -->
             <div class="logo-area">
                 <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
             </div>
+            <!-- Navigation bar -->
             <div class="main-menu">
                 <ul>
                     <li class="active"><a href="/">home</a></li>
@@ -71,7 +63,6 @@
     </section>
 
     <div class="intro"> 
-        <!-- <h1>Put your fitness plan on autopilot </h1> -->
         <a>Fitastic creates personalized diet plans based on your historical records and the calories you want to eat.</br> Create your diet plan right here in seconds.</a>
     </div>
 
@@ -81,6 +72,7 @@
             <div class="outtable_main_left">
                 <a>Today's Meal Plan</a>
             </div>
+            <!-- Regenerate all diet recommendation results -->
             <div class="outtable_main_right">
                 <form class="user_regenerate" action="/dietrec_model" method="POST">
                     <a>Regenerate all meals</a>
@@ -93,6 +85,7 @@
         
         
         <div class="outtable_main2">
+            <!-- Display the total calories -->
             <div class="outtable_main_left">
                 <a>Total calories: <b>{{total_calories}}</b></a>
             </div>
@@ -106,11 +99,11 @@
 </br>
 </br>
         <div class="gap20"></div>  
-        
         {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}
             {% if message == 'Breakfast'%} 
+                <!-- Display the breakfast recommendations -->    
                 <div class="table_main">
                     <div class="table_main_left">
                         <input class='label' value="Breakfast"></input>
@@ -128,7 +121,8 @@
                         </div>
                     </div>                   
                 </div>
-                <div class="gap40"></div>                
+                <div class="gap40"></div>  
+          
                 <div class="table_container">                                     
                     {{ table_b_html | safe }}
                 </div>
@@ -136,6 +130,7 @@
             {%endif%}
 
             {% if message == 'Lunch'%}
+                <!-- Display the lunch recommendations -->    
                 <div class="table_main">
                     <div class="table_main_left">
                         <input class='label' value="Lunch"></input>
@@ -161,6 +156,7 @@
             {%endif%}
 
             {% if message == 'Dinner'%}
+                <!-- Display the dinner recommendations --> 
                 <div class="table_main">
                     <div class="table_main_left">
                         <input class='label' value="Dinner"></input>
@@ -186,6 +182,7 @@
             {%endif%}
 
             {% if message == 'Dessert'%}
+                <!-- Display the dinner recommendations --> 
                 <div class="table_main">
                     <div class="table_main_left">
                         <input class='label' value="Dessert"></input>
@@ -215,12 +212,12 @@
         {% block body %}{% endblock %}
     </section>
 
+    <!-- Display the recipe details in a floating window--> 
     <div id="light" class="pop_win">
         <form  action="" method="POST" target='nm_iframe'>
             <input type="hidden" value="close" name="hidden"></input>
             <input class="close" name="close" type="submit" value="" onclick = "closeWin();" style="cursor:pointer;border-width:0;background-image: url(images/close.png);background-size: cover;float: right;"></input>
-        </form>
-        
+        </form> 
         <div id="name">
             <h2 id="name_display"></h2>
         </div>
@@ -260,6 +257,7 @@
     <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe>  
 
     <script type="text/javascript">
+        //transform recipe details
         function popWin(name,ingredients,direction,cook_time,prep_time,img_url,calorie){
             scrollTo(0,0);
             document.getElementById('light').style.display='block';
@@ -274,11 +272,14 @@
             document.getElementById('calorie_display').innerText = calorie;
         }
 
+        //close the floating window
         function closeWin() {
             document.getElementById('light').style.display = 'none';
             document.getElementById('fade').style.display = 'none'
         }
     </script>
+
+    <!-- back to top  --> 
     <div style="position:fixed;right: 30px;bottom:100px;">
         <img id="backtotop" src= "images/totop.png"></img>
         <a>Back to Top</a>
@@ -290,26 +291,5 @@
             scrollBy(0,-top);
         }
     </script>
-    <!-- <div id="light" class="pop_win">
-        <form  action="/dietrec_model" method="POST">
-            <input type="hidden" value="close" name="hidden"></input>
-            <input class="close" name="close" type="submit" value="" onclick = "closeWin();" style="cursor:pointer;border-width:0;background-image: url(images/close.png);background-size: cover;float: right;"></input>
-        </form>
-        {{food_name}}
-    </div>
-    <div id="fade" class="black_overlay"></div>
-
-    <script type="text/javascript">
-        function popWin(){
-            scrollTo(0,0);
-            document.getElementById('light').style.display='block';
-            document.getElementById('fade').style.display='block'
-        }
-
-        function closeWin() {
-            document.getElementById('light').style.display = 'none';
-            document.getElementById('fade').style.display = 'none'
-        }
-    </script> -->
 </body>
 </html>

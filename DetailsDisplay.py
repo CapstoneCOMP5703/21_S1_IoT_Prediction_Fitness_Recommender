@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+# display the recipe details
 class DetailsDisplay:
     def details_display(self, recipe_name):
         recipe = pd.read_csv("./recipes.csv")

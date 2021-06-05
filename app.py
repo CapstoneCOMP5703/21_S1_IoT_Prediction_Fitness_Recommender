@@ -1,12 +1,19 @@
+import flask
 import pymysql
 from pymysql.cursors import DictCursor
 from flask import Flask
-from flask import request, render_template, redirect, url_for, session, flash
+from flask import request, render_template, redirect, url_for, session,g, flash,jsonify
 import traceback
+from dataclasses import dataclass
 from datetime import timedelta,datetime
-from hashlib import md5
+import hashlib
+import pandas as pd
 import json
+import numpy as np
+from decimal import *
 
+from pyecharts import options as opts
+from pyecharts.charts import Line
 from jinja2 import Markup
 
 from config import config
@@ -25,6 +32,7 @@ dietRec = DietRec()
 detailsDisplay = DetailsDisplay()
 
 # from Short_term_prediction import da_rnn, dataInterpreter, contextEncoder, encoder, decoder
+from short_term_prediction_updated_v5 import da_rnn, dataInterpreter, contextEncoder, encoder, decoder,dataInterpreter_predict
 import torch
 
 
@@ -544,120 +552,146 @@ def cal_time(seconds):
     else:
         return "%02d:%02d:%02d" % (hours, mins, secs)
 
+# log in
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         cursor = db.cursor(DictCursor)
+        # get input values from form
         username = request.form.get('username', None)
         password = request.form.get('password', None)
+
+        # sql statement
         sql = "select * from users where username= %s"
         try:
-            # 执行sql语句
+            # execute sql statement
             cursor.execute(sql, username)
             result = cursor.fetchall()
-            print(result[0])
+            # when no result found in the database
             if (len(result)==0):
                 flash("The username does not exist!")
                 return redirect(url_for('login'))          
+            # when one result found in the database
             else:
-                if result[0]["password"] == md5(password.encode('utf-8')).hexdigest():
-                    print("Login successfully!") 
+                # encrypt the password
+                if result[0]["password"] == hashlib.sha512(password.encode('utf-8')).hexdigest():
+                    # store the session
                     session['userId'] = result[0]["user_id"]
                     session['user'] = request.form.get('username', None)
                     return redirect(url_for('workoutRec'))
                 else:
                     flash("Username or password is wrong!")
                     return redirect(url_for('login'))
-            # 提交到数据库执行
             db.commit()
         except:
-            # 如果发生错误则回滚
+            # rollback when mistake
             traceback.print_exc()
             db.rollback()
-        # 关闭数据库连接
+        # close the database connection
         db.close()
     return render_template("sign.html")
 
+# sign up
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         cursor = db.cursor(DictCursor)
+        # get input values from form
         username = request.form.get('username', None)
         email = request.form.get('email', None)
         password = request.form.get('password', None)
         repassword = request.form.get('repassword', None)
+
+        # sql statement
         sql = "select count(*) from users where username= %s"
         try:
+            # execute sql statement
             cursor.execute(sql, username)
             result = cursor.fetchall()
-            print(result)
+
+            # no same name found in the database
             if result[0]["count(*)"]== 0:
                 if password != repassword:
                     flash("Inconsistency of password!")
                     return redirect(url_for('signup'))
                 else:
+                    # sql statement for adding new user to the database
                     sql = 'INSERT INTO users (username, password, email) VALUES (%s, %s, %s)'
-                    cursor.execute(sql,(username,md5(password.encode('utf-8')).hexdigest(),email))
+                    cursor.execute(sql,(username,hashlib.sha512(password.encode('utf-8')).hexdigest(),email))
                     db.commit()
                     flash("Register successfully, please sign in")
                     return redirect(url_for('login'))
+            # same name found in the database
             else:
                 flash("please sign up with another name") 
                 return redirect(url_for('signup'))
                 db.commit()
-        except Exception as err:
-            print(err)
-        # 关闭数据库连接    
+        except:
+            # rollback when mistake
+            traceback.print_exc()
+            db.rollback()
+        # close the database connection   
         db.close()
     return render_template("signup.html")
 
+# password reset
 @app.route("/reset", methods=['GET', 'POST'])
 def reset():
     if request.method == 'POST':     
         cursor=db.cursor(DictCursor)
+        # get input values from form
         username = request.form.get('username', None)
         email = request.form.get('email', None)
         password = request.form.get('password', None)
         repassword = request.form.get('repassword', None)
-        if len(password)>=6:
-            if password == repassword:
-                sql = "Update users SET password = %s WHERE username = %s"
-                sql_2 = "Select * from users where username= %s"
-                try:          
-                    # 执行sql语句
+        
+        try:   
+            # when the length of password is more than 5
+            if len(password)>=6:
+                # when confirmed password is same as the password 
+                if password == repassword:
+                    # sql statement for updating the password
+                    sql = "Update users SET password = %s WHERE username = %s"
+                    sql_2 = "Select * from users where username= %s"       
+                    # execute sql statement 
                     cursor.execute(sql_2, username)
                     result = cursor.fetchall()
+                
+                    # when no result found in the database
                     if (len(result)==0):
                         flash("The username does not exist!") 
                         return redirect(url_for('reset'))     
                     else:
+                    # verifying email
                         if result[0]["email"] == email:
-                            cursor.execute(sql,(md5(password.encode('utf-8')).hexdigest(), username))
+                            cursor.execute(sql,(hashlib.sha512(password.encode('utf-8')).hexdigest(), username))
                             db.commit()
-                            print("Update successfully!") 
                             return redirect(url_for('login'))
                         else:
                             flash("Wrong Email!")
-                            return redirect(url_for('reset'))         
-                except:
-                    # 如果发生错误则回滚
-                    traceback.print_exc()
-                    db.rollback()
-                # 关闭数据库连接
-                db.close()
+                            return redirect(url_for('reset')) 
+                else:
+                    flash('Inconsistency of password!')
+                    return redirect(url_for('reset'))
             else:
-                flash('Inconsistency of password!')
-                return redirect(url_for('reset'))
-        else:
-            flash("Password should be at least 6 characters in length")
-            return redirect(url_for('reset'))
+                flash("Password should be at least 6 characters in length")
+                return redirect(url_for('reset'))                     
+        except:
+            # rollback when mistake
+            traceback.print_exc()
+            db.rollback()
+        # close the database connection 
+        db.close()
+
     return render_template("reset.html")  
 
+# log out
 @app.route("/logout")
 def logout():
+    # clear session
     session.clear()
     return render_template("homepage.html")
-
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=3000)
 

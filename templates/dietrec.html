@@ -19,16 +19,13 @@
 
     <!-- JS Files-->
     <script tpye="text/javascript" src="js/text.js"></script>
-
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <script src="https://www.gstatic.com/charts/loader.js">
-        //Google Chart
     </script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
         <script>
+            //clicking breakfast
             function checkclick_breakfast(){
                 var checkimg = document.getElementById("checkimg_breakfast");
                 if($("#select_breakfast").is(':checked')){
@@ -40,6 +37,7 @@
                 }
                 return checkimg.src
             }
+            //clicking lunch
             function checkclick_lunch(){
                 var checkimg = document.getElementById("checkimg_lunch");
                 if($("#select_lunch").is(':checked')){
@@ -51,6 +49,7 @@
                 }
                 return checkimg.src
             }
+            //clicking dinner
             function checkclick_dinner(){
                 var checkimg = document.getElementById("checkimg_dinner");
                 if($("#select_dinner").is(':checked')){
@@ -62,6 +61,7 @@
                 }
                 return checkimg.src
             }
+            //clicking dessert
             function checkclick_dessert(){
                 var checkimg = document.getElementById("checkimg_dessert");
                 if($("#select_dessert").is(':checked')){
@@ -73,6 +73,7 @@
                 }
                 return checkimg.src
             }
+            //clicking anything
             function checkclick_anything(){
                 var checkimg = document.getElementById("checkimg_anything");
                 var checkimg_vegan = document.getElementById("checkimg_vegan");
@@ -89,6 +90,7 @@
                 }
                 return checkimg.src
             }
+            //clicking vegan
             function checkclick_vegan(){
                 var checkimg = document.getElementById("checkimg_vegan");
                 var checkimg_anything = document.getElementById("checkimg_anything");
@@ -110,9 +112,11 @@
 <body>
     <header class="header-main">
         <div class="container">
+            <!-- Fitastic Logo -->
             <div class="logo-area">
                 <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
             </div>
+            <!-- Navigation bar-->
             <div class="main-menu">
                 <ul>
                     <li class="active"><a href="/">home</a></li>
@@ -144,12 +148,12 @@
     </section>
 
     <div class="intro"> 
-        <!-- <h1>Put your fitness plan on autopilot </h1> -->
         <a>Fitastic creates personalized diet plans based on the calories you want to eat. 
         </br>Create your diet plan right here in seconds.</a>
     </div>
 
     <form class="mealrec_input" action="/dietrec_model" method="POST">
+        <!-- choosing anything or vegan -->
         <div class="user_diet_selection">
             <table class="meal_type">
                 <tr>
@@ -170,12 +174,14 @@
                 </tr>
             </table>
         </div>
+        <!-- calorie input -->
         <div class="eat_calorie">
             <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
                 onafterpaste="this.value=this.value.replace(/\D/g,'')" required>
             <span data-placeholder="I want to eat:"></span>
             <span data-placeholder="Calories" class="span_cal"></span>
         </div>
+        <!-- choosing meal type(s) -->
         <div class="user_diet_selection">
             <table class="meal_type">  
                 <tr>
