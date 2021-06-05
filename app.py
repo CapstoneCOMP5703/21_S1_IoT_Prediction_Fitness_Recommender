@@ -579,7 +579,7 @@ def login():
                             # store the session
                             session['userId'] = result[0]["user_id"]
                             session['user'] = request.form.get('username', None)
-                            return redirect(url_for('workoutRec'))
+                            return redirect(url_for('workoutrec'))
                         else:
                             flash("Username or password is wrong!")
                             return redirect(url_for('login'))
