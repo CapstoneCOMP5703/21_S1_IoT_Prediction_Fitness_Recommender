@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    
     <!-- Page Title -->
     <title>Fitastic</title>
 
@@ -79,7 +78,19 @@
         <div class="user_submit">
             <input class="submit_btn" type="submit" value="Recommend Me"></input>
         </div>
-        
     </form>
+
+    <!-- back to top  --> 
+    <div style="position:fixed;right: 30px;bottom:100px;">
+        <img id="backtotop" src= "images/totop.png"></img>
+        <a>Back to Top</a>
+    </div>
+
+    <script>
+        backtotop .onclick = function(){
+            var top = document.body.scrollTop || document.documentElement.scrollTop
+            scrollBy(0,-top);
+        }
+    </script>
 </body>
 </html>

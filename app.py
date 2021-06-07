@@ -22,7 +22,8 @@ app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 # db = pymysql.connect(host=config.host,port=config.port, user=config.user, password=config.password, database=config.database)
-db = pymysql.connect(host="sh-cdb-rle6a9ic.sql.tencentcdb.com",port=59992,user="root",password="capstone25_2",database="Fitastic")
+# db = pymysql.connect(host="sh-cdb-rle6a9ic.sql.tencentcdb.com",port=59992,user="root",password="capstone25_2",database="Fitastic")
+db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
 
 from SportRec_v2 import Model
 rf=Model()
@@ -65,12 +66,15 @@ def sportrec_model():
         flash('Please input valid calories!')
         return render_template("workoutrec.html",)
     #parse str into int
-    calories=int(calories_get) 
+    try:
+        calories=int(calories_get) 
+    except:
+        calories = session.get('user_input_calories')
     #limit user input
     if(calories > 2001):
         flash('That is too much for you, try fewer calories!')
         return render_template("workoutrec.html",)
-    if(calories < 100):
+    if(calories < 99):
         flash('That is not enough for you, try more calories!')
         return render_template("workoutrec.html",)
     #save user input into session
@@ -81,12 +85,13 @@ def sportrec_model():
     if session.get('user'):
         #get the userId to predict personalized result
         data=rf.predict_data(userId, calories)
+        flash('We have these personalized workout recommendations for you!')
         # data=rf.predict_data(session.get('userId'), calories)
     else:
         #give new user a general result
         data=rf.predict_data(1, calories)
         # data=rf.predict_data(1, calories)
-        flash('//todo 解释这是新用户的托底数据')
+        flash('We have these workout recommendations for you!')
     
     #get the sport duration
     run_time,bike_time,mbike_time=readsplitdata(data)
@@ -245,6 +250,12 @@ def dietrec_model():
             flash('Please enter valid inputs!')
             return render_template("dietrec.html",)
         calories=int(calories_get)
+        if(calories < 99):
+            flash('That is not enough for you, try more calories!')
+            return render_template("dietrec.html",)
+        if(calories > 5000):
+            flash('That is too much for you, try fewer calories!')
+            return render_template("dietrec.html",)
         #read user input
         for c in cbox:
             if c =='Breakfast':
@@ -269,10 +280,12 @@ def dietrec_model():
         diet_list=calories, count,s_breakfast, s_lunch,s_dinner,s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert
         session['diet_list']=diet_list
 
+    print(diet_list)
+    print("re_breakfast time: ",re_breakfast)
     #load DietRec model
     diet_data = dietRec.recipe_rec(calories, count,s_breakfast, s_lunch,
     s_dinner, s_dessert, s_vegan, re,re_breakfast,re_lunch,re_dinner,re_dessert)
-
+    print(diet_data)
     #save DietRec parameter into global variate
 
     df_html_b,df_html_l,df_html_dinner,df_html_dessert,sum_breakfast_cal,sum_lunch_cal,sum_dinner_cal,sum_dessert_cal= generateMealTableNoIgre(diet_data)

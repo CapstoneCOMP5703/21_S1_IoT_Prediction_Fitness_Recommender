@@ -71,7 +71,7 @@
     </div>
 
     <section class="workrec_content">
-        <h2>We have these personalized workout recommendations for you!</br>Select one to start!</h2>
+        <h2>{{get_flashed_messages()[0]}}</br>Select one to start!</h2>
         <table class="table_rec">
             {% with messages = get_flashed_messages() %}
             {% if messages %}           
@@ -133,10 +133,16 @@
                 {% endwith %}   
                 {% block body %}{% endblock %}
         </table>
+        <h4></h4>
         <form class="user_regenerate" action="/workoutrec" method="POST">
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
     </section>
+    {% if get_flashed_messages()[0] == 'We have these workout recommendations for you!'%} 
+    <div class="note">
+        <p><i>*** Since you are not logged in, we have no history of you in our database, so we provide reference recommendations based on all user data</i></p>
+    </div>  
+    {% endif %}
 
     <!-- back to top  --> 
     <div style="position:fixed;right: 30px;bottom:100px;">

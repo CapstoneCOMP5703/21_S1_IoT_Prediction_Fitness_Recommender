@@ -1374,20 +1374,3 @@ class dataInterpreter_predict(object):
             
         self.variableMeans = variableMeans
         self.variableStds = variableStds
-
-
-# model = torch.load('./model_epoch_04.pt')
-# torch.cuda.set_device(0)
-# torch.backends.cudnn.enable =True 
-# torch.backends.cudnn.benchmark = True
-# model.predict(id=506226677)
-# # python short_term_prediction_updated_v5.py
-
-
-# 102043204
-# 179588544
-# 324652107
-# 372974340
-# 577878975
-# 554524851
-# 506226677

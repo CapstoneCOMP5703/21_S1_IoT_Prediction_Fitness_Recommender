@@ -1,4 +1,4 @@
-host="sh-cdb-rle6a9ic.sql.tencentcdb.com"
+host="localhost"
 port=59992
 user="root"
 password="capstone25_2"

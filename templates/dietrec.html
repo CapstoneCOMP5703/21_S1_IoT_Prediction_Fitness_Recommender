@@ -178,9 +178,10 @@
         <div class="eat_calorie">
             <input id="calories" type="text" name="calories" onkeyup="this.value=this.value.replace(/\D/g,'')" 
                 onafterpaste="this.value=this.value.replace(/\D/g,'')" required>
-            <span data-placeholder="I want to eat:"></span>
+            <span data-placeholder="I want to eat: (100-5000)"></span>
             <span data-placeholder="Calories" class="span_cal"></span>
         </div>
+        <h4>{{get_flashed_messages()[0]}}</h4>
         <!-- choosing meal type(s) -->
         <div class="user_diet_selection">
             <table class="meal_type">  
@@ -220,7 +221,7 @@
                 
             </table>
         </div>
-        <h4>{{get_flashed_messages()[0]}}</h4>
+        
         <div class="user_submit">
             <input type="hidden" value="new" name="hidden"></input>
             <input class="submit_btn" type="submit" value="Recommend Me"></button>

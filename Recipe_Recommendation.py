@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 class DietRec():
-    #sort the recipes based on the distance from the input calorie
+    #find the closet row
     def find_close(self, arr, value, meal_type, vegan, index_number):
         if vegan == 1:
             all_index = np.where((arr["Meal_Type"]==meal_type) & (arr["veg"]=="vegetarian"))[0]
@@ -65,33 +65,23 @@ class DietRec():
         #the output for all meal types
         rec_list={"Name":[],"Calorie_num":[],"img_urls":[],"Meal_Type":[],"veg":[]}
 
-        #when user selects one meal type
         if meal_num == 1:
-            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,index_number)
+            return self.print_list(recipe,rec_list,calorie,self.min_calorie(recipe,meal_type_list[0],meal_pre),meal_type_list[0],meal_pre,meal_regeneration_list[0])
 
-        #when user selects two meal types
         elif meal_num == 2:           
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.5,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, meal_regeneration_list[0]),calorie)
             self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, meal_regeneration_list[1])
             return rec_list 
 
-        #when user selects three meal types
         elif meal_num == 3:
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[0], meal_pre),meal_type_list[0], meal_pre, meal_regeneration_list[0]),calorie)
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.4,self.min_calorie(recipe, meal_type_list[1], meal_pre),meal_type_list[1], meal_pre, meal_regeneration_list[1]),calorie)
             self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[2], meal_pre),meal_type_list[2],meal_pre, meal_regeneration_list[2])    
             return rec_list
 
-        #when user selects four meal types
         elif meal_num == 4:
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[0], meal_pre), meal_type_list[0], meal_pre, meal_regeneration_list[0]), calorie)
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[1], meal_pre), meal_type_list[1], meal_pre, meal_regeneration_list[1]), calorie)
             calorie_left = self.cal_calorie_left(self.print_list(recipe,rec_list,calorie*0.3,self.min_calorie(recipe, meal_type_list[2], meal_pre), meal_type_list[2], meal_pre, meal_regeneration_list[2]), calorie)
             rec_lists = self.print_list(recipe,rec_list,calorie_left,self.min_calorie(recipe, meal_type_list[3],meal_pre),meal_type_list[3],meal_pre, meal_regeneration_list[3])
             return rec_list
-
-if __name__ == '__main__':
-    dietRec = DietRec()
-    data = dietRec.recipe_rec(2000,2,0,1,1,0,0,0,1,0,0,4)
-    print(data)
-
