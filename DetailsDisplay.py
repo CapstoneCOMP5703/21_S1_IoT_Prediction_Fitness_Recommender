@@ -4,7 +4,7 @@ import numpy as np
 # display the recipe details
 class DetailsDisplay:
     def details_display(self, recipe_name):
-        recipe = pd.read_csv("./recipes.csv")
+        recipe = pd.read_csv("./dataset/recipes.csv")
         
         ingredient_list = recipe.Ingredients_list[recipe.Name==recipe_name]
         direction_list = recipe.Directions_list[recipe.Name==recipe_name]
@@ -16,9 +16,3 @@ class DetailsDisplay:
         index_value = recipe.index.values[recipe.Name==recipe_name]
         
         return ingredient_list,direction_list,img_url,calorie,prep_time,cook_time,meal_type,index_value
-
-if __name__ == '__main__':
-    detailsDisplay = DetailsDisplay()
-    ingredient_list,direction_list,img_url,calorie,prep_time,cook_time,meal_type,index_value = detailsDisplay.details_display("spicy tahini sauce with kale sea vegetables and soba noodles")
-    print(ingredient_list[index_value[0]],direction_list[index_value[0]],img_url[index_value[0]],calorie[index_value[0]],prep_time[index_value[0]],cook_time[index_value[0]],meal_type[index_value[0]])
-

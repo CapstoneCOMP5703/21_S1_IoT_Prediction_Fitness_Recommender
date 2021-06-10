@@ -31,9 +31,11 @@
 <body>
     <header class="header-main">
         <div class="container">
+            <!-- Fitastic Logo -->
             <div class="logo-area">
                 <a href="/"><img src="images/logo.png" alt="logo" class="logo"></a>
             </div>
+            <!-- Navigation bar -->
             <div class="main-menu">
                 <ul>
                     <li class="active"><a href="/">home</a></li>
@@ -66,10 +68,9 @@
     </section>
 
     <div class="intro"> 
-        <!-- <h1>Put your fitness plan on autopilot </h1> -->
         <a>Fitastic creates personalized fitness plans based on your historical records and the calories you want to burn.</br> Create your fitness plan right here in seconds.</a>
     </div>
-
+    <!-- The content of SportRec model output -->
     <section class="workrec_content">
         <h2>{{get_flashed_messages()[0]}}</br>Select one to start!</h2>
         <table class="table_rec">
@@ -134,13 +135,14 @@
                 {% block body %}{% endblock %}
         </table>
         <h4></h4>
+        <!-- regenerate button -->
         <form class="user_regenerate" action="/workoutrec" method="POST">
             <input class="regenerate_btn" type="submit" value="Recommend Again"></input>
         </form>
     </section>
     {% if get_flashed_messages()[0] == 'We have these workout recommendations for you!'%} 
     <div class="note">
-        <p><i>*** Since you are not logged in, we have no history of you in our database, so we provide reference recommendations based on all user data</i></p>
+        <p><i>*** we have no relevant data of you, we are providing you with a common recommendation. If you prefer a personalized suggestion, please login and try more workout as you can.</i></p>
     </div>  
     {% endif %}
 

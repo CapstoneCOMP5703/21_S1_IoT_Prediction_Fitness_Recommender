@@ -48,9 +48,7 @@ class dataInterpreter(object):
         self.zMultiple = zMultiple
 
     def preprocess_data(self):
- 
-        # self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate.csv"   
-        self.processed_path = self.data_path + "/processed_endomondoHR_proper_interpolate_1k.csv"    
+        self.processed_path = self.data_path + "./dataset/processed_endomondoHR_proper_interpolate_1k.csv"    
  
         self.loadTrainValidTest()      
         
@@ -1103,10 +1101,7 @@ class dataInterpreter_predict(object):
         self.predictFN = "./" + predictFN
 
     def preprocess_data(self, id):
-   
-        # self.processed_path =  "./processed_endomondoHR_proper_interpolate_2w.csv"  
-        # self.processed_path =  "./heartrate_mock_data.csv"   
-        self.processed_path =  "./processed_endomondoHR_proper_interpolate_5k.csv"
+        self.processed_path =  "./dataset/processed_endomondoHR_proper_interpolate_5k.csv"
         with open(self.predictFN, "rb") as f:
             self.predictSet, self.contextMap = pickle.load(f)
 
