@@ -77,7 +77,7 @@ def sportrec_model():
     #save user input into session
     session['user_input_calories']=calories
     #load SportRec model
-    rf.load_data_from_path('./dataset/spertrec_testdata.csv')
+    rf.load_data_from_path('./dataset/spertrec_dataset.csv')
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
     if session.get('user'):
         #get the userId to predict personalized result
