@@ -21,8 +21,8 @@ from config import config
 app= Flask(__name__,static_url_path="/")
 app.config['SECRET_KEY'] = "sdfklasads5fa2k42j"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
-# db = pymysql.connect(host=config.host,port=config.port, user=config.user, password=config.password, database=config.database)
-db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
+db = pymysql.connect(host=config.host,port=config.port, user=config.user, password=config.password, database=config.database)
+# db = pymysql.connect(host="localhost",user="root",password="961214",database="Fitastic")
 
 from SportRec_v2 import Model
 rf=Model()
