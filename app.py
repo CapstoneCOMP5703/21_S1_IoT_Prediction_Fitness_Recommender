@@ -450,8 +450,8 @@ def activitylog():
             return redirect(url_for('workoutrec'))
         else:
             data = pd.read_csv('./dataset/mock_dataset.csv')
-            if data.Calories[(data.User_Id==userId)] == []:
-                flash('Sorry, please start to do the sport then check the activity log page!')
+            if data.Calories[(data.User_Id==userId)].tolist() == []:
+                flash('Sorry, Please start your workout then check the activity log page!')
                 return redirect(url_for('workoutrec'))
             
             #check which sport did user selected
