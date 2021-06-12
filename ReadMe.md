@@ -13,7 +13,7 @@ Fitastic is a ML & DL based system that ultilizes the personal workout records w
 * Almost 20 thousand recipes scraped from [https://www.allrecipes.com/](https://www.allrecipes.com/)
 
 ## Running Instruction
-### Using docker
+### Using docker (Strongly Recommended)
 **Prerequisite**
 
 ```
