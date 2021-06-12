@@ -58,3 +58,16 @@ Drive: Nvidia-driver-410+
 	pip install hashlib
 	```
 7. run `python app.py` to launch Fitastic
+
+## Test Account (Ideal users)
+```
+username: Eason
+password: 123456
+email: Eason@gmail.com
+```
+```
+username: Peter
+password: 123456
+email: Peter@gmail.com
+```
+
