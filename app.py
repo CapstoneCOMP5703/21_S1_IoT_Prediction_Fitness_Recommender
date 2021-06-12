@@ -41,8 +41,6 @@ import pickle
 import pandas as pd
 calories_cal_model=pickle.load(open('model_xgb.pkl','rb'))
 
-userId=7178673  
-
 #homepage
 @app.route("/")
 def homepage():      
@@ -81,8 +79,8 @@ def sportrec_model():
     rf.load_model_from_path('./model_run.m', './model_bike.m', './model_mountain.m')
     if session.get('user'):
         #get the userId to predict personalized result
-        # data=rf.predict_data(session.get('userId'), calories)
-        data=rf.predict_data(userId, calories)
+        data=rf.predict_data(session.get('userId'), calories)
+        # data=rf.predict_data(userId, calories)
         flash('We have these personalized workout recommendations for you!')
     else:
         #give new user a general result
@@ -445,13 +443,16 @@ def activitylog():
     #only logged user can use this function
     if session.get('user'):
         expected_calories = session.get('user_input_calories')
-        # userId=session.get('userId')
+        userId=session.get('userId')
         #user should select one sport before this page
         if expected_calories == None:
             flash('Sorry, please get one recommended sport first!')
             return redirect(url_for('workoutrec'))
         else:
             data = pd.read_csv('./dataset/mock_dataset.csv')
+            if data.Calories[(data.User_Id==userId)] == []:
+                flash('Sorry, please start to do the sport then check the activity log page!')
+                return redirect(url_for('workoutrec'))
             
             #check which sport did user selected
             if request.form.get("hidden")=="run":
