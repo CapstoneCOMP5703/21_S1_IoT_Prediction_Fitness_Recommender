@@ -32,7 +32,10 @@ Drive: NVIDIA-driver-410+
 ### Using Local IDE 
 **Prerequisite**
 
-`GPU: Nvidia graphics card `
+```
+GPU: Nvidia graphics card 
+Firewall: Turn Off (for connecting the cloud database)
+```
 
 **Steps**
 
