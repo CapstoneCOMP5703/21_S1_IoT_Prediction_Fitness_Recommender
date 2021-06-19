@@ -80,7 +80,7 @@
                     {% for message in messages %}
                     {% if message == 'run'%} 
                     <th id="th1">
-                        <form action="/activitylog" method="POST">
+                        <form class="workrec-select" action="/activitylog" method="POST">
                             <input type="hidden" value="run" name="hidden"></input>
                             <button class= "sport_img" type="submit" style="background: url(images/running2.jpg);background-size: cover;"></button>
                         </form>
@@ -88,7 +88,7 @@
                     {%endif%}
                     {% if message == 'bike'%} 
                     <th>
-                        <form action="/activitylog" method="POST">
+                        <form  class="workrec-select" action="/activitylog" method="POST">
                             <input type="hidden" value="bike" name="hidden"></input>
                             <button class= "sport_img" type="submit" style="background: url(images/biking.jpg);background-size: cover;"></button>
                         </form>
@@ -96,7 +96,7 @@
                     {%endif%}
                     {% if message == 'mbike'%} 
                     <th>
-                        <form action="/activitylog" method="POST">
+                        <form  class="workrec-select" action="/activitylog" method="POST">
                             <input type="hidden" value="mbike" name="hidden"></input>
                             <button class= "sport_img" type="submit" style="background: url(images/mountain_biking.png);background-size: cover;"></button>
                         </form>

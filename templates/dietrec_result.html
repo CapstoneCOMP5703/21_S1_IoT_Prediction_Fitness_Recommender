@@ -74,7 +74,7 @@
             </div>
             <!-- Regenerate all diet recommendation results -->
             <div class="outtable_main_right">
-                <form class="user_regenerate" action="/dietrec_model" method="POST">
+                <form class="user_regenerate_meal" action="/dietrec_model" method="POST">
                     <a>Regenerate all meals</a>
                     <input type="hidden" value="regenerate_all" name="hidden"></input>
                     <input class="regenerate" name="reall" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
@@ -113,7 +113,7 @@
                             <a>Total Breakfast Calories: <b>{{sum_breakfast_cal}}</b></a>
                         </div>
                         <div class="table_right">
-                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                            <form class="user_regenerate_meal" action="/dietrec_model" method="POST">
                                 <a>Regenerate</a>
                                 <input type="hidden" value="regenerate_breakfast" name="hidden"></input>
                                 <input class="regenerate" name="rebreakfast" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
@@ -140,7 +140,7 @@
                             <a>Total Lunch Calories: <b>{{sum_lunch_cal}}</b></a>
                         </div>
                         <div class="table_right">
-                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                            <form class="user_regenerate_meal" action="/dietrec_model" method="POST">
                                 <a>Regenerate</a>
                                 <input type="hidden" value="regenerate_lunch" name="hidden"></input>
                                 <input class="regenerate" name="relunch" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
@@ -166,7 +166,7 @@
                             <a>Total Dinner Calories: <b>{{sum_dinner_cal}}</b></a>
                         </div>
                         <div class="table_right">
-                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                            <form class="user_regenerate_meal" action="/dietrec_model" method="POST">
                                 <a>Regenerate</a>
                                 <input type="hidden" value="regenerate_dinner" name="hidden"></input>
                                 <input class="regenerate" name="rebdinner" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
@@ -192,7 +192,7 @@
                             <a>Total Dessert Calories: <b>{{sum_dessert_cal}}</b></a>
                         </div>
                         <div class="table_right">
-                            <form class="user_regenerate" action="/dietrec_model" method="POST">
+                            <form class="user_regenerate_meal" action="/dietrec_model" method="POST">
                                 <a>Regenerate</a>
                                 <input type="hidden" value="regenerate_dessert" name="hidden"></input>
                                 <input class="regenerate" name="redessert" type="submit" value="" style="background-image: url(images/regenerate.png);"></input>
