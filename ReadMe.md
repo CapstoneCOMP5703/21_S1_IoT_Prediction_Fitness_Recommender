@@ -18,18 +18,18 @@ Fitastic is a ML & DL based system that ultilizes the personal workout records w
 
 ```
 OS: Linux
-GPU: Nvidia graphics card 
-Drive: Nvidia-driver-410+
+GPU: NVIDIA graphics card (Minimal: NVIDIA GTX 980)
+Drive: NVIDIA-driver-410+
 ```
 **Steps**
 
-1. install Nvidia-driver-410, referring to [https://discuss.luxonis.com/d/17-installing-nvidia-410-cuda-and-cudnn-on-ubuntu-16-04](https://discuss.luxonis.com/d/17-installing-nvidia-410-cuda-and-cudnn-on-ubuntu-16-04)
+1. install NVIDIA-driver-410, referring to [https://discuss.luxonis.com/d/17-installing-nvidia-410-cuda-and-cudnn-on-ubuntu-16-04](https://discuss.luxonis.com/d/17-installing-nvidia-410-cuda-and-cudnn-on-ubuntu-16-04)
 1. install NVIDIA docker toolkit, referring to [https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
 ](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker)
 1. install docker compose, referring to [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/)
 1. pull docker-compose.yml (link) and run
 
-### Using Local IDE
+### Using Local IDE 
 **Prerequisite**
 
 `GPU: Nvidia graphics card `
